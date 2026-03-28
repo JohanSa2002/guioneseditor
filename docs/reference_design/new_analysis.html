@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Analysis - Guiones IA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "on-tertiary-fixed": "#301400",
+                "tertiary-fixed": "#ffdcc5",
+                "primary-container": "#8083ff",
+                "on-tertiary-fixed-variant": "#703700",
+                "surface-container-low": "#1b1b22",
+                "on-primary-container": "#0d0096",
+                "on-error-container": "#ffdad6",
+                "secondary": "#4edea3",
+                "surface-container-high": "#2a2931",
+                "surface": "#13131a",
+                "error-container": "#93000a",
+                "on-secondary-fixed-variant": "#005236",
+                "surface-container-lowest": "#0e0e15",
+                "surface-container": "#1f1f26",
+                "primary": "#c0c1ff",
+                "on-secondary-container": "#00311f",
+                "tertiary-fixed-dim": "#ffb783",
+                "on-surface": "#e4e1ec",
+                "surface-dim": "#13131a",
+                "outline": "#908fa0",
+                "on-error": "#690005",
+                "on-primary-fixed-variant": "#2f2ebe",
+                "inverse-on-surface": "#303038",
+                "surface-container-highest": "#34343c",
+                "surface-bright": "#393840",
+                "tertiary-container": "#d97721",
+                "background": "#13131a",
+                "secondary-container": "#00a572",
+                "secondary-fixed-dim": "#4edea3",
+                "on-tertiary": "#4f2500",
+                "primary-fixed-dim": "#c0c1ff",
+                "on-primary-fixed": "#07006c",
+                "on-primary": "#1000a9",
+                "on-surface-variant": "#c7c4d7",
+                "surface-variant": "#34343c",
+                "secondary-fixed": "#6ffbbe",
+                "outline-variant": "#464554",
+                "error": "#ffb4ab",
+                "inverse-surface": "#e4e1ec",
+                "on-tertiary-container": "#452000",
+                "inverse-primary": "#494bd6",
+                "on-background": "#e4e1ec",
+                "on-secondary": "#003824",
+                "surface-tint": "#c0c1ff",
+                "tertiary": "#ffb783",
+                "on-secondary-fixed": "#002113",
+                "primary-fixed": "#e1e0ff"
+              },
+              fontFamily: {
+                "headline": ["Manrope"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .step-pulse {
+            box-shadow: 0 0 0 0 rgba(192, 193, 255, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(192, 193, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(192, 193, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(192, 193, 255, 0); }
+        }
+        body { background-color: #13131a; }
+    </style>
+</head>
+<body class="font-body text-on-surface antialiased overflow-x-hidden">
+<!-- SideNavBar (Authority: Shared Components JSON) -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col p-4 bg-[#13131a] dark:bg-[#13131a] font-['Manrope'] antialiased h-screen w-64 border-r border-white/5 shadow-2xl shadow-indigo-500/10">
+<div class="mb-8 px-2">
+<h1 class="text-xl font-bold tracking-tight text-white">Guiones IA</h1>
+<p class="text-xs text-on-surface-variant/60 font-medium uppercase tracking-widest mt-1">Marketing Pro</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white transition-all duration-200 hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 bg-white/10 text-white rounded-lg font-semibold transition-all duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-sm">Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white transition-all duration-200 hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">description</span>
+<span class="text-sm">Scripts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white transition-all duration-200 hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/5">
+<button class="w-full flex items-center justify-center gap-2 bg-primary-container/20 border border-primary-container/30 text-primary py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-container/30 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                New Script
+            </button>
+</div>
+</aside>
+<!-- TopAppBar (Authority: Shared Components JSON) -->
+<header class="fixed top-0 right-0 left-64 h-16 flex items-center justify-between px-8 z-30 bg-[#13131a]/80 backdrop-blur-xl font-['Manrope'] text-sm">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full flex items-center bg-surface-container-low rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500/40 transition-all">
+<span class="material-symbols-outlined text-outline mr-3">search</span>
+<input class="bg-transparent border-none outline-none text-on-surface w-full text-sm placeholder:text-outline-variant focus:ring-0" placeholder="Search analysis or scripts..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 text-[#c7c4d7]">
+<button class="material-symbols-outlined hover:text-white transition-opacity">notifications</button>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container-highest border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of professional male digital marketing manager with friendly expression and modern lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_Elmeta1tEgUINlAQLR8dS8IkyxYo2kDcULeqaE2b0zhyUz_imTluyAKchJWc-q_AXkbbGGiMfR32Wm_8D2XlyrqhDhfMJWq5WWzQPsgF7g9nmNkCWZ6QtSN70BWl8jVvcajp1wqKvPm03edoqOrfDhlxOa8I3x3fWaT_x6C6DFE2TZuNicRtxvJjv48Mb3uPHDkN4l09FkTnUl26swmUd9HYfSLSpANnGLcFtS_kYb55L7Ip4OAFsmPB1PvB8EUT0YD1B_J0cZi6"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 pb-12 px-12 min-h-screen">
+<div class="max-w-4xl mx-auto">
+<!-- Header Section -->
+<div class="mb-10 text-center">
+<h2 class="text-4xl font-headline font-extrabold text-white tracking-tight mb-3">Engineer New Analysis</h2>
+<p class="text-on-surface-variant max-w-lg mx-auto leading-relaxed">Transform content data into high-converting AI script models with Obsidian Architecture.</p>
+</div>
+<!-- Multi-step Wizard Container -->
+<div class="relative">
+<!-- Progress Pipeline (Floating Top-Bar) -->
+<div class="mb-8 grid grid-cols-5 gap-4 px-4 py-6 bg-surface-container-low rounded-2xl border border-outline-variant/10 shadow-xl">
+<!-- Step 1: Complete -->
+<div class="flex flex-col items-center gap-2 opacity-50">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-secondary text-on-secondary">
+<span class="material-symbols-outlined text-[20px]">check</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-secondary">Audio Extracted</span>
+</div>
+<!-- Step 2: Complete -->
+<div class="flex flex-col items-center gap-2 opacity-50">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-secondary text-on-secondary">
+<span class="material-symbols-outlined text-[20px]">check</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-secondary">Transcribed</span>
+</div>
+<!-- Step 3: Active -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-primary text-on-primary step-pulse">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">GPT-4o Analysis</span>
+</div>
+<!-- Step 4: Pending -->
+<div class="flex flex-col items-center gap-2 opacity-30">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface">
+<span class="material-symbols-outlined text-[20px]">memory</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest">Embedding</span>
+</div>
+<!-- Step 5: Pending -->
+<div class="flex flex-col items-center gap-2 opacity-30">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface">
+<span class="material-symbols-outlined text-[20px]">storage</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest">Saving</span>
+</div>
+</div>
+<!-- Form Card -->
+<div class="bg-surface-container rounded-3xl p-8 border border-outline-variant/5 shadow-2xl relative overflow-hidden">
+<!-- Aesthetic Light Leak Background Decor -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+<div class="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/5 blur-[100px] rounded-full pointer-events-none"></div>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+<!-- Primary Input: URL -->
+<div class="md:col-span-2">
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Video Source URL</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-primary group-focus-within:text-white transition-colors">link</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 bg-surface-container-lowest border-none rounded-xl text-white placeholder:text-outline/40 focus:ring-2 focus:ring-primary/30 transition-all font-body" placeholder="https://tiktok.com/@creator/video/..." type="text"/>
+</div>
+</div>
+<!-- Dropdown: Niche -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Target Niche</label>
+<div class="relative">
+<select class="block w-full pl-4 pr-10 py-4 bg-surface-container-lowest border-none rounded-xl text-white appearance-none focus:ring-2 focus:ring-primary/30 font-body">
+<option>SaaS &amp; Tech</option>
+<option>Personal Finance</option>
+<option>Health &amp; Fitness</option>
+<option>E-commerce</option>
+<option>Agency Growth</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Text Input: Sub-niche -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Sub-Niche focus</label>
+<input class="block w-full px-4 py-4 bg-surface-container-lowest border-none rounded-xl text-white placeholder:text-outline/40 focus:ring-2 focus:ring-primary/30 font-body" placeholder="e.g., AI Automation for Real Estate" type="text"/>
+</div>
+<!-- Dropdown: Language -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Analysis Language</label>
+<div class="relative">
+<select class="block w-full pl-4 pr-10 py-4 bg-surface-container-lowest border-none rounded-xl text-white appearance-none focus:ring-2 focus:ring-primary/30 font-body">
+<option>English (US/UK)</option>
+<option>Spanish (ES/LATAM)</option>
+<option>Portuguese (BR)</option>
+<option>German</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">language</span>
+</div>
+</div>
+</div>
+<!-- Dropdown: Client Selector -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Assign to Client</label>
+<div class="relative">
+<select class="block w-full pl-4 pr-10 py-4 bg-surface-container-lowest border-none rounded-xl text-white appearance-none focus:ring-2 focus:ring-primary/30 font-body">
+<option>Internal Portfolio</option>
+<option>Nexus Marketing Inc.</option>
+<option>Aria Aesthetics</option>
+<option>Skyline Real Estate</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">group</span>
+</div>
+</div>
+</div>
+<!-- Optional: Manual Metrics -->
+<div class="md:col-span-2 pt-6 border-t border-outline-variant/10">
+<h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">show_chart</span>
+                                Content Metrics (Optional)
+                            </h3>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-outline mb-2">Views</label>
+<input class="block w-full px-4 py-3 bg-surface-container-lowest/50 border border-outline-variant/20 rounded-lg text-white placeholder:text-outline/40 focus:ring-1 focus:ring-secondary/40 text-sm" placeholder="240k" type="number"/>
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-outline mb-2">Likes</label>
+<input class="block w-full px-4 py-3 bg-surface-container-lowest/50 border border-outline-variant/20 rounded-lg text-white placeholder:text-outline/40 focus:ring-1 focus:ring-secondary/40 text-sm" placeholder="12k" type="number"/>
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-outline mb-2">Shares</label>
+<input class="block w-full px-4 py-3 bg-surface-container-lowest/50 border border-outline-variant/20 rounded-lg text-white placeholder:text-outline/40 focus:ring-1 focus:ring-secondary/40 text-sm" placeholder="850" type="number"/>
+</div>
+</div>
+</div>
+<!-- CTA Section -->
+<div class="md:col-span-2 pt-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-2 text-on-surface-variant/60">
+<span class="material-symbols-outlined text-sm">info</span>
+<span class="text-xs">Processing typically takes 45-60 seconds.</span>
+</div>
+<div class="flex items-center gap-4 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none px-8 py-3.5 rounded-xl border border-outline-variant/30 text-white font-semibold text-sm hover:bg-white/5 transition-all" type="button">
+                                    Cancel
+                                </button>
+<button class="flex-1 sm:flex-none px-10 py-3.5 rounded-xl bg-gradient-to-br from-primary-container to-primary text-on-primary font-bold text-sm shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2" type="submit">
+                                    Start Analysis
+                                    <span class="material-symbols-outlined text-[18px]">bolt</span>
+</button>
+</div>
+</div>
+</form>
+</div>
+</div>
+<!-- Contextual Insight (Bento-style snippet) -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/5">
+<span class="material-symbols-outlined text-primary mb-4">smart_toy</span>
+<h4 class="text-white font-bold text-sm mb-2">Neural Transcription</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">Multi-speaker recognition and punctuation recovery powered by Whisper v3 Large.</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/5">
+<span class="material-symbols-outlined text-secondary mb-4">auto_awesome</span>
+<h4 class="text-white font-bold text-sm mb-2">Hook Extraction</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">Identifies the exact second the viral hook ends and the narrative retention begins.</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/5">
+<span class="material-symbols-outlined text-tertiary mb-4">database</span>
+<h4 class="text-white font-bold text-sm mb-2">Vector Storage</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">Embeddings are saved in your private Knowledge Base for future script synthesis.</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,67 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: "class",
+  content: ['./index.html', './src/**/*.{vue,js}'],
+  theme: {
+    extend: {
+      colors: {
+        "on-tertiary-fixed": "#301400",
+        "tertiary-fixed": "#ffdcc5",
+        "primary-container": "#8083ff",
+        "on-tertiary-fixed-variant": "#703700",
+        "surface-container-low": "#1b1b22",
+        "on-primary-container": "#0d0096",
+        "on-error-container": "#ffdad6",
+        "secondary": "#4edea3",
+        "surface-container-high": "#2a2931",
+        "surface": "#13131a",
+        "error-container": "#93000a",
+        "on-secondary-fixed-variant": "#005236",
+        "surface-container-lowest": "#0e0e15",
+        "surface-container": "#1f1f26",
+        "primary": "#c0c1ff",
+        "on-secondary-container": "#00311f",
+        "tertiary-fixed-dim": "#ffb783",
+        "on-surface": "#e4e1ec",
+        "surface-dim": "#13131a",
+        "outline": "#908fa0",
+        "on-error": "#690005",
+        "on-primary-fixed-variant": "#2f2ebe",
+        "inverse-on-surface": "#303038",
+        "surface-container-highest": "#34343c",
+        "surface-bright": "#393840",
+        "tertiary-container": "#d97721",
+        "background": "#13131a",
+        "secondary-container": "#00a572",
+        "secondary-fixed-dim": "#4edea3",
+        "on-tertiary": "#4f2500",
+        "primary-fixed-dim": "#c0c1ff",
+        "on-primary-fixed": "#07006c",
+        "on-primary": "#1000a9",
+        "on-surface-variant": "#c7c4d7",
+        "surface-variant": "#34343c",
+        "secondary-fixed": "#6ffbbe",
+        "outline-variant": "#464554",
+        "error": "#ffb4ab",
+        "inverse-surface": "#e4e1ec",
+        "on-tertiary-container": "#452000",
+        "inverse-primary": "#494bd6",
+        "on-background": "#e4e1ec",
+        "on-secondary": "#003824",
+        "surface-tint": "#c0c1ff",
+        "tertiary": "#ffb783",
+        "on-secondary-fixed": "#002113",
+        "primary-fixed": "#e1e0ff"
+      },
+      fontFamily: {
+        "headline": ["Manrope", "sans-serif"],
+        "body": ["Inter", "sans-serif"],
+        "label": ["Inter", "sans-serif"]
+      },
+    }
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/container-queries')
+  ],
+}

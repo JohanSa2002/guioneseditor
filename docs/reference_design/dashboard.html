@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Guiones IA - Marketing Pro Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #13131a;
+        }
+        .font-headline {
+            font-family: 'Manrope', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(31, 31, 38, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "surface-container-low": "#1b1b22",
+                "surface-container": "#1f1f26",
+                "surface-container-highest": "#34343c",
+                "surface": "#13131a",
+                "primary": "#c0c1ff",
+                "primary-container": "#8083ff",
+                "on-primary-container": "#0d0096",
+                "secondary": "#4edea3",
+                "on-surface": "#e4e1ec",
+                "on-surface-variant": "#c7c4d7",
+                "outline-variant": "#464554",
+              },
+              fontFamily: {
+                "headline": ["Manrope"],
+                "body": ["Inter"],
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+    </script>
+</head>
+<body class="text-on-surface antialiased selection:bg-primary/30">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col p-4 h-screen w-64 border-r border-white/5 bg-[#13131a] font-['Manrope'] antialiased shadow-2xl shadow-indigo-500/10">
+<div class="flex items-center gap-3 mb-10 px-2">
+<div class="w-8 h-8 rounded bg-gradient-to-br from-primary-container to-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-lg" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight text-white">Guiones IA</h1>
+<p class="text-[10px] uppercase tracking-widest text-primary/60 font-bold">Marketing Pro</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 bg-white/10 text-white rounded-lg font-semibold transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white hover:bg-white/5 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="text-sm">Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white hover:bg-white/5 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-sm">Scripts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white hover:bg-white/5 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/5">
+<button class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-container text-on-primary-container rounded-lg font-bold text-sm shadow-lg shadow-primary/20 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Script
+            </button>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 right-0 left-64 h-16 flex items-center justify-between px-8 z-30 bg-[#13131a]/80 backdrop-blur-xl font-['Manrope'] text-sm">
+<div class="relative w-96 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/40 text-on-surface placeholder:text-outline/50 transition-all" placeholder="Search analyzed scripts..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative text-[#c7c4d7] hover:text-white transition-opacity">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full border-2 border-[#13131a]"></span>
+</button>
+<div class="flex items-center gap-3 pl-6 border-l border-white/5">
+<div class="text-right">
+<p class="text-xs font-bold text-white leading-none">Alex Rivera</p>
+<p class="text-[10px] text-outline">Growth Lead</p>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="professional headshot of a marketing executive with confident expression, neutral studio background, high-end photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAF_qikv11E-m1fg7HE7CLMu_qdasNYKJt0vmz-v3yT6b2kpw_lMre-iwzo_G52AH5bkHIpJXAQ7OrqNTKiXwPybCJ2AO950DIm2ARnq7t9bgP_ZIr2f1IBAJ1uNSBj6ZtHupN9byFF50rsf5_LseEknLEetvpcMkk4dw-38bYDw4vfQXdDzQ7xvEJlPD46c788j7cCJjzumWd04CvMP41-3bIH-JssH_uvOrNB7GUfUt7k1NaWW9T_jMMzwhViAJ6syW7o8IGsR6NA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 pb-12 px-8 min-h-screen">
+<!-- Header Section -->
+<header class="mb-10 flex items-end justify-between">
+<div>
+<h2 class="text-4xl font-extrabold font-headline tracking-tight text-white mb-2">Engineering Hub</h2>
+<p class="text-on-surface-variant max-w-lg">Transforming high-performance viral data into editorial script masterpieces.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container-low text-on-surface rounded-lg text-sm font-semibold border border-outline-variant/20 hover:bg-surface-container transition-colors">Export Report</button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-bold shadow-lg shadow-primary/10 hover:brightness-110 transition-all">Run Analysis</button>
+</div>
+</header>
+<!-- KPI Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+<!-- Card 1 -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10 group hover:border-primary/20 transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="text-outline text-xs font-bold uppercase tracking-wider">Top Niche</span>
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+<h3 class="text-2xl font-bold text-white font-headline">Finance</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[10px] px-2 py-0.5 rounded bg-secondary/10 text-secondary border border-secondary/20 font-bold">+12.4%</span>
+<span class="text-[10px] text-outline">vs last month</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10 group hover:border-primary/20 transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="text-outline text-xs font-bold uppercase tracking-wider">Virality Score</span>
+<span class="material-symbols-outlined text-primary text-lg">bolt</span>
+</div>
+<h3 class="text-2xl font-bold text-white font-headline">82<span class="text-sm text-outline font-normal ml-1">/100</span></h3>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-4 overflow-hidden">
+<div class="bg-gradient-to-r from-primary-container to-primary h-full w-[82%]"></div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10 group hover:border-primary/20 transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="text-outline text-xs font-bold uppercase tracking-wider">Analyzed Videos</span>
+<span class="material-symbols-outlined text-outline text-lg">videocam</span>
+</div>
+<h3 class="text-2xl font-bold text-white font-headline">142</h3>
+<p class="text-[10px] text-outline mt-2 italic">Processed in last 7 days</p>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10 group hover:border-primary/20 transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="text-outline text-xs font-bold uppercase tracking-wider">Top Platform</span>
+<span class="material-symbols-outlined text-red-400 text-lg">favorite</span>
+</div>
+<h3 class="text-2xl font-bold text-white font-headline">TikTok</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[10px] px-2 py-0.5 rounded bg-red-400/10 text-red-400 border border-red-400/20 font-bold">Viral Dominance</span>
+</div>
+</div>
+</section>
+<!-- Main Data Table Section -->
+<section class="bg-surface-container-low rounded-2xl border border-outline-variant/10 overflow-hidden shadow-2xl">
+<div class="p-6 flex items-center justify-between border-b border-white/5 bg-surface-container/30">
+<h4 class="font-headline font-bold text-lg text-white">Analyzed Videos Pipeline</h4>
+<div class="flex gap-2">
+<button class="p-2 text-outline hover:text-white transition-colors">
+<span class="material-symbols-outlined text-xl">filter_list</span>
+</button>
+<button class="p-2 text-outline hover:text-white transition-colors">
+<span class="material-symbols-outlined text-xl">sort</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-[11px] uppercase tracking-widest text-outline border-b border-white/5 bg-surface-container-low">
+<th class="px-6 py-4 font-bold">Platform</th>
+<th class="px-6 py-4 font-bold">Niche</th>
+<th class="px-6 py-4 font-bold">Narrative Structure</th>
+<th class="px-6 py-4 font-bold">Emotional Trigger</th>
+<th class="px-6 py-4 font-bold text-center">Virality</th>
+<th class="px-6 py-4 font-bold text-center">Eng. %</th>
+<th class="px-6 py-4 font-bold text-center">Cialdini</th>
+<th class="px-6 py-4 font-bold text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/[0.03]">
+<!-- Row 1 -->
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="px-6 py-5">
+<span class="px-3 py-1 text-[10px] font-bold rounded-full border border-red-500/30 bg-red-500/10 text-red-400 uppercase tracking-tighter shadow-[0_0_10px_rgba(239,68,68,0.1)]">TikTok</span>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[11px] rounded font-medium">Marketing</span>
+</td>
+<td class="px-6 py-5 text-sm font-medium text-on-surface">Hook-Problem-Solution</td>
+<td class="px-6 py-5 text-sm text-on-surface-variant">Urgency</td>
+<td class="px-6 py-5">
+<div class="flex flex-col items-center">
+<span class="text-lg font-bold text-secondary">94</span>
+<div class="w-12 h-0.5 bg-secondary/20 rounded-full mt-1">
+<div class="bg-secondary h-full w-[94%]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center text-sm font-medium">4.2%</td>
+<td class="px-6 py-5 text-center">
+<div class="flex items-center justify-center gap-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/20"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/20"></span>
+<span class="text-[10px] ml-1 text-primary font-bold">3/7</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-outline hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="bg-surface-container-lowest/30 hover:bg-white/[0.02] transition-colors group">
+<td class="px-6 py-5">
+<span class="px-3 py-1 text-[10px] font-bold rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-400 uppercase tracking-tighter shadow-[0_0_10px_rgba(217,70,239,0.1)]">Reels</span>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[11px] rounded font-medium">E-commerce</span>
+</td>
+<td class="px-6 py-5 text-sm font-medium text-on-surface">Product-Benefit-CTA</td>
+<td class="px-6 py-5 text-sm text-on-surface-variant">Curiosity</td>
+<td class="px-6 py-5">
+<div class="flex flex-col items-center">
+<span class="text-lg font-bold text-secondary">78</span>
+<div class="w-12 h-0.5 bg-secondary/20 rounded-full mt-1">
+<div class="bg-secondary h-full w-[78%]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center text-sm font-medium">3.8%</td>
+<td class="px-6 py-5 text-center">
+<div class="flex items-center justify-center gap-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-[10px] ml-1 text-primary font-bold">5/7</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-outline hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="px-6 py-5">
+<span class="px-3 py-1 text-[10px] font-bold rounded-full border border-red-600/30 bg-red-600/10 text-red-500 uppercase tracking-tighter">Shorts</span>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[11px] rounded font-medium">Finance</span>
+</td>
+<td class="px-6 py-5 text-sm font-medium text-on-surface">Education-Shock-Value</td>
+<td class="px-6 py-5 text-sm text-on-surface-variant">Authority</td>
+<td class="px-6 py-5">
+<div class="flex flex-col items-center">
+<span class="text-lg font-bold text-secondary">62</span>
+<div class="w-12 h-0.5 bg-secondary/20 rounded-full mt-1">
+<div class="bg-secondary h-full w-[62%]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center text-sm font-medium">5.1%</td>
+<td class="px-6 py-5 text-center">
+<div class="flex items-center justify-center gap-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/20"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/20"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/20"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/20"></span>
+<span class="text-[10px] ml-1 text-primary font-bold">1/7</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-outline hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="bg-surface-container-lowest/30 hover:bg-white/[0.02] transition-colors group">
+<td class="px-6 py-5">
+<span class="px-3 py-1 text-[10px] font-bold rounded-full border border-red-500/30 bg-red-500/10 text-red-400 uppercase tracking-tighter shadow-[0_0_10px_rgba(239,68,68,0.1)]">TikTok</span>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[11px] rounded font-medium">Personal Brand</span>
+</td>
+<td class="px-6 py-5 text-sm font-medium text-on-surface">Vlog-Insight-Call</td>
+<td class="px-6 py-5 text-sm text-on-surface-variant">Belonging</td>
+<td class="px-6 py-5">
+<div class="flex flex-col items-center">
+<span class="text-lg font-bold text-secondary">88</span>
+<div class="w-12 h-0.5 bg-secondary/20 rounded-full mt-1">
+<div class="bg-secondary h-full w-[88%]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center text-sm font-medium">2.9%</td>
+<td class="px-6 py-5 text-center">
+<div class="flex items-center justify-center gap-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/20"></span>
+<span class="text-[10px] ml-1 text-primary font-bold">4/7</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-outline hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-white/5 flex items-center justify-between text-[11px] text-outline font-medium uppercase tracking-wider">
+<span>Showing 1-4 of 142 results</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-surface-container rounded hover:text-white transition-colors">Previous</button>
+<button class="px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded font-bold">1</button>
+<button class="px-3 py-1 bg-surface-container rounded hover:text-white transition-colors">2</button>
+<button class="px-3 py-1 bg-surface-container rounded hover:text-white transition-colors">Next</button>
+</div>
+</div>
+</section>
+<!-- Script Concept Feature Section (Editorial Layout) -->
+<section class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 relative h-[400px] rounded-2xl overflow-hidden group border border-outline-variant/10 shadow-2xl">
+<img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="abstract digital waves with deep indigo and vibrant neon violet colors, high contrast, minimalist futuristic aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIUHH9UAkU59-MsrvYMz5YiBKmgP86klpQs957mt91g016ePYWPvq3SIjn00joLQmQA7MOc8qDhMLW2i_sr-kQwFKIAV_xA5jP580BKRqALEaspHXST8QwTmaBSXLyG3f3NbEJdVBf9vyip0T-3Ev9rzbWB8XinetwSRi0sZLBJ_PYwwpgB_PpYU3UxwFqibEzzreYxEZYk1CcTzShVwNoozei6HhGgBW3d-Ggf_DuoDrS0A9Y6JFQ-e6cr9aI5GVhTzKfPYvM80Oi"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/60 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-10">
+<span class="text-[10px] font-bold bg-primary-container text-on-primary-container px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">Algorithm Pick</span>
+<h3 class="text-4xl font-extrabold font-headline text-white mb-4 leading-tight max-w-lg">Mastering the 'Debt-Free' Hook Strategy for 2024</h3>
+<p class="text-on-surface-variant max-w-sm mb-6 text-sm">Our AI detected a 340% spike in narrative hooks using "negative visualization" in the personal finance niche.</p>
+<button class="flex items-center gap-2 text-white font-bold group/btn">
+                        Learn how to engineer this 
+                        <span class="material-symbols-outlined group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container p-8 rounded-2xl border border-outline-variant/10 flex flex-col justify-center">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-secondary text-2xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<h4 class="text-xl font-bold text-white font-headline mb-4">Smart Recommendations</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Based on your recent analyses, we recommend switching your Hook structure to <strong>"Pattern Interrupt"</strong> for YouTube Shorts to capture 1.2s more average watch time.</p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center gap-3 text-xs text-on-surface">
+<span class="w-1 h-1 rounded-full bg-primary"></span>
+                        Increase visual pacing in first 3s
+                    </li>
+<li class="flex items-center gap-3 text-xs text-on-surface">
+<span class="w-1 h-1 rounded-full bg-primary"></span>
+                        Use higher contrast text overlays
+                    </li>
+<li class="flex items-center gap-3 text-xs text-on-surface">
+<span class="w-1 h-1 rounded-full bg-primary"></span>
+                        Leverage "FOMO" emotional trigger
+                    </li>
+</ul>
+<button class="w-full py-3 bg-surface-container-highest text-white text-xs font-bold rounded-lg border border-white/5 hover:bg-white/10 transition-colors">Apply to Scripts</button>
+</div>
+</section>
+</main>
+</body></html>

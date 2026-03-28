@@ -1,0 +1,12 @@
+{
+  "name": "guiones-sistema",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "18.x" },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "openai": "^4.28.0",
+    "zod": "^3.22.4"
+  }
+}
