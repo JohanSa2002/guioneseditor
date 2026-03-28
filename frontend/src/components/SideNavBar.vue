@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <!-- Navigation -->
+    <!-- Navegación -->
     <nav class="flex-1 space-y-1">
       <router-link to="/" class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white hover:bg-white/5 transition-all duration-200 group relative" active-class="bg-white/10 !text-white rounded-lg font-semibold">
         <span class="material-symbols-outlined text-[20px]">dashboard</span>
@@ -19,23 +19,23 @@
       </router-link>
       <router-link to="/analysis" class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white hover:bg-white/5 transition-all duration-200 group relative" active-class="bg-white/10 !text-white rounded-lg font-semibold">
         <span class="material-symbols-outlined text-[20px]">analytics</span>
-        <span class="text-sm font-medium">Analysis</span>
+        <span class="text-sm font-medium">Análisis</span>
       </router-link>
       <router-link to="/scripts" class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white hover:bg-white/5 transition-all duration-200 group relative" active-class="bg-white/10 !text-white rounded-lg font-semibold">
         <span class="material-symbols-outlined text-[20px]">description</span>
-        <span class="text-sm font-medium">Scripts</span>
+        <span class="text-sm font-medium">Guiones</span>
       </router-link>
       <router-link to="/settings" class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white hover:bg-white/5 transition-all duration-200 group relative" active-class="bg-white/10 !text-white rounded-lg font-semibold">
         <span class="material-symbols-outlined text-[20px]">settings</span>
-        <span class="text-sm font-medium">Settings</span>
+        <span class="text-sm font-medium">Configuración</span>
       </router-link>
     </nav>
 
-    <!-- Footer Action -->
+    <!-- Acción principal -->
     <div class="mt-auto pt-6 border-t border-white/5">
       <router-link to="/new-analysis" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-container text-on-primary-container rounded-lg font-bold text-sm shadow-lg shadow-primary/20 scale-95 active:scale-90 transition-transform hover:brightness-110">
         <span class="material-symbols-outlined text-sm">add</span>
-        New Analysis
+        Nuevo Análisis
       </router-link>
     </div>
   </aside>

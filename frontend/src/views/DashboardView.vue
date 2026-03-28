@@ -1,23 +1,23 @@
 <template>
   <div class="max-w-7xl mx-auto flex flex-col gap-10">
-    <!-- Header -->
+    <!-- Encabezado -->
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
       <div>
-        <h1 class="text-5xl font-extrabold font-headline tracking-tighter text-white mb-2 leading-tight">Engineering Hub</h1>
+        <h1 class="text-5xl font-extrabold font-headline tracking-tighter text-white mb-2 leading-tight">Panel Principal</h1>
         <p class="text-primary text-sm font-bold flex items-center gap-2 tracking-widest uppercase">
           <span class="material-symbols-outlined text-sm">terminal</span>
-          System Overview & Performance Analytics
+          Resumen del sistema y métricas de rendimiento
         </p>
       </div>
       <div class="flex items-center gap-4">
-        <button class="px-6 py-3 bg-surface-container border border-white/5 text-outline font-bold rounded-xl text-sm hover:text-white transition-colors" @click="cargarDatos">Refresh Hub</button>
+        <button class="px-6 py-3 bg-surface-container border border-white/5 text-outline font-bold rounded-xl text-sm hover:text-white transition-colors" @click="cargarDatos">Actualizar</button>
         <router-link to="/new-analysis" class="px-8 py-3 bg-gradient-to-br from-primary-container to-primary text-on-primary-container font-headline font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all text-sm h-12 flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm">add</span> New Analysis
+          <span class="material-symbols-outlined text-sm">add</span> Nuevo Análisis
         </router-link>
       </div>
     </header>
 
-    <!-- KPI Bento Grid -->
+    <!-- KPI por Niche -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <div v-for="stat in stats" :key="stat.niche" class="bg-surface-container p-6 rounded-3xl border border-outline-variant/10 shadow-xl relative overflow-hidden group">
         <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-primary/5 blur-2xl rounded-full group-hover:bg-primary/10 transition-colors"></div>
@@ -25,7 +25,7 @@
         <div class="flex items-end justify-between">
           <h2 class="text-3xl font-black font-headline text-white tracking-tighter">{{ stat.total_guiones }}</h2>
           <div class="text-right">
-            <p class="text-[10px] text-primary font-bold uppercase tracking-tighter">Avg Score</p>
+            <p class="text-[10px] text-primary font-bold uppercase tracking-tighter">Puntaje Prom.</p>
             <p class="text-lg font-black text-primary leading-none">{{ (stat.avg_score || 0).toFixed(1) }}</p>
           </div>
         </div>
@@ -33,35 +33,35 @@
           <div class="bg-primary h-full transition-all duration-1000" :style="{ width: (stat.avg_score || 0) + '%' }"></div>
         </div>
       </div>
-      
-      <!-- Placeholder if no stats -->
+
+      <!-- Placeholder sin datos -->
       <div v-if="stats.length === 0" class="lg:col-span-4 bg-surface-container/50 border border-dashed border-white/5 p-8 rounded-3xl flex items-center justify-center italic text-outline text-sm">
-        Connect database to view niche performance.
+        Conecta la base de datos para ver el rendimiento por niche.
       </div>
     </div>
 
-    <!-- Main Content Grid -->
+    <!-- Contenido Principal -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-      <!-- Detailed Table -->
+      <!-- Tabla de Guiones -->
       <div class="lg:col-span-12 xl:col-span-8 bg-surface-container rounded-3xl border border-outline-variant/10 shadow-2xl overflow-hidden flex flex-col">
         <div class="px-8 py-6 border-b border-white/5 bg-surface-container-high/50 flex items-center justify-between">
           <h3 class="text-sm font-headline font-black text-white uppercase tracking-widest flex items-center gap-2">
-            <span class="material-symbols-outlined text-outline text-lg">database</span> Analyzed Scripts
+            <span class="material-symbols-outlined text-outline text-lg">database</span> Guiones Analizados
           </h3>
           <div class="flex gap-2">
-             <button class="px-4 py-2 bg-surface-container-low text-[10px] font-black uppercase text-outline rounded hover:text-white transition-colors" @click="cambiarPagina(filtros.page - 1)" :disabled="filtros.page <= 1">Prev</button>
-             <button class="px-4 py-2 bg-surface-container-low text-[10px] font-black uppercase text-outline rounded hover:text-white transition-colors" @click="cambiarPagina(filtros.page + 1)" :disabled="guiones.length < filtros.limit">Next</button>
+             <button class="px-4 py-2 bg-surface-container-low text-[10px] font-black uppercase text-outline rounded hover:text-white transition-colors" @click="cambiarPagina(filtros.page - 1)" :disabled="filtros.page <= 1">Anterior</button>
+             <button class="px-4 py-2 bg-surface-container-low text-[10px] font-black uppercase text-outline rounded hover:text-white transition-colors" @click="cambiarPagina(filtros.page + 1)" :disabled="guiones.length < filtros.limit">Siguiente</button>
           </div>
         </div>
-        
+
         <div class="overflow-x-auto flex-1 max-h-[600px] scrollbar-custom">
           <table class="w-full text-left border-collapse">
             <thead class="sticky top-0 bg-surface-container z-10 border-b border-white/5">
               <tr class="text-[10px] font-black text-outline uppercase tracking-widest bg-surface-container-high/30">
-                <th class="px-8 py-4">Context</th>
-                <th class="px-6 py-4">Viral Score</th>
-                <th class="px-6 py-4">Neurometric Pattern</th>
-                <th class="px-8 py-4 text-right">Actions</th>
+                <th class="px-8 py-4">Contexto</th>
+                <th class="px-6 py-4">Puntaje Viral</th>
+                <th class="px-6 py-4">Patrón Neurométrico</th>
+                <th class="px-8 py-4 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5">
@@ -72,7 +72,7 @@
                       <span :class="plataformaBadge(g.plataforma)" class="text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">{{ g.plataforma }}</span>
                       <span class="text-[10px] text-outline font-bold uppercase tracking-wider">{{ g.niche }}</span>
                     </div>
-                    <p class="text-sm font-bold text-white leading-tight group-hover:text-primary transition-colors line-clamp-2 max-w-sm">{{ g.tema_principal || 'No semantic title detected' }}</p>
+                    <p class="text-sm font-bold text-white leading-tight group-hover:text-primary transition-colors line-clamp-2 max-w-sm">{{ g.tema_principal || 'Sin título detectado' }}</p>
                     <p class="text-[10px] text-outline/60 italic font-medium truncate max-w-xs">{{ g.url_origen }}</p>
                   </div>
                 </td>
@@ -89,7 +89,7 @@
                 </td>
                 <td class="px-6 py-6">
                   <div class="max-w-xs">
-                    <p class="text-[11px] text-outline font-bold uppercase tracking-widest mb-1">{{ g.gancho_tipo || 'Hook' }}</p>
+                    <p class="text-[11px] text-outline font-bold uppercase tracking-widest mb-1">{{ g.gancho_tipo || 'Gancho' }}</p>
                     <p class="text-xs text-on-surface-variant line-clamp-2 leading-relaxed italic">"{{ g.gancho_texto }}"</p>
                   </div>
                 </td>
@@ -99,12 +99,12 @@
                   </button>
                 </td>
               </tr>
-              
+
               <tr v-if="guiones.length === 0 && !cargando">
                 <td colspan="4" class="py-24 text-center">
                   <div class="flex flex-col items-center gap-2 opacity-30">
                     <span class="material-symbols-outlined text-5xl">inventory_2</span>
-                    <p class="text-sm font-bold uppercase tracking-widest">Repository Empty</p>
+                    <p class="text-sm font-bold uppercase tracking-widest">Repositorio vacío</p>
                   </div>
                 </td>
               </tr>
@@ -113,17 +113,17 @@
         </div>
       </div>
 
-      <!-- Right Column: Algorithm Pick -->
+      <!-- Columna derecha: Mejor Guión -->
       <div class="lg:col-span-12 xl:col-span-4 flex flex-col gap-8">
         <div class="bg-surface-container p-8 rounded-[40px] border border-secondary/20 shadow-3xl relative overflow-hidden flex-1 flex flex-col gap-8 group">
           <div class="absolute -top-12 -right-12 w-48 h-48 bg-secondary/5 blur-3xl rounded-full group-hover:bg-secondary/10 transition-colors"></div>
-          
+
           <div>
             <div class="flex items-center gap-2 text-secondary font-black text-[10px] uppercase tracking-[0.2em] mb-3">
-              <span class="material-symbols-outlined text-sm animate-pulse">new_releases</span> Editors Pick
+              <span class="material-symbols-outlined text-sm animate-pulse">new_releases</span> Selección del Editor
             </div>
-            <h3 class="text-3xl font-headline font-black text-white tracking-widest leading-none mb-2">MASTER SCRIPT</h3>
-            <p class="text-xs text-outline font-bold">Top Performing Neuromarketing Pattern</p>
+            <h3 class="text-3xl font-headline font-black text-white tracking-widest leading-none mb-2">GUIÓN MAESTRO</h3>
+            <p class="text-xs text-outline font-bold">Patrón de neuromarketing con mayor rendimiento</p>
           </div>
 
           <div v-if="guionTop" class="space-y-6 flex-1 flex flex-col">
@@ -131,10 +131,10 @@
                <p class="text-[10px] text-secondary font-bold uppercase tracking-widest">{{ guionTop.niche }} • {{ guionTop.sub_niche }}</p>
                <p class="text-lg font-black text-white leading-tight font-headline">{{ guionTop.tema_principal }}</p>
             </div>
-            
+
             <div class="flex-1 space-y-4">
                <div>
-                 <p class="text-[10px] text-outline font-black uppercase tracking-widest mb-2">Narrative Core</p>
+                 <p class="text-[10px] text-outline font-black uppercase tracking-widest mb-2">Núcleo Narrativo</p>
                  <p class="text-sm text-on-surface-variant leading-relaxed line-clamp-4">{{ guionTop.resumen_patron }}</p>
                </div>
                <div class="grid grid-cols-2 gap-4">
@@ -143,17 +143,17 @@
                     <p class="text-xl font-black text-white">{{ guionTop.score_cialdini }}/7</p>
                  </div>
                  <div class="p-3 rounded-xl bg-surface-container-low border border-white/5">
-                    <p class="text-[10px] text-outline font-bold uppercase mb-1">Intensity</p>
+                    <p class="text-[10px] text-outline font-bold uppercase mb-1">Viralidad</p>
                     <p class="text-xl font-black text-white">{{ guionTop.score_virabilidad }}%</p>
                  </div>
                </div>
             </div>
 
-            <button @click="verDetalle(guionTop.id)" class="w-full py-4 bg-white text-surface rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-secondary hover:text-white transition-all transform active:scale-95 shadow-xl shadow-white/5">Analyze Vector</button>
+            <button @click="verDetalle(guionTop.id)" class="w-full py-4 bg-white text-surface rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-secondary hover:text-white transition-all transform active:scale-95 shadow-xl shadow-white/5">Ver Análisis Completo</button>
           </div>
-          
+
           <div v-else class="flex flex-col items-center justify-center flex-1 italic text-outline text-xs opacity-50">
-            No top patterns analyzed yet.
+            Aún no hay patrones analizados.
           </div>
         </div>
       </div>
