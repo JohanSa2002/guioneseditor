@@ -2,38 +2,39 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView      from '../views/DashboardView.vue'
 import AnalysisCreateView from '../views/AnalysisCreateView.vue'
 import AnalysisDetailView from '../views/AnalysisDetailView.vue'
+import ScriptsView        from '../views/ScriptsView.vue'
+import SettingsView       from '../views/SettingsView.vue'
 
 const routes = [
-  { 
-    path: '/', 
+  {
+    path: '/',
     name: 'Dashboard',
-    component: DashboardView 
+    component: DashboardView
   },
-  { 
-    path: '/new-analysis', 
+  {
+    path: '/new-analysis',
     name: 'AnalysisCreate',
-    component: AnalysisCreateView 
+    component: AnalysisCreateView
   },
-  { 
-    path: '/analysis/:id', 
+  {
+    path: '/analysis/:id',
     name: 'AnalysisDetail',
-    component: AnalysisDetailView 
+    component: AnalysisDetailView
   },
-  // Placeholders for sidebar consistency
-  { 
-    path: '/analysis', 
+  {
+    path: '/analysis',
     name: 'AnalysisList',
-    redirect: '/' 
+    redirect: '/scripts'
   },
-  { 
-    path: '/scripts', 
+  {
+    path: '/scripts',
     name: 'Scripts',
-    component: () => import('../views/DashboardView.vue') // Placeholder
+    component: ScriptsView
   },
-  { 
-    path: '/settings', 
+  {
+    path: '/settings',
     name: 'Settings',
-    component: () => import('../views/DashboardView.vue') // Placeholder
+    component: SettingsView
   }
 ]
 
