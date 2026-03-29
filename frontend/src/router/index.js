@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView      from '../views/DashboardView.vue'
 import AnalysisCreateView from '../views/AnalysisCreateView.vue'
 import AnalysisDetailView from '../views/AnalysisDetailView.vue'
+import AnalysisListView   from '../views/AnalysisListView.vue'
 import ScriptsView        from '../views/ScriptsView.vue'
 import SettingsView       from '../views/SettingsView.vue'
 
@@ -17,14 +18,14 @@ const routes = [
     component: AnalysisCreateView
   },
   {
+    path: '/analysis',
+    name: 'AnalysisList',
+    component: AnalysisListView
+  },
+  {
     path: '/analysis/:id',
     name: 'AnalysisDetail',
     component: AnalysisDetailView
-  },
-  {
-    path: '/analysis',
-    name: 'AnalysisList',
-    redirect: '/scripts'
   },
   {
     path: '/scripts',

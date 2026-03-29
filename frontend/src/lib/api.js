@@ -12,8 +12,9 @@ async function request(path, options = {}) {
 
 export const api = {
   guiones:  {
-    listar:  (params = {}) => request('/guiones?' + new URLSearchParams(params)),
-    obtener: (id)          => request(`/guiones/${id}`),
+    listar:       (params = {}) => request('/guiones?' + new URLSearchParams(params)),
+    listarTodos:  (params = {}) => request('/guiones?' + new URLSearchParams({ ...params, todos: '1' })),
+    obtener:      (id)          => request(`/guiones/${id}`),
   },
   analizar: (body)         => request('/analizar', { method: 'POST', body: JSON.stringify(body) }),
   nichos:   ()             => request('/nichos'),

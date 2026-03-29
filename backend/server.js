@@ -25,7 +25,7 @@ app.use(express.json())
 // ── GET /api/guiones ────────────────────────────────────────
 // Lista todos los guiones con paginación y filtros
 app.get('/api/guiones', async (req, res) => {
-  const { niche, cliente_id, plataforma, page = 1, limit = 20 } = req.query
+  const { niche, cliente_id, plataforma, page = 1, limit = 20, todos } = req.query
   const offset = (page - 1) * limit
 
   let query = supabase
@@ -34,13 +34,13 @@ app.get('/api/guiones', async (req, res) => {
       id, niche, sub_niche, plataforma, url_origen,
       gancho_texto, estructura_narrativa, trigger_emocional,
       tono, score_engagement, score_virabilidad, score_cialdini,
-      fecha_analisis, procesado_ok, vistas, likes, compartidos,
+      fecha_analisis, procesado_ok, error_detalle, vistas, likes, compartidos,
       tema_principal, resumen_patron
     `, { count: 'exact' })
-    .eq('procesado_ok', true)
     .order('fecha_analisis', { ascending: false })
     .range(offset, offset + limit - 1)
 
+  if (!todos) query = query.eq('procesado_ok', true)
   if (niche)      query = query.eq('niche', niche)
   if (cliente_id) query = query.eq('cliente_id', cliente_id)
   if (plataforma) query = query.eq('plataforma', plataforma)
