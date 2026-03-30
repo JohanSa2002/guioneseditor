@@ -37,10 +37,6 @@ const routes = [
     name: 'Generate',
     component: GenerateView
   },
-  {
-    path: '/settings',
-    redirect: '/'
-  }
 ]
 
 export default createRouter({
