@@ -5,7 +5,6 @@ import AnalysisDetailView from '../views/AnalysisDetailView.vue'
 import AnalysisListView   from '../views/AnalysisListView.vue'
 import ScriptsView        from '../views/ScriptsView.vue'
 import GenerateView       from '../views/GenerateView.vue'
-import SettingsView       from '../views/SettingsView.vue'
 
 const routes = [
   {
@@ -40,8 +39,7 @@ const routes = [
   },
   {
     path: '/settings',
-    name: 'Settings',
-    component: SettingsView
+    redirect: '/'
   }
 ]
 
