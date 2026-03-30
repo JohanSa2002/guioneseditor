@@ -6,6 +6,7 @@ import { transcribir }        from './lib/transcriptor.js'
 import { analizarTranscript } from './lib/analizador.js'
 import { validarAnalisis }    from './lib/validador.js'
 import { generarEmbedding }   from './lib/embeddings.js'
+import { generarGuion }       from './lib/generador.js'
 import { supabase }           from './lib/supabase.js'
 
 // ── Validar variables de entorno requeridas ──────────────────
@@ -185,6 +186,137 @@ app.post('/api/analizar', async (req, res) => {
 
     res.status(500).json({ ok: false, paso, error: err.message })
   }
+})
+
+// ── POST /api/generar ───────────────────────────────────────
+// Genera un guion nuevo a partir de patrones analizados
+app.post('/api/generar', async (req, res) => {
+  const {
+    niche, tema, audiencia, plataforma,
+    duracion_objetivo = 60,
+    tono = 'educativo',
+    objetivo = 'engagement',
+    estructura = 'AIDA',
+    instrucciones_extra = '',
+    cliente_id = null,
+    referencias_ids = [],   // IDs de guiones analizados a usar como referencia
+    num_referencias = 3,    // cuántos guiones top tomar si no se dan IDs explícitos
+  } = req.body
+
+  if (!niche)    return res.status(400).json({ error: 'El campo "niche" es requerido' })
+  if (!tema)     return res.status(400).json({ error: 'El campo "tema" es requerido' })
+  if (!audiencia) return res.status(400).json({ error: 'El campo "audiencia" es requerido' })
+
+  try {
+    // Obtener patrones de referencia
+    let patrones = []
+
+    if (referencias_ids.length > 0) {
+      // Usar las referencias explícitas del usuario
+      const { data } = await supabase
+        .from('guiones')
+        .select(`
+          estructura_narrativa, gancho_tipo, gancho_texto, apertura_exacta,
+          tecnica_retencion, trigger_emocional, intensidad_emocional,
+          cialdini_reciprocidad, cialdini_escasez, cialdini_autoridad,
+          cialdini_consistencia, cialdini_prueba_social, cialdini_simpatia, cialdini_unidad,
+          ingredientes_clave, resumen_patron, score_virabilidad
+        `)
+        .in('id', referencias_ids)
+        .eq('procesado_ok', true)
+
+      patrones = data || []
+    } else {
+      // Auto-seleccionar los mejores del mismo niche y plataforma
+      let query = supabase
+        .from('guiones')
+        .select(`
+          estructura_narrativa, gancho_tipo, gancho_texto, apertura_exacta,
+          tecnica_retencion, trigger_emocional, intensidad_emocional,
+          cialdini_reciprocidad, cialdini_escasez, cialdini_autoridad,
+          cialdini_consistencia, cialdini_prueba_social, cialdini_simpatia, cialdini_unidad,
+          ingredientes_clave, resumen_patron, score_virabilidad
+        `)
+        .eq('procesado_ok', true)
+        .eq('niche', niche)
+        .order('score_virabilidad', { ascending: false })
+        .limit(num_referencias)
+
+      if (plataforma) query = query.eq('plataforma', plataforma)
+
+      const { data } = await query
+      patrones = data || []
+    }
+
+    const guion = await generarGuion({
+      niche, tema, audiencia, plataforma, duracion_objetivo,
+      tono, objetivo, estructura, instrucciones_extra,
+    }, patrones)
+
+    // Guardar en Supabase
+    const { data: guardado, error: errGuardado } = await supabase
+      .from('guiones_generados')
+      .insert({
+        cliente_id,
+        niche, tema, audiencia, plataforma,
+        duracion_objetivo, tono, objetivo,
+        estructura_usada: estructura,
+        instrucciones_extra: instrucciones_extra || null,
+        referencias_ids: referencias_ids.length > 0 ? referencias_ids : (patrones.map ? null : null),
+        titulo_sugerido:       guion.titulo_sugerido,
+        gancho:                guion.gancho,
+        desarrollo:            guion.desarrollo,
+        cta:                   guion.cta,
+        guion_completo:        guion.guion_completo,
+        variantes_gancho:      guion.variantes_gancho,
+        tecnicas_aplicadas:    guion.tecnicas_aplicadas,
+        notas_produccion:      guion.notas_produccion,
+        duracion_estimada_seg: guion.duracion_estimada_seg,
+        score_estimado:        guion.score_estimado,
+        version_prompt:        'v1.0',
+      })
+      .select('id')
+      .single()
+
+    if (errGuardado) throw new Error(`Supabase: ${errGuardado.message}`)
+
+    res.json({ ok: true, guion_id: guardado.id, guion })
+  } catch (err) {
+    console.error('[generar] Error:', err.message)
+    res.status(500).json({ ok: false, error: err.message })
+  }
+})
+
+// ── GET /api/generados ──────────────────────────────────────
+// Lista guiones generados con paginación
+app.get('/api/generados', async (req, res) => {
+  const { niche, cliente_id, page = 1, limit = 20 } = req.query
+  const offset = (Number(page) - 1) * Number(limit)
+
+  let query = supabase
+    .from('guiones_generados')
+    .select('id, niche, tema, audiencia, plataforma, tono, objetivo, titulo_sugerido, score_estimado, aprobado, fecha_generacion, num_referencias', { count: 'exact' })
+    .order('fecha_generacion', { ascending: false })
+    .range(offset, offset + Number(limit) - 1)
+
+  if (niche)      query = query.eq('niche', niche)
+  if (cliente_id) query = query.eq('cliente_id', cliente_id)
+
+  const { data, error, count } = await query
+  if (error) return res.status(500).json({ error: error.message })
+  res.json({ generados: data, total: count, page: Number(page), limit: Number(limit) })
+})
+
+// ── GET /api/generados/:id ──────────────────────────────────
+app.get('/api/generados/:id', async (req, res) => {
+  const { data, error } = await supabase
+    .from('guiones_generados')
+    .select('*')
+    .eq('id', req.params.id)
+    .single()
+
+  if (error) return res.status(404).json({ error: 'Guion generado no encontrado' })
+  res.json(data)
 })
 
 app.listen(PORT, () => console.log(`Backend local corriendo en http://localhost:${PORT}`))

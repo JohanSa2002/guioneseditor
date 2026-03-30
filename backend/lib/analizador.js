@@ -1,7 +1,7 @@
 // ============================================================
 // ANALIZADOR — GPT-4o
 // Prompt maestro multidisciplinario: Storytelling + Cialdini
-// + Neuropublicidad → JSON de 55 campos analizables
+// + Neuropublicidad + Copywriting → JSON de 45 campos
 // ============================================================
 import OpenAI from 'openai'
 
@@ -11,6 +11,7 @@ const PROMPT_SISTEMA = `Eres un experto en ingeniería de guiones para video cor
 - Storytelling y estructura narrativa
 - Psicología de la persuasión (Cialdini, sesgos cognitivos)
 - Neuropublicidad y neuromarketing
+- Copywriting directo (Eugene Schwartz, Gary Halbert, David Ogilvy)
 - Marketing de contenidos para múltiples nichos
 
 Tu tarea es analizar la transcripción de un video y devolver un JSON con el análisis completo.
@@ -37,6 +38,8 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
   "estructura_narrativa": "<AIDA|PAS|hero_journey|storybrand|antes_despues|otra>",
   "gancho_tipo": "<pregunta|declaracion_shock|dato_estadistica|historia|controversia|promesa_directa>",
   "gancho_texto": "<primeras 5-8 palabras del video>",
+  "apertura_exacta": "<copia EXACTAMENTE las primeras 15 palabras del video tal como aparecen en la transcripción>",
+  "cierre_exacto": "<copia EXACTAMENTE las últimas 10 palabras del video tal como aparecen en la transcripción>",
   "gancho_duracion_seg": <número entero estimado>,
   "desarrollo_tipo": "<problema_solucion|lista|demostracion|testimonio|tutorial|storytelling_puro>",
   "cta_tipo": "<seguir|comentar|compartir|comprar|visitar_link|guardar|ninguno>",
@@ -46,6 +49,8 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
   "resolucion": "<cómo se resuelve o qué promete resolver>",
   "pacing_ritmo": "<lento|medio|rapido|variable>",
   "numero_actos": <1, 2 o 3>,
+  "tecnica_retencion": "<open_loop|cliffhanger|curiosity_gap|countdown|pregunta_abierta|ninguna>",
+  "momento_pico_seg": <segundo estimado donde ocurre el pico emocional o de mayor tensión del video>,
 
   "cialdini_reciprocidad": <true|false>,
   "cialdini_escasez": <true|false>,
@@ -54,7 +59,7 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
   "cialdini_prueba_social": <true|false>,
   "cialdini_simpatia": <true|false>,
   "cialdini_unidad": <true|false>,
-  "sesgo_cognitivo": "<nombre del sesgo cognitivo principal, o null>",
+  "sesgo_cognitivo": "<nombre del sesgo cognitivo principal, ej: FOMO, Efecto Halo, Anclaje, Prueba Social, Reciprocidad, o null>",
   "trigger_emocional": "<miedo|esperanza|curiosidad|ira|orgullo|tristeza|sorpresa|humor>",
   "intensidad_emocional": <número entero del 1 al 10>,
 
@@ -68,6 +73,7 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
   "velocidad_locucion": "<lenta|normal|rapida|muy_rapida>",
   "uso_musica": <true|false>,
   "micro_compromisos": <true|false>,
+  "ratio_emocion_logica": "<emocional|logico|equilibrado>",
 
   "tema_principal": "<tema en 1-3 palabras>",
   "angulo_unico": "<qué diferencia a este video de otros del mismo tema, en 1 oración>",
@@ -76,14 +82,19 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
   "persona_narradora": "<primera_persona|segunda_persona|tercera_persona|mixta>",
   "promesa_explicita": "<la promesa que hace el video al espectador, en 1 oración>",
   "nivel_especificidad": "<generico|especifico|ultra_especifico>",
+  "nivel_consciencia": "<inconsciente|problema_consciente|solucion_consciente|producto_consciente|mas_consciente>",
+  "objecion_principal": "<la objeción más probable del espectador que el video anticipa o desmonta, en 1 oración, o null si no hay>",
+  "avatar_descripcion": "<describe en 1 oración al perfil de persona a quien está dirigido este video: edad, situación, deseo o dolor principal>",
+  "ingredientes_clave": ["<elemento 1 que NO puede faltar si se replica este guion>", "<elemento 2>", "<elemento 3>"],
+  "replicabilidad": "<alta|media|baja>",
 
   "score_virabilidad": <número entero del 1 al 100>,
-  "resumen_patron": "<párrafo de 2-3 oraciones describiendo el patrón ganador de este video>"
+  "resumen_patron": "<párrafo de 3-4 oraciones describiendo el patrón ganador de este video: qué hace, por qué funciona psicológicamente y cómo se puede replicar>"
 }`
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o',
-    temperature: 0.2, // baja temperatura para análisis consistente
+    temperature: 0.2,
     messages: [
       { role: 'system', content: PROMPT_SISTEMA },
       { role: 'user',   content: promptUsuario },
@@ -95,7 +106,6 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
     throw new Error('GPT-4o devolvió una respuesta vacía')
   }
 
-  // Limpiar posible markdown que GPT-4o a veces añade
   const jsonLimpio = contenido
     .replace(/^```json\n?/, '')
     .replace(/^```\n?/, '')

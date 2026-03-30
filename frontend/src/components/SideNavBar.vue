@@ -25,6 +25,10 @@
         <span class="material-symbols-outlined text-[20px]">description</span>
         <span class="text-sm font-medium">Guiones</span>
       </router-link>
+      <router-link to="/generate" class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white hover:bg-white/5 transition-all duration-200 group relative" active-class="bg-white/10 !text-white rounded-lg font-semibold">
+        <span class="material-symbols-outlined text-[20px]">auto_fix_high</span>
+        <span class="text-sm font-medium">Generar</span>
+      </router-link>
       <router-link to="/settings" class="flex items-center gap-3 px-3 py-2.5 text-[#c7c4d7] hover:text-white hover:bg-white/5 transition-all duration-200 group relative" active-class="bg-white/10 !text-white rounded-lg font-semibold">
         <span class="material-symbols-outlined text-[20px]">settings</span>
         <span class="text-sm font-medium">Configuración</span>
