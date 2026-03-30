@@ -5,6 +5,7 @@
     "api/**/*.js": { "maxDuration": 60 }
   },
   "rewrites": [
-    { "source": "/:path*", "destination": "/index.html" }
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

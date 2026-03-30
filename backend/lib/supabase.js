@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
+const url = process.env.SUPABASE_URL
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!url || !key) {
+  throw new Error('Faltan variables de entorno: SUPABASE_URL y/o SUPABASE_SERVICE_ROLE_KEY')
+}
+
 // Service Role key: bypasea RLS, solo usar en backend
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+export const supabase = createClient(url, key)
