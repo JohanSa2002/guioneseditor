@@ -111,6 +111,7 @@ app.post('/api/analizar', async (req, res) => {
     competidor_referente = false,
     vistas = null, likes = null, compartidos = null,
     fecha_publicacion = null,
+    contexto_video = '',
   } = req.body
 
   if (!url)   return res.status(400).json({ error: 'El campo "url" es requerido' })
@@ -135,7 +136,7 @@ app.post('/api/analizar', async (req, res) => {
 
     paso = 'analisis'
     console.log(`[3/5] Analizando con GPT-4o...`)
-    const analisisRaw = await analizarTranscript(transcript, niche, plataforma, duracion)
+    const analisisRaw = await analizarTranscript(transcript, niche, plataforma, duracion, contexto_video)
 
     paso = 'validacion'
     console.log(`[4/5] Validando schema...`)
@@ -152,6 +153,7 @@ app.post('/api/analizar', async (req, res) => {
         proyecto_nombre, competidor_referente,
         url_origen: url, plataforma, duracion_segundos: duracion,
         vistas, likes, compartidos, fecha_publicacion,
+        contexto_video: contexto_video || null,
         ...analisis,
         transcript,
         embedding_vector: `[${vector.join(',')}]`,

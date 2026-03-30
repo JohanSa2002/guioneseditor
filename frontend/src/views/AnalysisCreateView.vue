@@ -99,6 +99,30 @@
             </div>
           </div>
         </section>
+
+        <!-- Paso 3: Contexto del Video -->
+        <section class="space-y-6">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center font-black text-sm border border-tertiary/20">03</span>
+            <h2 class="text-xl font-headline font-extrabold text-white tracking-tight">Contexto del Video <span class="text-outline font-normal text-base">(opcional)</span></h2>
+          </div>
+
+          <div class="glass-panel p-8 rounded-3xl border border-white/5 shadow-2xl space-y-4">
+            <p class="text-xs text-outline/70 leading-relaxed">
+              Describe de qué trata el video, cuál era la intención del creador, o cualquier detalle que la transcripción sola no captura (ej. tono irónico, contexto de tendencia, referencia cultural). GPT-4o usará esto para enriquecer el análisis.
+            </p>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-4 top-4 text-tertiary text-lg">lightbulb</span>
+              <textarea
+                v-model="form.contexto_video"
+                rows="4"
+                placeholder="Ej. Este video es una respuesta a una tendencia viral donde los creadores muestran su rutina matutina. El creador usa humor sarcástico y habla a emprendedores que trabajan desde casa..."
+                class="w-full bg-surface-container-low border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-tertiary/40 focus:border-tertiary/40 text-white placeholder:text-outline/40 transition-all resize-none leading-relaxed"
+                :disabled="analizando"
+              ></textarea>
+            </div>
+          </div>
+        </section>
       </div>
 
       <!-- Columna de Estado del Pipeline -->
@@ -176,7 +200,8 @@ const form = ref({
   compartidos: null,
   cliente_id: null,
   proyecto_nombre: '',
-  competidor_referente: false
+  competidor_referente: false,
+  contexto_video: ''
 })
 
 const pasosVisibles = [

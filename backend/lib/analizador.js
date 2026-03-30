@@ -1,7 +1,7 @@
 // ============================================================
 // ANALIZADOR — GPT-4o
 // Prompt maestro multidisciplinario: Storytelling + Cialdini
-// + Neuropublicidad + Copywriting → JSON de 45 campos
+// + Neuropublicidad + Copywriting → JSON de 49 campos
 // ============================================================
 import OpenAI from 'openai'
 
@@ -22,12 +22,17 @@ SOLO devuelve el JSON, sin texto adicional, sin markdown, sin explicaciones.`
  * @param {string} niche          Nicho del video (ej: "fitness", "finanzas")
  * @param {string} plataforma     tiktok | reels | shorts
  * @param {number} duracion       Duración en segundos
+ * @param {string} contextoVideo  Contexto adicional opcional sobre el video
  * @returns {object} JSON con todos los campos de análisis
  */
-export async function analizarTranscript(transcript, niche, plataforma, duracion) {
+export async function analizarTranscript(transcript, niche, plataforma, duracion, contextoVideo = '') {
+  const bloqueContexto = contextoVideo
+    ? `CONTEXTO ADICIONAL DEL VIDEO (úsalo para enriquecer el análisis):\n"""\n${contextoVideo}\n"""\n\n`
+    : ''
+
   const promptUsuario = `Analiza este video de ${plataforma} de ${duracion} segundos del nicho "${niche}".
 
-TRANSCRIPCIÓN:
+${bloqueContexto}TRANSCRIPCIÓN:
 """
 ${transcript}
 """
@@ -87,6 +92,11 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
   "avatar_descripcion": "<describe en 1 oración al perfil de persona a quien está dirigido este video: edad, situación, deseo o dolor principal>",
   "ingredientes_clave": ["<elemento 1 que NO puede faltar si se replica este guion>", "<elemento 2>", "<elemento 3>"],
   "replicabilidad": "<alta|media|baja>",
+
+  "fortalezas": ["<fortaleza 1 del video: qué hace especialmente bien>", "<fortaleza 2>", "<fortaleza 3>"],
+  "debilidades": ["<debilidad o área de mejora 1>", "<debilidad 2>"],
+  "sugerencias_mejora": ["<sugerencia accionable concreta 1 para mejorar el video>", "<sugerencia 2>", "<sugerencia 3>"],
+  "hashtags_sugeridos": ["<hashtag1>", "<hashtag2>", "<hashtag3>", "<hashtag4>", "<hashtag5>", "<hashtag6>", "<hashtag7>"],
 
   "score_virabilidad": <número entero del 1 al 100>,
   "resumen_patron": "<párrafo de 3-4 oraciones describiendo el patrón ganador de este video: qué hace, por qué funciona psicológicamente y cómo se puede replicar>"

@@ -33,6 +33,7 @@ export default async function handler(req, res) {
     likes           = null,
     compartidos     = null,
     fecha_publicacion = null,
+    contexto_video  = '',
   } = req.body
 
   if (!url)   return res.status(400).json({ error: 'El campo "url" es requerido' })
@@ -56,7 +57,7 @@ export default async function handler(req, res) {
 
     // ── PASO 3: Analizar con GPT-4o ───────────────────────
     paso = 'analisis'
-    const analisisRaw = await analizarTranscript(transcript, niche, plataforma, duracion)
+    const analisisRaw = await analizarTranscript(transcript, niche, plataforma, duracion, contexto_video)
 
     // ── PASO 4: Validar con Zod ───────────────────────────
     paso = 'validacion'
@@ -136,6 +137,13 @@ export default async function handler(req, res) {
         persona_narradora:      analisis.persona_narradora,
         promesa_explicita:      analisis.promesa_explicita,
         nivel_especificidad:    analisis.nivel_especificidad,
+        contexto_video:         contexto_video || null,
+
+        // Diagnóstico
+        fortalezas:             analisis.fortalezas,
+        debilidades:            analisis.debilidades,
+        sugerencias_mejora:     analisis.sugerencias_mejora,
+        hashtags_sugeridos:     analisis.hashtags_sugeridos,
 
         // Métricas (score_engagement lo calcula el trigger de Supabase)
         score_virabilidad:      analisis.score_virabilidad,

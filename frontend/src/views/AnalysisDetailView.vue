@@ -43,6 +43,34 @@
       <!-- Columna izquierda -->
       <div class="xl:col-span-4 flex flex-col gap-6">
 
+        <!-- Métricas Sociales -->
+        <div v-if="guion.vistas || guion.likes || guion.compartidos" class="bg-surface-container p-5 rounded-3xl border border-outline-variant/10 shadow-xl">
+          <h3 class="text-xs font-headline font-bold text-white mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-outline text-base">bar_chart</span> Métricas del Video
+          </h3>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="text-center p-3 rounded-2xl bg-surface-container-low border border-white/5">
+              <span class="material-symbols-outlined text-blue-400 text-lg block mb-1">visibility</span>
+              <p class="text-[9px] text-outline font-black uppercase tracking-widest mb-1">Vistas</p>
+              <p class="text-base font-black text-white font-headline">{{ formatNum(guion.vistas) }}</p>
+            </div>
+            <div class="text-center p-3 rounded-2xl bg-surface-container-low border border-white/5">
+              <span class="material-symbols-outlined text-red-400 text-lg block mb-1" style="font-variation-settings:'FILL' 1;">favorite</span>
+              <p class="text-[9px] text-outline font-black uppercase tracking-widest mb-1">Likes</p>
+              <p class="text-base font-black text-white font-headline">{{ formatNum(guion.likes) }}</p>
+            </div>
+            <div class="text-center p-3 rounded-2xl bg-surface-container-low border border-white/5">
+              <span class="material-symbols-outlined text-secondary text-lg block mb-1">share</span>
+              <p class="text-[9px] text-outline font-black uppercase tracking-widest mb-1">Compartidos</p>
+              <p class="text-base font-black text-white font-headline">{{ formatNum(guion.compartidos) }}</p>
+            </div>
+          </div>
+          <div v-if="guion.score_engagement" class="mt-3 flex items-center justify-between px-3 py-2 rounded-xl bg-surface-container-lowest border border-white/5">
+            <span class="text-[10px] text-outline font-black uppercase tracking-widest">Engagement Rate</span>
+            <span class="text-sm font-black text-secondary">{{ (guion.score_engagement * 1).toFixed(2) }}%</span>
+          </div>
+        </div>
+
         <!-- Puntaje -->
         <div class="bg-surface-container p-6 rounded-3xl border border-outline-variant/10 shadow-2xl relative overflow-hidden group">
           <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 blur-3xl rounded-full group-hover:bg-primary/30 transition-colors pointer-events-none"></div>
@@ -59,14 +87,10 @@
               <span class="text-xs font-bold text-primary uppercase tracking-widest mt-1">/ 100</span>
             </div>
           </div>
-          <div class="grid grid-cols-3 gap-3 pt-6 border-t border-white/5">
+          <div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/5">
             <div class="text-center">
               <p class="text-[9px] text-outline uppercase tracking-widest font-bold mb-1">Cialdini</p>
               <p class="text-xl font-bold text-white">{{ guion.score_cialdini ?? 0 }}<span class="text-sm text-outline">/7</span></p>
-            </div>
-            <div class="text-center">
-              <p class="text-[9px] text-outline uppercase tracking-widest font-bold mb-1">Engagement</p>
-              <p class="text-xl font-bold text-secondary">{{ guion.score_engagement ? (guion.score_engagement*1).toFixed(2) + '%' : 'N/A' }}</p>
             </div>
             <div class="text-center">
               <p class="text-[9px] text-outline uppercase tracking-widest font-bold mb-1">Intensidad</p>
@@ -281,6 +305,65 @@
           </div>
         </div>
 
+        <!-- Diagnóstico: Fortalezas / Debilidades / Sugerencias -->
+        <div v-if="guion.fortalezas?.length || guion.debilidades?.length" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-surface-container p-6 rounded-3xl border border-secondary/10 shadow-xl">
+            <h3 class="text-sm font-headline font-bold text-white mb-5 flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">thumb_up</span> Fortalezas
+            </h3>
+            <div class="space-y-2">
+              <div v-for="(f, i) in guion.fortalezas" :key="i" class="flex items-start gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0"></span>
+                <p class="text-xs text-on-surface-variant leading-relaxed">{{ f }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-container p-6 rounded-3xl border border-red-500/10 shadow-xl">
+            <h3 class="text-sm font-headline font-bold text-white mb-5 flex items-center gap-2">
+              <span class="material-symbols-outlined text-red-400 text-base">build</span> Áreas de Mejora
+            </h3>
+            <div class="space-y-2 mb-5">
+              <div v-for="(d, i) in guion.debilidades" :key="i" class="flex items-start gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-400 mt-2 shrink-0"></span>
+                <p class="text-xs text-on-surface-variant leading-relaxed">{{ d }}</p>
+              </div>
+            </div>
+            <div v-if="guion.sugerencias_mejora?.length">
+              <p class="text-[9px] text-outline font-black uppercase tracking-widest mb-2">Sugerencias</p>
+              <div class="space-y-1.5">
+                <div v-for="(s, i) in guion.sugerencias_mejora" :key="i" class="flex items-start gap-2">
+                  <span class="text-[9px] font-black text-tertiary shrink-0 mt-0.5">{{ i + 1 }}.</span>
+                  <p class="text-xs text-on-surface-variant leading-relaxed">{{ s }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hashtags sugeridos -->
+        <div v-if="guion.hashtags_sugeridos?.length" class="bg-surface-container p-6 rounded-3xl border border-outline-variant/10 shadow-xl">
+          <h3 class="text-sm font-headline font-bold text-white mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-outline text-base">tag</span> Hashtags Sugeridos
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="tag in guion.hashtags_sugeridos"
+              :key="tag"
+              class="px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-full text-xs font-bold text-primary cursor-pointer hover:bg-primary/20 transition-colors"
+              @click="copiarTag(tag)"
+            >#{{ tag.replace(/^#/, '') }}</span>
+          </div>
+          <p class="text-[9px] text-outline/50 mt-3 italic">Haz clic en un hashtag para copiarlo</p>
+        </div>
+
+        <!-- Contexto original del usuario -->
+        <div v-if="guion.contexto_video" class="bg-surface-container p-5 rounded-2xl border border-tertiary/10">
+          <p class="text-[10px] text-tertiary font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">lightbulb</span> Contexto ingresado
+          </p>
+          <p class="text-sm text-on-surface-variant leading-relaxed italic">{{ guion.contexto_video }}</p>
+        </div>
+
         <!-- Transcripción -->
         <div class="bg-surface-container p-6 rounded-3xl border border-outline-variant/10 shadow-xl">
           <div class="flex items-center justify-between mb-2">
@@ -341,6 +424,17 @@ const ratioIcon = computed(() => {
 
 function openUrl(url) {
   if (url) window.open(url, '_blank')
+}
+
+function formatNum(n) {
+  if (!n) return '—'
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
+  if (n >= 1_000)     return (n / 1_000).toFixed(1) + 'K'
+  return n.toLocaleString()
+}
+
+function copiarTag(tag) {
+  navigator.clipboard.writeText('#' + tag.replace(/^#/, ''))
 }
 
 function plataformaBadge(p) {

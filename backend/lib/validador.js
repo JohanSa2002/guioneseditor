@@ -81,6 +81,12 @@ export const AnalisisSchema = z.object({
   ingredientes_clave:     z.array(z.string()).min(1).max(7),
   replicabilidad:         ReplicabilidadEnum,
 
+  // Diagnóstico y mejora
+  fortalezas:             z.array(z.string()).min(1).max(5),
+  debilidades:            z.array(z.string()).min(1).max(5),
+  sugerencias_mejora:     z.array(z.string()).min(1).max(5),
+  hashtags_sugeridos:     z.array(z.string()).min(1).max(10),
+
   // Métricas
   score_virabilidad:      z.number().int().min(1).max(100),
   resumen_patron:         z.string().min(10).max(1500),
