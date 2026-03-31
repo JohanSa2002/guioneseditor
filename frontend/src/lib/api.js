@@ -5,8 +5,21 @@ async function request(path, options = {}) {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error || `Error ${res.status}`)
+
+  // Protección: el servidor puede devolver texto/HTML en errores graves
+  let data
+  const contentType = res.headers.get('content-type') || ''
+  if (contentType.includes('application/json')) {
+    data = await res.json()
+  } else {
+    const text = await res.text()
+    data = { error: text || `Error del servidor (${res.status})` }
+  }
+
+  if (!res.ok) {
+    const msg = data.error || data.message || `Error ${res.status}`
+    throw new Error(data.paso ? `[${data.paso}] ${msg}` : msg)
+  }
   return data
 }
 

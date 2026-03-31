@@ -146,24 +146,43 @@ app.post('/api/analizar', async (req, res) => {
     console.log(`[5/5] Generando embedding y guardando...`)
     const vector = await generarEmbedding(transcript, analisis)
 
+    paso = 'guardado'
+    console.log(`[5/5] Guardando en la base de datos...`)
+
+    const payload = {
+      cliente_id, niche, sub_niche, mercado_objetivo, idioma,
+      proyecto_nombre, competidor_referente,
+      url_origen: url, plataforma, duracion_segundos: duracion,
+      vistas: vistas ? Number(vistas) : null,
+      likes: likes ? Number(likes) : null,
+      compartidos: compartidos ? Number(compartidos) : null,
+      fecha_publicacion,
+      contexto_video: contexto_video || null,
+      ...analisis,
+      transcript,
+      embedding_vector: vector, // Use native array
+      procesado_ok: true,
+      version_prompt: 'v1.0',
+    }
+
     const { data: guion, error: errorSupabase } = await supabase
       .from('guiones')
-      .insert({
-        cliente_id, niche, sub_niche, mercado_objetivo, idioma,
-        proyecto_nombre, competidor_referente,
-        url_origen: url, plataforma, duracion_segundos: duracion,
-        vistas, likes, compartidos, fecha_publicacion,
-        contexto_video: contexto_video || null,
-        ...analisis,
-        transcript,
-        embedding_vector: `[${vector.join(',')}]`,
-        procesado_ok: true,
-        version_prompt: 'v1.0',
-      })
+      .insert(payload)
       .select('id, niche, score_virabilidad, resumen_patron')
       .single()
 
-    if (errorSupabase) throw new Error(`Supabase: ${errorSupabase.message}`)
+    if (errorSupabase) {
+      console.error('[Supabase] Error al insertar guion:')
+      console.error('  Código:', errorSupabase.code)
+      console.error('  Mensaje:', errorSupabase.message)
+      console.error('  Detalle:', errorSupabase.details)
+      console.error('  Pista:', errorSupabase.hint)
+      
+      // Log simple del objeto para detectar campos inválidos en la consola del backend
+      console.error('Payload enviado (resumido):', Object.keys(payload).join(', '))
+      
+      throw new Error(`Supabase [${errorSupabase.code}]: ${errorSupabase.message}`)
+    }
 
     const segundos = ((Date.now() - inicio) / 1000).toFixed(1)
     console.log(`✓ Completado en ${segundos}s — ID: ${guion.id}`)
@@ -322,3 +341,21 @@ app.get('/api/generados/:id', async (req, res) => {
 })
 
 app.listen(PORT, () => console.log(`Backend local corriendo en http://localhost:${PORT}`))
+
+// ── Middleware global de manejo de errores ───────────────────
+// Captura cualquier error no manejado en los routes de Express
+app.use((err, req, res, _next) => {
+  console.error('[Express] Error no manejado:', err.stack || err.message)
+  if (!res.headersSent) {
+    res.status(500).json({ ok: false, error: err.message || 'Error interno del servidor' })
+  }
+})
+
+// ── Prevenir Crash por Promesas Rechazadas ───────────────────
+process.on('unhandledRejection', (reason) => {
+  console.error('[Node] unhandledRejection:', reason)
+})
+process.on('uncaughtException', (err) => {
+  console.error('[Node] uncaughtException:', err.stack || err.message)
+})
+
