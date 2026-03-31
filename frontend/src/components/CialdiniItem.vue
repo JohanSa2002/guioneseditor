@@ -1,9 +1,20 @@
 <template>
-  <div class="flex items-center gap-3 p-2.5 rounded-xl border transition-colors" :class="active ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-surface-container-lowest border-white/5'">
-    <div class="w-4 h-4 rounded-full flex items-center justify-center shrink-0" :class="active ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-transparent'">
-      <span v-if="active" class="material-symbols-outlined text-[12px] font-bold">check</span>
+  <div
+    class="flex items-center gap-2.5 p-2.5 rounded-lg border transition-colors"
+    :class="active
+      ? 'bg-accent-subtle border-accent-border'
+      : 'bg-surface-muted border-border'"
+  >
+    <div
+      class="w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-colors"
+      :class="active ? 'bg-accent text-white' : 'bg-border text-transparent'"
+    >
+      <span v-if="active" class="material-symbols-outlined text-[11px]" style="font-variation-settings:'FILL' 1;">check</span>
     </div>
-    <span class="text-xs font-bold tracking-wide" :class="active ? 'text-white' : 'text-outline'">{{ label }}</span>
+    <span
+      class="text-xs font-medium tracking-wide transition-colors"
+      :class="active ? 'text-accent' : 'text-ink-3'"
+    >{{ label }}</span>
   </div>
 </template>
 

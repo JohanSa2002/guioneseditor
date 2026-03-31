@@ -3,33 +3,36 @@
 @tailwind utilities;
 
 @layer base {
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { @apply bg-surface; }
-  ::-webkit-scrollbar-thumb { @apply bg-surface-container-highest rounded-full; }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { @apply bg-canvas; }
+  ::-webkit-scrollbar-thumb { @apply bg-border-strong rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-ink-3; }
 }
 
 @layer utilities {
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   }
-  .glass-panel {
-    background: rgba(31, 31, 38, 0.6);
-    backdrop-filter: blur(20px);
+
+  /* Tarjeta base con sombra sutil */
+  .card {
+    @apply bg-surface rounded-xl border border-border shadow-sm;
   }
-  .neon-glow {
-    text-shadow: 0 0 10px rgba(78, 222, 163, 0.4);
+
+  /* Badge de plataforma — base */
+  .platform-badge {
+    @apply text-[9px] font-semibold px-2 py-0.5 rounded-md uppercase tracking-wider;
   }
-  .radial-gradient-score {
-    background: conic-gradient(from 0deg, #4edea3 88%, #1f1f26 0%);
-  }
+
+  /* Animación del paso activo */
   .step-pulse {
-    box-shadow: 0 0 0 0 rgba(192, 193, 255, 0.4);
-    animation: pulse 2s infinite;
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.3);
+    animation: step-pulse-anim 2s infinite;
   }
 }
 
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(192, 193, 255, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(192, 193, 255, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(192, 193, 255, 0); }
+@keyframes step-pulse-anim {
+  0%   { box-shadow: 0 0 0 0   rgba(37, 99, 235, 0.3); }
+  70%  { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(37, 99, 235, 0); }
 }

@@ -1,15 +1,17 @@
 <template>
-  <div class="bg-surface min-h-screen text-on-surface selection:bg-primary/30">
+  <div class="bg-canvas min-h-screen text-ink selection:bg-accent/20 selection:text-accent">
     <SideNavBar />
     <TopAppBar />
 
-    <!-- Main Content Canvas -->
-    <main class="ml-64 pt-24 pb-12 px-8 min-h-screen relative">
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
+    <!-- Área principal -->
+    <main class="ml-60 pt-16 pb-12 px-8 min-h-screen">
+      <div class="max-w-7xl mx-auto pt-8">
+        <router-view v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
+      </div>
     </main>
   </div>
 </template>
@@ -22,7 +24,7 @@ import TopAppBar from './components/TopAppBar.vue'
 <style>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.15s ease;
 }
 .fade-enter-from,
 .fade-leave-to {

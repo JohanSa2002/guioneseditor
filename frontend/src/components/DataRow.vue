@@ -1,18 +1,21 @@
 <template>
-  <div class="flex items-center justify-between border-b border-white/5 pb-2 last:border-0 last:pb-0">
-    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">{{ label }}</span>
+  <div class="flex items-center justify-between py-2 border-b border-border last:border-0">
+    <span class="text-[10px] font-semibold text-ink-3 uppercase tracking-wider">{{ label }}</span>
 
     <template v-if="type === 'boolean'">
-      <span :class="value ? 'text-primary' : 'text-outline/40'" class="text-xs font-bold uppercase tracking-widest">
-        {{ value ? 'SÍ' : 'NO' }}
-      </span>
+      <span
+        class="text-xs font-semibold uppercase tracking-wider"
+        :class="value ? 'text-success' : 'text-ink-3'"
+      >{{ value ? 'Sí' : 'No' }}</span>
     </template>
 
     <template v-else>
-      <span v-if="value" class="text-xs font-medium text-right max-w-[150px] truncate" :class="highlight ? 'text-white' : 'text-on-surface-variant'">
-        {{ value }}
-      </span>
-      <span v-else class="text-gray-600 text-xs">—</span>
+      <span
+        v-if="value"
+        class="text-xs font-medium text-right max-w-[160px] truncate"
+        :class="highlight ? 'text-ink font-semibold' : 'text-ink-2'"
+      >{{ value }}</span>
+      <span v-else class="text-xs text-ink-3">—</span>
     </template>
   </div>
 </template>
@@ -23,7 +26,7 @@ defineProps({
   value: [String, Number, Boolean],
   type: {
     type: String,
-    default: 'text' // o 'boolean'
+    default: 'text'
   },
   highlight: Boolean
 })

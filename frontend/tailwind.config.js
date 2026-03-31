@@ -1,62 +1,97 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: "class",
   content: ['./index.html', './src/**/*.{vue,js}'],
   theme: {
     extend: {
       colors: {
-        "on-tertiary-fixed": "#301400",
-        "tertiary-fixed": "#ffdcc5",
-        "primary-container": "#8083ff",
-        "on-tertiary-fixed-variant": "#703700",
-        "surface-container-low": "#1b1b22",
-        "on-primary-container": "#0d0096",
-        "on-error-container": "#ffdad6",
-        "secondary": "#4edea3",
-        "surface-container-high": "#2a2931",
-        "surface": "#13131a",
-        "error-container": "#93000a",
-        "on-secondary-fixed-variant": "#005236",
-        "surface-container-lowest": "#0e0e15",
-        "surface-container": "#1f1f26",
-        "primary": "#c0c1ff",
-        "on-secondary-container": "#00311f",
-        "tertiary-fixed-dim": "#ffb783",
-        "on-surface": "#e4e1ec",
-        "surface-dim": "#13131a",
-        "outline": "#908fa0",
-        "on-error": "#690005",
-        "on-primary-fixed-variant": "#2f2ebe",
-        "inverse-on-surface": "#303038",
-        "surface-container-highest": "#34343c",
-        "surface-bright": "#393840",
-        "tertiary-container": "#d97721",
-        "background": "#13131a",
-        "secondary-container": "#00a572",
-        "secondary-fixed-dim": "#4edea3",
-        "on-tertiary": "#4f2500",
-        "primary-fixed-dim": "#c0c1ff",
-        "on-primary-fixed": "#07006c",
-        "on-primary": "#1000a9",
-        "on-surface-variant": "#c7c4d7",
-        "surface-variant": "#34343c",
-        "secondary-fixed": "#6ffbbe",
-        "outline-variant": "#464554",
-        "error": "#ffb4ab",
-        "inverse-surface": "#e4e1ec",
-        "on-tertiary-container": "#452000",
-        "inverse-primary": "#494bd6",
-        "on-background": "#e4e1ec",
-        "on-secondary": "#003824",
-        "surface-tint": "#c0c1ff",
-        "tertiary": "#ffb783",
-        "on-secondary-fixed": "#002113",
-        "primary-fixed": "#e1e0ff"
+        // ── Fondos y superficies ──────────────────────────
+        "canvas":                   "#0c0c0f",   // página principal
+        "surface":                  "#141416",   // tarjetas / paneles
+        "surface-muted":            "#1c1c1f",   // áreas sutiles
+        "surface-subtle":           "#242428",   // más profundo
+
+        // ── Bordes ───────────────────────────────────────
+        "border":                   "#2e2e33",
+        "border-strong":            "#3f3f46",
+
+        // ── Texto ────────────────────────────────────────
+        "ink":                      "#f4f4f5",   // texto primario
+        "ink-2":                    "#a1a1aa",   // texto secundario
+        "ink-3":                    "#71717a",   // texto atenuado / placeholder
+
+        // ── Acento principal (azul) ───────────────────────
+        "accent":                   "#3b82f6",
+        "accent-hover":             "#60a5fa",
+        "accent-subtle":            "#1e2d4e",
+        "accent-border":            "#1e3a8a",
+
+        // ── Éxito / secundario (esmeralda) ────────────────
+        "success":                  "#10b981",
+        "success-hover":            "#34d399",
+        "success-subtle":           "#0d2e22",
+        "success-border":           "#065f46",
+
+        // ── Advertencia (ámbar) ───────────────────────────
+        "warn":                     "#f59e0b",
+        "warn-subtle":              "#2d1f00",
+        "warn-border":              "#92400e",
+
+        // ── Error ─────────────────────────────────────────
+        "error":                    "#f87171",
+        "error-subtle":             "#2d0b0b",
+        "error-border":             "#991b1b",
+
+        // ── Alias para compatibilidad con plantillas ──────
+        "background":               "#0c0c0f",
+        "surface-container":        "#141416",
+        "surface-container-low":    "#1c1c1f",
+        "surface-container-lowest": "#0c0c0f",
+        "surface-container-high":   "#242428",
+        "surface-container-highest":"#2e2e33",
+        "surface-dim":              "#0c0c0f",
+        "surface-bright":           "#2e2e33",
+        "surface-variant":          "#1c1c1f",
+        "on-surface":               "#f4f4f5",
+        "on-surface-variant":       "#a1a1aa",
+        "outline":                  "#71717a",
+        "outline-variant":          "#2e2e33",
+        "primary":                  "#3b82f6",
+        "primary-container":        "#1e3a8a",
+        "primary-fixed":            "#1e2d4e",
+        "primary-fixed-dim":        "#1e3a8a",
+        "on-primary":               "#ffffff",
+        "on-primary-container":     "#bfdbfe",
+        "on-primary-fixed":         "#93c5fd",
+        "on-primary-fixed-variant": "#60a5fa",
+        "secondary":                "#10b981",
+        "secondary-container":      "#065f46",
+        "secondary-fixed":          "#0d2e22",
+        "secondary-fixed-dim":      "#065f46",
+        "on-secondary":             "#ffffff",
+        "on-secondary-container":   "#6ee7b7",
+        "on-secondary-fixed":       "#a7f3d0",
+        "on-secondary-fixed-variant":"#34d399",
+        "tertiary":                 "#f59e0b",
+        "tertiary-container":       "#92400e",
+        "tertiary-fixed":           "#2d1f00",
+        "tertiary-fixed-dim":       "#92400e",
+        "on-tertiary":              "#ffffff",
+        "on-tertiary-container":    "#fcd34d",
+        "on-tertiary-fixed":        "#fde68a",
+        "on-tertiary-fixed-variant":"#fbbf24",
+        "inverse-surface":          "#f4f4f5",
+        "inverse-on-surface":       "#141416",
+        "inverse-primary":          "#1d4ed8",
+        "surface-tint":             "#3b82f6",
+        "on-background":            "#f4f4f5",
+        "on-error":                 "#ffffff",
+        "on-error-container":       "#fca5a5",
+        "error-container":          "#2d0b0b",
       },
       fontFamily: {
-        "headline": ["Manrope", "sans-serif"],
-        "body": ["Inter", "sans-serif"],
-        "label": ["Inter", "sans-serif"]
+        "headline": ["Bricolage Grotesque", "sans-serif"],
+        "body":     ["Outfit", "sans-serif"],
+        "label":    ["Outfit", "sans-serif"],
       },
     }
   },

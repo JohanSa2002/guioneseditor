@@ -1,76 +1,97 @@
 <template>
-  <div class="max-w-7xl mx-auto flex flex-col gap-10">
+  <div class="flex flex-col gap-8">
+
     <!-- Encabezado -->
-    <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
-      <div>
-        <h1 class="text-5xl font-extrabold font-headline tracking-tighter text-white mb-2 leading-tight">Generador de Guiones</h1>
-        <p class="text-secondary text-sm font-bold flex items-center gap-2 tracking-widest uppercase">
-          <span class="material-symbols-outlined text-sm">auto_fix_high</span>
-          IA que aprende de tus patrones de alto rendimiento
-        </p>
-      </div>
+    <header class="pb-6 border-b border-border">
+      <h1 class="text-3xl font-bold font-headline text-ink mb-1">Generar Guion</h1>
+      <p class="text-sm text-ink-3">IA que aprende de tus patrones de mayor rendimiento</p>
     </header>
 
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-10">
-      <!-- Formulario -->
-      <div class="xl:col-span-7 flex flex-col gap-8">
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+
+      <!-- Formulario (izquierda) -->
+      <div class="xl:col-span-7 flex flex-col gap-6">
 
         <!-- Paso 1: Contexto -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center font-black text-sm border border-secondary/20">01</span>
-            <h2 class="text-xl font-headline font-extrabold text-white tracking-tight">Contexto del Guion</h2>
+        <section class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-border bg-surface-muted/50 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-md bg-accent text-white text-xs font-bold flex items-center justify-center">1</span>
+            <h2 class="text-sm font-semibold text-ink">Contexto del Guion</h2>
           </div>
-          <div class="bg-surface-container p-8 rounded-3xl border border-white/5 shadow-2xl space-y-6">
-            <div class="grid grid-cols-2 gap-6">
-              <div class="space-y-2">
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline">Nicho</label>
-                <input v-model="form.niche" list="nichos-gen" placeholder="ej. fitness, finanzas..." class="w-full bg-surface-container-low border border-white/10 rounded-2xl px-4 py-4 text-sm text-white placeholder:text-outline/40 focus:ring-2 focus:ring-secondary/40 font-black uppercase tracking-widest" :disabled="generando" />
+          <div class="p-6 space-y-5">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Nicho</label>
+                <input
+                  v-model="form.niche"
+                  list="nichos-gen"
+                  placeholder="ej. fitness, finanzas…"
+                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 transition-all"
+                  :disabled="generando"
+                />
                 <datalist id="nichos-gen">
                   <option v-for="n in nichos" :key="n" :value="n" />
                 </datalist>
               </div>
-              <div class="space-y-2">
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline">Plataforma</label>
-                <select v-model="form.plataforma" class="w-full bg-surface-container-low border border-white/10 rounded-2xl px-4 py-4 text-sm text-on-surface appearance-none focus:ring-2 focus:ring-secondary/40" :disabled="generando">
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Plataforma</label>
+                <select
+                  v-model="form.plataforma"
+                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/30 appearance-none transition-all"
+                  :disabled="generando"
+                >
                   <option value="tiktok">TikTok</option>
                   <option value="reels">Instagram Reels</option>
                   <option value="shorts">YouTube Shorts</option>
                 </select>
               </div>
             </div>
-            <div class="space-y-2">
-              <label class="text-[10px] font-black uppercase tracking-widest text-outline">Tema del Video</label>
-              <input v-model="form.tema" type="text" placeholder="ej. Cómo perder 5kg en 30 días sin pasar hambre" class="w-full bg-surface-container-low border border-white/10 rounded-2xl px-4 py-4 text-sm text-white placeholder:text-outline/40 focus:ring-2 focus:ring-secondary/40" :disabled="generando" />
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Tema del Video</label>
+              <input
+                v-model="form.tema"
+                type="text"
+                placeholder="ej. Cómo perder 5kg en 30 días sin pasar hambre"
+                class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all"
+                :disabled="generando"
+              />
             </div>
-            <div class="space-y-2">
-              <label class="text-[10px] font-black uppercase tracking-widest text-outline">Audiencia Objetivo</label>
-              <input v-model="form.audiencia" type="text" placeholder="ej. Mujeres de 25-40 años con poco tiempo para el gimnasio" class="w-full bg-surface-container-low border border-white/10 rounded-2xl px-4 py-4 text-sm text-white placeholder:text-outline/40 focus:ring-2 focus:ring-secondary/40" :disabled="generando" />
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Audiencia Objetivo</label>
+              <input
+                v-model="form.audiencia"
+                type="text"
+                placeholder="ej. Mujeres de 25-40 años con poco tiempo para el gimnasio"
+                class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all"
+                :disabled="generando"
+              />
             </div>
           </div>
         </section>
 
         <!-- Paso 2: Parámetros -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-black text-sm border border-primary/20">02</span>
-            <h2 class="text-xl font-headline font-extrabold text-white tracking-tight">Parámetros de Generación</h2>
+        <section class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-border bg-surface-muted/50 flex items-center gap-3">
+            <span class="w-6 h-6 rounded-md bg-success text-white text-xs font-bold flex items-center justify-center">2</span>
+            <h2 class="text-sm font-semibold text-ink">Parámetros de Generación</h2>
           </div>
-          <div class="bg-surface-container p-8 rounded-3xl border border-white/5 shadow-2xl space-y-6">
-            <div class="grid grid-cols-2 gap-6">
-              <div class="space-y-2">
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline">Estructura Narrativa</label>
-                <select v-model="form.estructura" class="w-full bg-surface-container-low border border-white/10 rounded-2xl px-4 py-4 text-sm text-on-surface appearance-none focus:ring-2 focus:ring-primary/40" :disabled="generando">
-                  <option value="AIDA">AIDA (Atención → Interés → Deseo → Acción)</option>
-                  <option value="PAS">PAS (Problema → Agitación → Solución)</option>
+          <div class="p-6 space-y-5">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Estructura Narrativa</label>
+                <select v-model="form.estructura" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/30 appearance-none transition-all" :disabled="generando">
+                  <option value="AIDA">AIDA — Atención · Interés · Deseo · Acción</option>
+                  <option value="PAS">PAS — Problema · Agitación · Solución</option>
                   <option value="hero_journey">Hero's Journey</option>
                   <option value="storybrand">StoryBrand</option>
                   <option value="antes_despues">Antes / Después</option>
                 </select>
               </div>
-              <div class="space-y-2">
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline">Objetivo</label>
-                <select v-model="form.objetivo" class="w-full bg-surface-container-low border border-white/10 rounded-2xl px-4 py-4 text-sm text-on-surface appearance-none focus:ring-2 focus:ring-primary/40" :disabled="generando">
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Objetivo</label>
+                <select v-model="form.objetivo" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/30 appearance-none transition-all" :disabled="generando">
                   <option value="engagement">Engagement (likes, comentarios)</option>
                   <option value="awareness">Awareness (alcance)</option>
                   <option value="conversion">Conversión (ventas, leads)</option>
@@ -79,10 +100,11 @@
                 </select>
               </div>
             </div>
-            <div class="grid grid-cols-2 gap-6">
-              <div class="space-y-2">
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline">Tono</label>
-                <select v-model="form.tono" class="w-full bg-surface-container-low border border-white/10 rounded-2xl px-4 py-4 text-sm text-on-surface appearance-none focus:ring-2 focus:ring-primary/40" :disabled="generando">
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Tono</label>
+                <select v-model="form.tono" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent/30 appearance-none transition-all" :disabled="generando">
                   <option value="educativo">Educativo</option>
                   <option value="entretenimiento">Entretenimiento</option>
                   <option value="inspiracional">Inspiracional</option>
@@ -91,127 +113,151 @@
                   <option value="humoristico">Humorístico</option>
                 </select>
               </div>
-              <div class="space-y-2">
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline">Duración Objetivo (seg)</label>
-                <input v-model.number="form.duracion_objetivo" type="number" min="15" max="180" class="w-full bg-surface-container-low border border-white/10 rounded-2xl px-4 py-4 text-sm text-on-surface font-bold text-center focus:ring-2 focus:ring-primary/40" :disabled="generando" />
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Duración objetivo (seg)</label>
+                <input
+                  v-model.number="form.duracion_objetivo"
+                  type="number" min="15" max="180"
+                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink font-medium text-center focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all"
+                  :disabled="generando"
+                />
               </div>
             </div>
-            <div class="space-y-2">
-              <label class="text-[10px] font-black uppercase tracking-widest text-outline">Instrucciones adicionales (opcional)</label>
-              <textarea v-model="form.instrucciones_extra" rows="3" placeholder="ej. Incluir una estadística de estudio, no mencionar competidores, usar lenguaje informal..." class="w-full bg-surface-container-low border border-white/10 rounded-2xl px-4 py-4 text-sm text-white placeholder:text-outline/40 focus:ring-2 focus:ring-primary/40 resize-none" :disabled="generando"></textarea>
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Instrucciones adicionales <span class="font-normal text-ink-3">(opcional)</span></label>
+              <textarea
+                v-model="form.instrucciones_extra"
+                rows="3"
+                placeholder="ej. Incluir una estadística de estudio, no mencionar competidores, usar lenguaje informal…"
+                class="w-full bg-canvas border border-border rounded-lg px-3 py-3 text-sm text-ink placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/30 resize-none leading-relaxed transition-all"
+                :disabled="generando"
+              ></textarea>
             </div>
           </div>
         </section>
 
-        <!-- Botón -->
+        <!-- Botón Generar -->
         <button
           @click="generar"
           :disabled="generando || !form.niche || !form.tema || !form.audiencia"
-          class="w-full py-5 bg-gradient-to-br from-secondary/80 to-secondary text-on-secondary font-headline font-black rounded-2xl shadow-xl shadow-secondary/20 hover:scale-[1.02] active:scale-95 transition-all text-base uppercase tracking-widest flex items-center justify-center gap-3 disabled:opacity-40 disabled:scale-100"
+          class="w-full py-3 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span class="material-symbols-outlined text-xl" :class="generando ? 'animate-spin' : ''">{{ generando ? 'hourglass_top' : 'auto_fix_high' }}</span>
-          {{ generando ? 'Generando con GPT-4o...' : 'Generar Guion' }}
+          <span class="material-symbols-outlined text-[18px]" :class="generando ? 'animate-spin' : ''">
+            {{ generando ? 'hourglass_top' : 'auto_fix_high' }}
+          </span>
+          {{ generando ? 'Generando con GPT-4o…' : 'Generar Guion' }}
         </button>
 
-        <p v-if="error" class="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">{{ error }}</p>
+        <div v-if="error" class="p-4 rounded-lg bg-error-subtle border border-error-border text-error text-sm">
+          {{ error }}
+        </div>
       </div>
 
-      <!-- Panel derecho: Preview + Info -->
-      <div class="xl:col-span-5 flex flex-col gap-6">
+      <!-- Panel de resultados (derecha) -->
+      <div class="xl:col-span-5 flex flex-col gap-5">
 
         <!-- Resultado -->
-        <div v-if="resultado" class="flex flex-col gap-4">
+        <div v-if="resultado" class="flex flex-col gap-5">
+
           <!-- Score -->
-          <div class="bg-surface-container p-6 rounded-3xl border border-secondary/20 shadow-xl relative overflow-hidden">
-            <div class="absolute -top-8 -right-8 w-32 h-32 bg-secondary/10 blur-3xl rounded-full"></div>
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-sm font-headline font-black text-white uppercase tracking-widest">{{ resultado.guion.titulo_sugerido }}</h3>
-              <div class="flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full border border-secondary/20">
-                <span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings:'FILL' 1;">bolt</span>
-                <span class="text-sm font-black text-secondary">{{ resultado.guion.score_estimado }}/100</span>
+          <div class="bg-surface rounded-xl border border-success-border shadow-sm p-5">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-semibold text-ink leading-snug">{{ resultado.guion.titulo_sugerido }}</h3>
+              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-success-subtle border border-success-border rounded-full ml-3 shrink-0">
+                <span class="material-symbols-outlined text-success text-[14px]" style="font-variation-settings:'FILL' 1;">bolt</span>
+                <span class="text-xs font-bold text-success">{{ resultado.guion.score_estimado }}/100</span>
               </div>
             </div>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <span v-for="t in resultado.guion.tecnicas_aplicadas" :key="t" class="text-[9px] font-black uppercase tracking-widest px-2 py-1 bg-surface-container-low border border-white/5 rounded text-outline">{{ t }}</span>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span
+                v-for="t in resultado.guion.tecnicas_aplicadas"
+                :key="t"
+                class="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 bg-surface-muted border border-border rounded text-ink-3"
+              >{{ t }}</span>
             </div>
-            <p class="text-[10px] text-secondary font-black uppercase tracking-widest mb-1">Duración estimada</p>
-            <p class="text-2xl font-black text-white font-headline">{{ resultado.guion.duracion_estimada_seg }}s</p>
+            <div class="flex items-center gap-3">
+              <p class="text-[10px] text-ink-3 font-medium uppercase tracking-wide">Duración estimada</p>
+              <p class="text-base font-bold text-ink">{{ resultado.guion.duracion_estimada_seg }}s</p>
+            </div>
           </div>
 
           <!-- Guion completo -->
-          <div class="bg-surface-container rounded-3xl border border-outline-variant/10 shadow-xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-white/5 bg-surface-container-high/50 flex items-center justify-between">
-              <h3 class="text-xs font-black text-white uppercase tracking-widest">Guion Completo</h3>
-              <button @click="copiarGuion" class="text-xs font-bold text-primary hover:text-white transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm">{{ copiado ? 'check' : 'content_copy' }}</span>
+          <div class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
+            <div class="px-5 py-3.5 border-b border-border flex items-center justify-between">
+              <h3 class="text-xs font-semibold text-ink uppercase tracking-wider">Guion Completo</h3>
+              <button @click="copiarGuion" class="text-xs font-medium text-accent hover:text-accent-hover transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">{{ copiado ? 'check' : 'content_copy' }}</span>
                 {{ copiado ? 'Copiado' : 'Copiar' }}
               </button>
             </div>
-            <div class="p-6 space-y-4">
+            <div class="p-5 space-y-4">
               <div>
-                <p class="text-[9px] text-secondary font-black uppercase tracking-widest mb-2">Gancho</p>
-                <p class="text-sm text-white leading-relaxed font-medium">{{ resultado.guion.gancho }}</p>
+                <p class="text-[10px] font-semibold text-success uppercase tracking-wider mb-2">Gancho</p>
+                <p class="text-sm text-ink leading-relaxed">{{ resultado.guion.gancho }}</p>
               </div>
               <div>
-                <p class="text-[9px] text-primary font-black uppercase tracking-widest mb-2">Desarrollo</p>
-                <p class="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">{{ resultado.guion.desarrollo }}</p>
+                <p class="text-[10px] font-semibold text-accent uppercase tracking-wider mb-2">Desarrollo</p>
+                <p class="text-sm text-ink-2 leading-relaxed whitespace-pre-wrap">{{ resultado.guion.desarrollo }}</p>
               </div>
               <div v-if="resultado.guion.cta">
-                <p class="text-[9px] text-tertiary font-black uppercase tracking-widest mb-2">Call to Action</p>
-                <p class="text-sm text-white leading-relaxed font-medium">{{ resultado.guion.cta }}</p>
+                <p class="text-[10px] font-semibold text-warn uppercase tracking-wider mb-2">Call to Action</p>
+                <p class="text-sm text-ink leading-relaxed">{{ resultado.guion.cta }}</p>
               </div>
             </div>
           </div>
 
-          <!-- Variantes del gancho -->
-          <div v-if="resultado.guion.variantes_gancho?.length" class="bg-surface-container p-6 rounded-3xl border border-outline-variant/10">
-            <h3 class="text-xs font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-              <span class="material-symbols-outlined text-outline text-base">shuffle</span> Variantes del Gancho
+          <!-- Variantes del Gancho -->
+          <div v-if="resultado.guion.variantes_gancho?.length" class="bg-surface rounded-xl border border-border shadow-sm p-5">
+            <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-ink-3 text-[16px]">shuffle</span> Variantes del Gancho
             </h3>
-            <div class="space-y-3">
-              <div v-for="(v, i) in resultado.guion.variantes_gancho" :key="i" class="p-3 rounded-xl bg-surface-container-low border border-white/5">
-                <span class="text-[9px] text-outline font-black uppercase tracking-widest mr-2">V{{ i + 1 }}</span>
-                <span class="text-sm text-on-surface-variant italic">"{{ v }}"</span>
+            <div class="space-y-2">
+              <div v-for="(v, i) in resultado.guion.variantes_gancho" :key="i" class="flex items-start gap-2.5 p-3 rounded-lg bg-surface-muted border border-border">
+                <span class="text-[9px] font-bold text-ink-3 uppercase tracking-wider pt-0.5 shrink-0">V{{ i + 1 }}</span>
+                <span class="text-sm text-ink-2 italic leading-relaxed">"{{ v }}"</span>
               </div>
             </div>
           </div>
 
-          <!-- Notas de producción -->
-          <div v-if="resultado.guion.notas_produccion" class="bg-surface-container p-6 rounded-3xl border border-yellow-500/20">
-            <h3 class="text-xs font-black text-yellow-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-              <span class="material-symbols-outlined text-base">videocam</span> Notas de Producción
+          <!-- Notas de Producción -->
+          <div v-if="resultado.guion.notas_produccion" class="bg-surface rounded-xl border border-warn-border p-5">
+            <h3 class="text-xs font-semibold text-warn uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px]">videocam</span> Notas de Producción
             </h3>
-            <p class="text-sm text-on-surface-variant leading-relaxed">{{ resultado.guion.notas_produccion }}</p>
+            <p class="text-sm text-ink-2 leading-relaxed">{{ resultado.guion.notas_produccion }}</p>
           </div>
 
           <!-- Nuevo guion -->
-          <button @click="resultado = null; form.tema = ''; form.instrucciones_extra = ''" class="w-full py-3 bg-surface-container border border-white/5 text-outline font-bold rounded-xl text-sm hover:text-white hover:border-white/10 transition-colors">
+          <button
+            @click="resultado = null; form.tema = ''; form.instrucciones_extra = ''"
+            class="w-full py-2.5 bg-canvas border border-border text-ink-2 font-medium rounded-lg text-sm hover:bg-surface-muted transition-colors"
+          >
             Generar otro guion
           </button>
         </div>
 
         <!-- Estado vacío / Info -->
-        <div v-else class="bg-surface-container rounded-3xl border border-outline-variant/10 p-8 flex flex-col gap-6 sticky top-24">
-          <div>
-            <h3 class="text-sm font-headline font-black text-white uppercase tracking-widest mb-2">Cómo funciona</h3>
-            <p class="text-xs text-outline/70 leading-relaxed">El generador analiza los guiones de mayor rendimiento de tu base de datos y aplica sus patrones estructurales, técnicas de retención y triggers emocionales a tu nuevo contenido.</p>
-          </div>
-          <div class="space-y-3">
+        <div v-else class="bg-surface rounded-xl border border-border shadow-sm p-6 sticky top-24">
+          <h3 class="text-sm font-semibold text-ink mb-3">¿Cómo funciona?</h3>
+          <p class="text-xs text-ink-3 leading-relaxed mb-5">
+            El generador analiza los guiones de mayor rendimiento de tu base de datos y aplica sus patrones estructurales, técnicas de retención y triggers emocionales al nuevo contenido.
+          </p>
+          <div class="space-y-4">
             <div v-for="paso in pasoInfo" :key="paso.label" class="flex items-start gap-3">
-              <div class="w-7 h-7 rounded-full bg-surface-container-low border border-white/5 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-sm text-primary">{{ paso.icon }}</span>
+              <div class="w-7 h-7 rounded-full bg-accent-subtle border border-accent-border flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-accent text-[14px]">{{ paso.icon }}</span>
               </div>
               <div>
-                <p class="text-xs font-black text-white">{{ paso.label }}</p>
-                <p class="text-[10px] text-outline/60">{{ paso.desc }}</p>
+                <p class="text-xs font-semibold text-ink">{{ paso.label }}</p>
+                <p class="text-[11px] text-ink-3 mt-0.5 leading-snug">{{ paso.desc }}</p>
               </div>
             </div>
           </div>
-          <div class="pt-4 border-t border-white/5">
-            <p class="text-[10px] text-outline/50 italic">Tiempo estimado: 5-10 segundos · Modelo: GPT-4o</p>
+          <div class="mt-5 pt-4 border-t border-border">
+            <p class="text-[11px] text-ink-3">Tiempo estimado: 5–10 segundos · Modelo: GPT-4o</p>
           </div>
         </div>
-
       </div>
     </div>
   </div>
