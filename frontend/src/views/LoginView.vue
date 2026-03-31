@@ -5,7 +5,7 @@
       <!-- Logo / título -->
       <div class="text-center mb-10">
         <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 mb-4">
-          <span class="material-icons text-accent text-2xl">edit_note</span>
+          <span class="material-symbols-outlined text-accent text-2xl">movie_creation</span>
         </div>
         <h1 class="text-xl font-semibold text-ink">Generador de Guiones</h1>
         <p class="text-sm text-ink/40 mt-1">Inicia sesión para continuar</p>
@@ -20,7 +20,7 @@
           <input
             v-model="email"
             type="email"
-            placeholder="admin@gmail.com"
+            placeholder=""
             autocomplete="email"
             class="w-full bg-surface border border-border rounded-lg px-4 py-2.5 text-sm text-ink placeholder-ink/25
                    focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/30 transition"
@@ -45,7 +45,7 @@
               @click="showPassword = !showPassword"
               class="absolute right-3 top-1/2 -translate-y-1/2 text-ink/30 hover:text-ink/60 transition"
             >
-              <span class="material-icons text-lg">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+              <span class="material-symbols-outlined text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
             </button>
           </div>
         </div>
