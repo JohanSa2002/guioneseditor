@@ -26,10 +26,27 @@
           <p class="text-xs font-semibold text-ink leading-none">Marketing Pro</p>
           <p class="text-[10px] text-ink-3 mt-0.5">Administrador</p>
         </div>
+        <button
+          @click="handleLogout"
+          title="Cerrar sesión"
+          class="ml-1 text-ink-3 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-surface-muted"
+        >
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+        </button>
       </div>
     </div>
   </header>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth.js'
+
+const router = useRouter()
+const auth   = useAuthStore()
+
+function handleLogout() {
+  auth.logout()
+  router.push('/login')
+}
 </script>

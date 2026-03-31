@@ -1,12 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../stores/auth.js'
 import DashboardView      from '../views/DashboardView.vue'
 import AnalysisCreateView from '../views/AnalysisCreateView.vue'
 import AnalysisDetailView from '../views/AnalysisDetailView.vue'
 import AnalysisListView   from '../views/AnalysisListView.vue'
 import ScriptsView        from '../views/ScriptsView.vue'
 import GenerateView       from '../views/GenerateView.vue'
+import LoginView          from '../views/LoginView.vue'
 
 const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+    meta: { public: true }
+  },
   {
     path: '/',
     name: 'Dashboard',
@@ -39,7 +47,19 @@ const routes = [
   },
 ]
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+router.beforeEach((to) => {
+  const auth = useAuthStore()
+  if (!to.meta.public && !auth.isAuthenticated) {
+    return { name: 'Login' }
+  }
+  if (to.name === 'Login' && auth.isAuthenticated) {
+    return { name: 'Dashboard' }
+  }
+})
+
+export default router
