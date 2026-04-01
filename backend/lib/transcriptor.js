@@ -2,7 +2,7 @@
 // TRANSCRIPTOR — OpenAI Whisper
 // Descarga el audio desde la URL y lo transcribe
 // ============================================================
-import OpenAI from 'openai'
+import OpenAI, { toFile } from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -18,8 +18,9 @@ export async function transcribir(audioUrl, idioma = 'es') {
     throw new Error(`Error al descargar audio: ${audioResponse.status}`)
   }
 
-  const audioBuffer = await audioResponse.arrayBuffer()
-  const audioFile   = new File([audioBuffer], 'audio.mp3', { type: 'audio/mpeg' })
+  // En Vercel Serverless (Node < 20), Web API `File` no está disponible por defecto,
+  // y `arrayBuffer` consume mucha RAM. `toFile` soluciona ambos.
+  const audioFile = await toFile(audioResponse, 'audio.mp3', { type: 'audio/mpeg' })
 
   const transcripcion = await openai.audio.transcriptions.create({
     file:     audioFile,
