@@ -109,16 +109,16 @@
 
             <div class="grid grid-cols-3 gap-4">
               <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Vistas</label>
-                <input v-model.number="form.vistas" type="number" placeholder="0" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink text-center focus:outline-none focus:ring-2 focus:ring-accent/30" :disabled="analizando"/>
+                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Vistas <span class="text-error normal-case font-normal">*</span></label>
+                <input v-model.number="form.vistas" type="number" min="1" placeholder="Ej. 250000" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink text-center focus:outline-none focus:ring-2 focus:ring-accent/30" :disabled="analizando"/>
               </div>
               <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Likes</label>
-                <input v-model.number="form.likes" type="number" placeholder="0" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink text-center focus:outline-none focus:ring-2 focus:ring-accent/30" :disabled="analizando"/>
+                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Likes <span class="text-error normal-case font-normal">*</span></label>
+                <input v-model.number="form.likes" type="number" min="1" placeholder="Ej. 18000" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink text-center focus:outline-none focus:ring-2 focus:ring-accent/30" :disabled="analizando"/>
               </div>
               <div class="space-y-1.5">
                 <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Compartidos</label>
-                <input v-model.number="form.compartidos" type="number" placeholder="0" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink text-center focus:outline-none focus:ring-2 focus:ring-accent/30" :disabled="analizando"/>
+                <input v-model.number="form.compartidos" type="number" min="0" placeholder="Ej. 3200" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink text-center focus:outline-none focus:ring-2 focus:ring-accent/30" :disabled="analizando"/>
               </div>
             </div>
 
@@ -286,6 +286,10 @@ onMounted(async () => {
 async function iniciarAnalisis() {
   if (!form.value.url || !form.value.niche) {
     error.value = "URL y Nicho son obligatorios para iniciar el pipeline."
+    return
+  }
+  if (!form.value.vistas || form.value.vistas <= 0 || !form.value.likes || form.value.likes <= 0) {
+    error.value = "Vistas y Likes son obligatorios. Cópialos directamente del video antes de analizar."
     return
   }
 

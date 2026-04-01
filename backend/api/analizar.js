@@ -36,8 +36,10 @@ export default async function handler(req, res) {
     contexto_video  = '',
   } = req.body
 
-  if (!url)   return res.status(400).json({ error: 'El campo "url" es requerido' })
-  if (!niche) return res.status(400).json({ error: 'El campo "niche" es requerido' })
+  if (!url)              return res.status(400).json({ error: 'El campo "url" es requerido' })
+  if (!niche)            return res.status(400).json({ error: 'El campo "niche" es requerido' })
+  if (!vistas || Number(vistas) <= 0) return res.status(400).json({ error: 'El campo "vistas" es requerido y debe ser mayor a 0' })
+  if (!likes  || Number(likes)  <= 0) return res.status(400).json({ error: 'El campo "likes" es requerido y debe ser mayor a 0' })
 
   const URL_SOPORTADAS = /^https?:\/\/(www\.)?(tiktok\.com|vm\.tiktok\.com|instagram\.com|youtube\.com|youtu\.be)/
   if (!URL_SOPORTADAS.test(url)) {

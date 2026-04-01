@@ -48,7 +48,8 @@ export default async function handler(req, res) {
         `)
         .eq('procesado_ok', true)
         .eq('niche', niche)
-        .order('score_virabilidad', { ascending: false })
+        .order('likes', { ascending: false })
+        .order('vistas', { ascending: false })
         .limit(num_referencias)
 
       if (plataforma) query = query.eq('plataforma', plataforma)
