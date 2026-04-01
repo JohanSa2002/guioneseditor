@@ -178,9 +178,19 @@
             </div>
           </template>
 
-          <button class="p-1.5 rounded-lg text-ink-3 hover:text-accent hover:bg-accent-subtle transition-all opacity-0 group-hover:opacity-100">
-            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-          </button>
+          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+            <button class="p-1.5 rounded-lg text-ink-3 hover:text-accent hover:bg-accent-subtle transition-all">
+              <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+            </button>
+            <button
+              @click.stop="confirmarEliminar(g)"
+              :disabled="eliminandoId === g.id"
+              class="p-1.5 rounded-lg text-ink-3 hover:text-red-400 hover:bg-red-950/40 transition-all disabled:opacity-50"
+            >
+              <span v-if="eliminandoId === g.id" class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+              <span v-else class="material-symbols-outlined text-[16px]">delete</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -301,6 +311,7 @@ const totalGuiones = ref(0)
 const modalGenerado  = ref(null)
 const cargandoModal  = ref(false)
 const copiadoModal   = ref(false)
+const eliminandoId   = ref(null)
 
 const filtros = ref({
   tipo: 'analizados',
@@ -408,6 +419,30 @@ async function copiarGuionModal() {
   await navigator.clipboard.writeText(texto)
   copiadoModal.value = true
   setTimeout(() => { copiadoModal.value = false }, 2000)
+}
+
+async function confirmarEliminar(g) {
+  const titulo = filtros.value.tipo === 'analizados'
+    ? (g.tema_principal || 'este guion')
+    : (g.titulo_sugerido || 'este guion')
+
+  if (!confirm(`¿Eliminar "${titulo}"? Esta acción no se puede deshacer.`)) return
+
+  eliminandoId.value = g.id
+  try {
+    if (filtros.value.tipo === 'analizados') {
+      await api.guiones.eliminar(g.id)
+    } else {
+      await api.generados.eliminar(g.id)
+    }
+    guiones.value = guiones.value.filter(x => x.id !== g.id)
+    totalGuiones.value = Math.max(0, totalGuiones.value - 1)
+  } catch (e) {
+    console.error(e)
+    alert('No se pudo eliminar: ' + e.message)
+  } finally {
+    eliminandoId.value = null
+  }
 }
 
 function plataformaBadge(p) {

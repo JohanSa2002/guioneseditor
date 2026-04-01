@@ -65,6 +65,17 @@ app.get('/api/guiones/:id', async (req, res) => {
   res.json(data)
 })
 
+// ── DELETE /api/guiones/:id ─────────────────────────────────
+app.delete('/api/guiones/:id', async (req, res) => {
+  const { error } = await supabase
+    .from('guiones')
+    .delete()
+    .eq('id', req.params.id)
+
+  if (error) return res.status(500).json({ error: error.message })
+  res.json({ ok: true })
+})
+
 // ── GET /api/nichos ─────────────────────────────────────────
 // Lista de nichos distintos para el selector del formulario
 app.get('/api/nichos', async (req, res) => {
@@ -346,6 +357,17 @@ app.get('/api/generados/:id', async (req, res) => {
 
   if (error) return res.status(404).json({ error: 'Guion generado no encontrado' })
   res.json(data)
+})
+
+// ── DELETE /api/generados/:id ───────────────────────────────
+app.delete('/api/generados/:id', async (req, res) => {
+  const { error } = await supabase
+    .from('guiones_generados')
+    .delete()
+    .eq('id', req.params.id)
+
+  if (error) return res.status(500).json({ error: error.message })
+  res.json({ ok: true })
 })
 
 app.listen(PORT, () => console.log(`Backend local corriendo en http://localhost:${PORT}`))
