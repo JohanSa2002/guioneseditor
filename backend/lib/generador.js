@@ -98,5 +98,9 @@ Genera el guion con EXACTAMENTE este JSON:
     .replace(/\n?```$/, '')
     .trim()
 
-  return JSON.parse(jsonLimpio)
+  try {
+    return JSON.parse(jsonLimpio)
+  } catch (err) {
+    throw new Error(`Error parseando JSON de GPT: ${err.message}. Contenido crudo: ${contenido}`)
+  }
 }

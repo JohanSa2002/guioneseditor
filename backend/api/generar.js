@@ -69,6 +69,7 @@ export default async function handler(req, res) {
         duracion_objetivo, tono, objetivo,
         estructura_usada:      estructura,
         instrucciones_extra:   instrucciones_extra || null,
+        referencias_ids:       referencias_ids.length > 0 ? referencias_ids : (patrones.map ? patrones.map(p => p.id).filter(Boolean) : null),
         titulo_sugerido:       guion.titulo_sugerido,
         gancho:                guion.gancho,
         desarrollo:            guion.desarrollo,

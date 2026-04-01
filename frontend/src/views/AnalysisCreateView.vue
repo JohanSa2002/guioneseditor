@@ -211,7 +211,7 @@
               <div class="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
                 <div
                   class="bg-accent h-full rounded-full transition-all duration-500"
-                  :style="{ width: ((currentStepIdx / 4) * 100) + '%' }"
+                  :style="{ width: ((currentStepIdx / 3) * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-[11px] text-ink-3 text-center">Tiempo estimado: ~15 segundos · GPT-4o + Whisper</p>

@@ -89,7 +89,7 @@
             <span class="material-symbols-outlined text-accent text-[16px]">analytics</span>
             Puntaje de Viralidad
           </h3>
-          <div class="flex justify-center mb-5">
+          <div class="flex justify-center mb-5 relative">
             <svg class="w-40 h-40 transform -rotate-90" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="42" fill="none" stroke="#e5e3de" stroke-width="7"/>
               <circle

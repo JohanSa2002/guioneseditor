@@ -195,8 +195,8 @@ const filtrosEstado = [
   { valor: 'fallidos', label: 'Fallidos' },
 ]
 
-const totalOk       = computed(() => guiones.value.filter(g => g.procesado_ok).length)
-const totalFallidos = computed(() => guiones.value.filter(g => !g.procesado_ok).length)
+const totalOk       = ref(0)
+const totalFallidos = ref(0)
 
 async function cargarDatos() {
   cargando.value = true
@@ -204,10 +204,15 @@ async function cargarDatos() {
     const params = { page: filtros.value.page, limit: filtros.value.limit }
     if (filtros.value.niche) params.niche = filtros.value.niche
 
-    const [dg, dn] = await Promise.all([
+    const [dg, dn, okReq, allReq] = await Promise.all([
       api.guiones.listarTodos(params),
       api.nichos(),
+      api.guiones.listar({ limit: 1, ...(params.niche ? { niche: params.niche } : {}) }),
+      api.guiones.listarTodos({ limit: 1, ...(params.niche ? { niche: params.niche } : {}) }),
     ])
+
+    totalOk.value = okReq.total || 0
+    totalFallidos.value = (allReq.total || 0) - (okReq.total || 0)
 
     let lista = dg.guiones
     if (filtroActivo.value === 'exitosos') lista = lista.filter(g => g.procesado_ok)

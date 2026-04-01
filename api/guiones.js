@@ -3,7 +3,7 @@ import { supabase } from '../backend/lib/supabase.js'
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido' })
 
-  const { niche, cliente_id, plataforma, page = 1, limit = 20 } = req.query
+  const { niche, cliente_id, plataforma, page = 1, limit = 20, todos } = req.query
   const offset = (Number(page) - 1) * Number(limit)
 
   let query = supabase
@@ -12,12 +12,13 @@ export default async function handler(req, res) {
       id, niche, sub_niche, plataforma, url_origen,
       gancho_texto, gancho_tipo, estructura_narrativa, trigger_emocional,
       tono, score_engagement, score_virabilidad, score_cialdini,
-      fecha_analisis, procesado_ok, vistas, likes, compartidos,
+      fecha_analisis, procesado_ok, error_detalle, vistas, likes, compartidos,
       tema_principal, resumen_patron
     `, { count: 'exact' })
-    .eq('procesado_ok', true)
     .order('fecha_analisis', { ascending: false })
     .range(offset, offset + Number(limit) - 1)
+
+  if (todos !== '1' && todos !== 'true') query = query.eq('procesado_ok', true)
 
   if (niche)      query = query.eq('niche', niche)
   if (cliente_id) query = query.eq('cliente_id', cliente_id)

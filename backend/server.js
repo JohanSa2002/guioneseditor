@@ -33,7 +33,7 @@ app.get('/api/guiones', async (req, res) => {
     .from('guiones')
     .select(`
       id, niche, sub_niche, plataforma, url_origen,
-      gancho_texto, estructura_narrativa, trigger_emocional,
+      gancho_texto, gancho_tipo, estructura_narrativa, trigger_emocional,
       tono, score_engagement, score_virabilidad, score_cialdini,
       fecha_analisis, procesado_ok, error_detalle, vistas, likes, compartidos,
       tema_principal, resumen_patron
@@ -41,7 +41,7 @@ app.get('/api/guiones', async (req, res) => {
     .order('fecha_analisis', { ascending: false })
     .range(offset, offset + limit - 1)
 
-  if (!todos) query = query.eq('procesado_ok', true)
+  if (todos !== '1' && todos !== 'true') query = query.eq('procesado_ok', true)
   if (niche)      query = query.eq('niche', niche)
   if (cliente_id) query = query.eq('cliente_id', cliente_id)
   if (plataforma) query = query.eq('plataforma', plataforma)
