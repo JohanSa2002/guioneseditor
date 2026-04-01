@@ -132,13 +132,16 @@ app.post('/api/analizar', async (req, res) => {
     console.log(`[1/5] Extrayendo audio de: ${url}`)
     const { audioUrl, duracion, plataforma } = await extraerAudio(url)
 
+    // Normalizar duración: TikTok devuelve ms (ej. 47416), Instagram devuelve s float (ej. 49.062)
+    const duracionSeg = duracion ? Math.round(duracion > 1000 ? duracion / 1000 : duracion) : null
+
     paso = 'transcripcion'
-    console.log(`[2/5] Transcribiendo audio (${duracion}s)...`)
+    console.log(`[2/5] Transcribiendo audio (${duracionSeg}s)...`)
     const transcript = await transcribir(audioUrl, idioma)
 
     paso = 'analisis'
     console.log(`[3/5] Analizando con GPT-4o...`)
-    const analisisRaw = await analizarTranscript(transcript, niche, plataforma, duracion, contexto_video)
+    const analisisRaw = await analizarTranscript(transcript, niche, plataforma, duracionSeg, contexto_video)
 
     paso = 'validacion'
     console.log(`[4/5] Validando schema...`)
@@ -154,7 +157,7 @@ app.post('/api/analizar', async (req, res) => {
     const payload = {
       cliente_id, niche, sub_niche, mercado_objetivo, idioma,
       proyecto_nombre, competidor_referente,
-      url_origen: url, plataforma, duracion_segundos: duracion,
+      url_origen: url, plataforma, duracion_segundos: duracionSeg,
       vistas: vistas ? Number(vistas) : null,
       likes: likes ? Number(likes) : null,
       compartidos: compartidos ? Number(compartidos) : null,
@@ -200,12 +203,14 @@ app.post('/api/analizar', async (req, res) => {
 
   } catch (err) {
     console.error(`✗ Error en paso "${paso}":`, err.message)
-    await supabase.from('guiones').insert({
-      url_origen: url, niche, idioma, cliente_id,
-      procesado_ok: false,
-      error_detalle: `[${paso}] ${err.message}`,
-      version_prompt: 'v1.0',
-    }).catch(() => {})
+    try {
+      await supabase.from('guiones').insert({
+        url_origen: url, niche, idioma, cliente_id,
+        procesado_ok: false,
+        error_detalle: `[${paso}] ${err.message}`,
+        version_prompt: 'v1.0',
+      })
+    } catch (_) { /* silencioso si falla el insert de error */ }
 
     res.status(500).json({ ok: false, paso, error: err.message })
   }

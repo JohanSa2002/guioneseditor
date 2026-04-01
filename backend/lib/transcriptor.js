@@ -42,7 +42,8 @@ export async function transcribir(audioUrl, idioma = 'es') {
   const ext      = audioUrl.split('?')[0].split('.').pop()?.toLowerCase() || 'mp3'
   const mimeMap  = { mp3: 'audio/mpeg', m4a: 'audio/mp4', mp4: 'audio/mp4', webm: 'audio/webm', ogg: 'audio/ogg', wav: 'audio/wav' }
   const mimeType = mimeMap[ext] || 'audio/mpeg'
-  const audioFile = toFile(audioResponse, `audio.${ext}`, { type: mimeType })
+  // toFile es async en el SDK de OpenAI — await es necesario aunque el IDE lo marque como hint
+  const audioFile = await toFile(audioResponse, `audio.${ext}`, { type: mimeType })
 
   const transcripcion = await openai.audio.transcriptions.create({
     file:     audioFile,

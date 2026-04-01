@@ -53,13 +53,16 @@ export default async function handler(req, res) {
     paso = 'extraccion'
     const { audioUrl, duracion, titulo, thumbnail, plataforma } = await extraerAudio(url)
 
+    // Normalizar duración: TikTok devuelve ms (ej. 47416), Instagram devuelve s float (ej. 49.062)
+    const duracionSeg = duracion ? Math.round(duracion > 1000 ? duracion / 1000 : duracion) : null
+
     // ── PASO 2: Transcribir con Whisper ───────────────────
     paso = 'transcripcion'
     const transcript = await transcribir(audioUrl, idioma)
 
     // ── PASO 3: Analizar con GPT-4o ───────────────────────
     paso = 'analisis'
-    const analisisRaw = await analizarTranscript(transcript, niche, plataforma, duracion, contexto_video)
+    const analisisRaw = await analizarTranscript(transcript, niche, plataforma, duracionSeg, contexto_video)
 
     // ── PASO 4: Validar con Zod ───────────────────────────
     paso = 'validacion'
@@ -74,7 +77,7 @@ export default async function handler(req, res) {
     const payload = {
       cliente_id, niche, sub_niche, mercado_objetivo, idioma,
       proyecto_nombre, competidor_referente,
-      url_origen: url, plataforma, duracion_segundos: duracion,
+      url_origen: url, plataforma, duracion_segundos: duracionSeg,
       vistas: vistas ? Number(vistas) : null,
       likes: likes ? Number(likes) : null,
       compartidos: compartidos ? Number(compartidos) : null,
@@ -114,15 +117,17 @@ export default async function handler(req, res) {
 
     // Guardar el error en Supabase para diagnóstico
     if (paso !== 'inicio') {
-      await supabase.from('guiones').insert({
-        url_origen:      url,
-        niche,
-        idioma,
-        cliente_id,
-        procesado_ok:    false,
-        error_detalle:   `[${paso}] ${err.message}`,
-        version_prompt:  'v1.0',
-      }).catch(() => {}) // silencioso si falla el insert de error
+      try {
+        await supabase.from('guiones').insert({
+          url_origen:     url,
+          niche,
+          idioma,
+          cliente_id,
+          procesado_ok:   false,
+          error_detalle:  `[${paso}] ${err.message}`,
+          version_prompt: 'v1.0',
+        })
+      } catch (_) { /* silencioso si falla el insert de error */ }
     }
 
     return res.status(500).json({

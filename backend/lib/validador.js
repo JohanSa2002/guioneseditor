@@ -40,7 +40,12 @@ function normalizarEnum(valor, validos, aliases = {}) {
   const matchU = validos.find(v => v.toLowerCase() === underscored)
   if (matchU) return matchU
 
-  return sinAcentos // sin match → Zod reportará el error
+  // 6. Fallback de último recurso: "otra" > "ninguna" > "ninguno" > último valor del enum
+  //    GPT-4o a veces devuelve "ninguno" para campos donde no corresponde
+  if (validos.includes('otra'))    return 'otra'
+  if (validos.includes('ninguna')) return 'ninguna'
+  if (validos.includes('ninguno')) return 'ninguno'
+  return validos[validos.length - 1]
 }
 
 /** Enum flexible: tolera acentos, mayúsculas, espacios y aliases explícitos */
