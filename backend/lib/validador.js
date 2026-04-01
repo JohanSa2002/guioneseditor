@@ -1,27 +1,98 @@
 // ============================================================
 // VALIDADOR — Zod Schema
 // Valida el JSON de GPT-4o antes de guardar en Supabase
-// Si GPT-4o alucina un valor fuera del enum, lo atrapa aquí
+// Incluye normalización de enums para tolerar variaciones
+// comunes de GPT-4o (acentos, mayúsculas, aliases)
 // ============================================================
 import { z } from 'zod'
 
-const EstructuraEnum      = z.enum(['AIDA','PAS','hero_journey','storybrand','antes_despues','otra'])
-const GanchoTipoEnum      = z.enum(['pregunta','declaracion_shock','dato_estadistica','historia','controversia','promesa_directa'])
-const DesarrolloEnum      = z.enum(['problema_solucion','lista','demostracion','testimonio','tutorial','storytelling_puro'])
-const CtaTipoEnum         = z.enum(['seguir','comentar','compartir','comprar','visitar_link','guardar','ninguno'])
-const PacingEnum          = z.enum(['lento','medio','rapido','variable'])
-const TriggerEnum         = z.enum(['miedo','esperanza','curiosidad','ira','orgullo','tristeza','sorpresa','humor'])
-const AtencionVisualEnum  = z.enum(['zoom_agresivo','corte_rapido','texto_pantalla','cara_camara','broll_dinamico','ninguno'])
-const DolorPlacerEnum     = z.enum(['apela_dolor','apela_placer','ambos'])
-const CargaEnum           = z.enum(['baja','media','alta'])
-const VelocidadEnum       = z.enum(['lenta','normal','rapida','muy_rapida'])
-const TonoEnum            = z.enum(['educativo','entretenimiento','inspiracional','controversial','informativo','humoristico'])
-const PersonaEnum         = z.enum(['primera_persona','segunda_persona','tercera_persona','mixta'])
-const EspecificidadEnum   = z.enum(['generico','especifico','ultra_especifico'])
-const TecnicaRetencionEnum= z.enum(['open_loop','cliffhanger','curiosity_gap','countdown','pregunta_abierta','ninguna'])
-const RatioEmocionEnum    = z.enum(['emocional','logico','equilibrado'])
-const NivelConcienciaEnum = z.enum(['inconsciente','problema_consciente','solucion_consciente','producto_consciente','mas_consciente'])
-const ReplicabilidadEnum  = z.enum(['alta','media','baja'])
+// ── Helpers de normalización ─────────────────────────────────
+
+function stripAccents(str) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
+/**
+ * Intenta hacer coincidir `valor` con uno de los valores válidos del enum,
+ * tolerando diferencias de acentos, mayúsculas y espacios vs guiones bajos.
+ * Si no encuentra coincidencia, devuelve el valor original para que Zod reporte el error.
+ */
+function normalizarEnum(valor, validos, aliases = {}) {
+  if (typeof valor !== 'string') return valor
+
+  // 1. Alias explícitos (e.g. "ninguno" → "ninguna")
+  if (aliases[valor]) return aliases[valor]
+
+  // 2. Strip de acentos
+  const sinAcentos = stripAccents(valor).trim()
+  if (aliases[sinAcentos]) return aliases[sinAcentos]
+
+  // 3. Coincidencia exacta tras strip
+  if (validos.includes(sinAcentos)) return sinAcentos
+
+  // 4. Coincidencia case-insensitive
+  const lower = sinAcentos.toLowerCase()
+  const matchCI = validos.find(v => v.toLowerCase() === lower)
+  if (matchCI) return matchCI
+
+  // 5. Espacios → guiones bajos + case-insensitive
+  const underscored = lower.replace(/\s+/g, '_')
+  const matchU = validos.find(v => v.toLowerCase() === underscored)
+  if (matchU) return matchU
+
+  return sinAcentos // sin match → Zod reportará el error
+}
+
+/** Enum flexible: tolera acentos, mayúsculas, espacios y aliases explícitos */
+function flexEnum(values, aliases = {}) {
+  return z.preprocess(
+    v => normalizarEnum(String(v ?? ''), values, aliases),
+    z.enum(values)
+  )
+}
+
+/** Entero flexible: acepta strings numéricos que GPT-4o a veces devuelve */
+function flexInt(min, max) {
+  return z.preprocess(
+    v => (typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)))
+      ? Math.round(Number(v))
+      : v,
+    z.number().int().min(min).max(max)
+  )
+}
+
+// ── Definición de enums ──────────────────────────────────────
+
+const EstructuraEnum     = flexEnum(['AIDA','PAS','hero_journey','storybrand','antes_despues','otra'])
+const GanchoTipoEnum     = flexEnum(
+  ['pregunta','declaracion_shock','dato_estadistica','historia','controversia','promesa_directa'],
+  { 'shock': 'declaracion_shock', 'declaracion': 'declaracion_shock',
+    'dato': 'dato_estadistica', 'estadistica': 'dato_estadistica',
+    'promesa': 'promesa_directa' }
+)
+const DesarrolloEnum     = flexEnum(['problema_solucion','lista','demostracion','testimonio','tutorial','storytelling_puro'])
+const CtaTipoEnum        = flexEnum(['seguir','comentar','compartir','comprar','visitar_link','guardar','ninguno'])
+const PacingEnum         = flexEnum(['lento','medio','rapido','variable'])
+const TriggerEnum        = flexEnum(['miedo','esperanza','curiosidad','ira','orgullo','tristeza','sorpresa','humor'])
+const AtencionVisualEnum = flexEnum(['zoom_agresivo','corte_rapido','texto_pantalla','cara_camara','broll_dinamico','ninguno'])
+const DolorPlacerEnum    = flexEnum(['apela_dolor','apela_placer','ambos'])
+const CargaEnum          = flexEnum(['baja','media','alta'])
+const VelocidadEnum      = flexEnum(['lenta','normal','rapida','muy_rapida'], { 'muy rapida': 'muy_rapida' })
+const TonoEnum           = flexEnum(
+  ['educativo','entretenimiento','inspiracional','controversial','informativo','humoristico'],
+  { 'humor': 'humoristico', 'comico': 'humoristico', 'humoristico': 'humoristico' }
+)
+const PersonaEnum        = flexEnum(['primera_persona','segunda_persona','tercera_persona','mixta'])
+const EspecificidadEnum  = flexEnum(['generico','especifico','ultra_especifico'])
+const TecnicaRetencionEnum = flexEnum(
+  ['open_loop','cliffhanger','curiosity_gap','countdown','pregunta_abierta','ninguna'],
+  { 'ninguno': 'ninguna' } // GPT-4o a veces usa el masculino
+)
+const RatioEmocionEnum   = flexEnum(['emocional','logico','equilibrado'])
+const NivelConcienciaEnum = flexEnum(['inconsciente','problema_consciente','solucion_consciente','producto_consciente','mas_consciente'])
+const ReplicabilidadEnum = flexEnum(['alta','media','baja'])
+
+// ── Schema principal ─────────────────────────────────────────
 
 export const AnalisisSchema = z.object({
   // Storytelling
@@ -30,7 +101,7 @@ export const AnalisisSchema = z.object({
   gancho_texto:           z.string().min(1).max(200),
   apertura_exacta:        z.string().min(1).max(300),
   cierre_exacto:          z.string().min(1).max(200),
-  gancho_duracion_seg:    z.number().int().min(0).max(30),
+  gancho_duracion_seg:    flexInt(0, 30),
   desarrollo_tipo:        DesarrolloEnum,
   cta_tipo:               CtaTipoEnum,
   cta_texto:              z.string().max(300).nullable(),
@@ -38,9 +109,9 @@ export const AnalisisSchema = z.object({
   conflicto_central:      z.string().min(1).max(500),
   resolucion:             z.string().min(1).max(500),
   pacing_ritmo:           PacingEnum,
-  numero_actos:           z.number().int().min(1).max(4),
+  numero_actos:           flexInt(1, 4),
   tecnica_retencion:      TecnicaRetencionEnum,
-  momento_pico_seg:       z.number().int().min(0).max(600),
+  momento_pico_seg:       flexInt(0, 600),
 
   // Cialdini
   cialdini_reciprocidad:  z.boolean(),
@@ -52,7 +123,7 @@ export const AnalisisSchema = z.object({
   cialdini_unidad:        z.boolean(),
   sesgo_cognitivo:        z.string().max(100).nullable(),
   trigger_emocional:      TriggerEnum,
-  intensidad_emocional:   z.number().int().min(1).max(10),
+  intensidad_emocional:   flexInt(1, 10),
 
   // Neuropublicidad
   atencion_visual:        AtencionVisualEnum,
@@ -88,7 +159,7 @@ export const AnalisisSchema = z.object({
   hashtags_sugeridos:     z.array(z.string()).min(1).max(10),
 
   // Métricas
-  score_virabilidad:      z.number().int().min(1).max(100),
+  score_virabilidad:      flexInt(1, 100),
   resumen_patron:         z.string().min(10).max(1500),
 })
 

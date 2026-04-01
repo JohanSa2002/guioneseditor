@@ -122,5 +122,9 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
     .replace(/\n?```$/, '')
     .trim()
 
-  return JSON.parse(jsonLimpio)
+  try {
+    return JSON.parse(jsonLimpio)
+  } catch {
+    throw new Error(`GPT-4o devolvió JSON inválido. Primeros 200 chars: ${jsonLimpio.slice(0, 200)}`)
+  }
 }
