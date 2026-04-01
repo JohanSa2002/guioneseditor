@@ -38,7 +38,11 @@ export async function transcribir(audioUrl, idioma = 'es') {
 
   // En Vercel Serverless (Node < 20), Web API `File` no está disponible por defecto,
   // y `arrayBuffer` consume mucha RAM. `toFile` soluciona ambos.
-  const audioFile = toFile(audioResponse, 'audio.mp3', { type: 'audio/mpeg' })
+  // Detectar extensión real del audio (TikTok→mp3, Instagram→m4a, etc.)
+  const ext      = audioUrl.split('?')[0].split('.').pop()?.toLowerCase() || 'mp3'
+  const mimeMap  = { mp3: 'audio/mpeg', m4a: 'audio/mp4', mp4: 'audio/mp4', webm: 'audio/webm', ogg: 'audio/ogg', wav: 'audio/wav' }
+  const mimeType = mimeMap[ext] || 'audio/mpeg'
+  const audioFile = toFile(audioResponse, `audio.${ext}`, { type: mimeType })
 
   const transcripcion = await openai.audio.transcriptions.create({
     file:     audioFile,

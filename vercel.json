@@ -2,8 +2,7 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "functions": {
-    "api/analizar.js": { "maxDuration": 300 },
-    "api/generar.js":  { "maxDuration": 120 }
+    "api/**/*.js": { "maxDuration": 60 }
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
