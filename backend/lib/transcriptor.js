@@ -38,10 +38,32 @@ export async function transcribir(audioUrl, idioma = 'es') {
 
   // En Vercel Serverless (Node < 20), Web API `File` no está disponible por defecto,
   // y `arrayBuffer` consume mucha RAM. `toFile` soluciona ambos.
-  // Detectar extensión real del audio (TikTok→mp3, Instagram→m4a, etc.)
-  const ext      = audioUrl.split('?')[0].split('.').pop()?.toLowerCase() || 'mp3'
-  const mimeMap  = { mp3: 'audio/mpeg', m4a: 'audio/mp4', mp4: 'audio/mp4', webm: 'audio/webm', ogg: 'audio/ogg', wav: 'audio/wav' }
-  const mimeType = mimeMap[ext] || 'audio/mpeg'
+  const formatosSoportados = ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']
+  const mimeMap = { mp3: 'audio/mpeg', m4a: 'audio/mp4', mp4: 'audio/mp4', webm: 'audio/webm', ogg: 'audio/ogg', wav: 'audio/wav', flac: 'audio/flac', mpeg: 'audio/mpeg', mpga: 'audio/mpeg', oga: 'audio/ogg' }
+
+  // 1. Intentar detectar formato desde el Content-Type de la respuesta HTTP
+  const contentType = audioResponse.headers.get('content-type') || ''
+  const contentTypeToExt = {
+    'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a',
+    'video/mp4': 'mp4', 'audio/webm': 'webm', 'video/webm': 'webm',
+    'audio/ogg': 'ogg', 'audio/flac': 'flac', 'audio/wav': 'wav',
+    'audio/x-wav': 'wav', 'audio/x-m4a': 'm4a',
+  }
+  let ext = null
+  for (const [mime, e] of Object.entries(contentTypeToExt)) {
+    if (contentType.includes(mime)) { ext = e; break }
+  }
+
+  // 2. Si el Content-Type no fue útil, intentar con la extensión de la URL
+  if (!ext) {
+    const urlExt = audioUrl.split('?')[0].split('.').pop()?.toLowerCase()
+    ext = formatosSoportados.includes(urlExt) ? urlExt : null
+  }
+
+  // 3. Fallback a mp4 (más común en plataformas sociales y soportado por Whisper)
+  if (!ext) ext = 'mp4'
+
+  const mimeType = mimeMap[ext] || 'audio/mp4'
   // toFile es async en el SDK de OpenAI — await es necesario aunque el IDE lo marque como hint
   const audioFile = await toFile(audioResponse, `audio.${ext}`, { type: mimeType })
 
