@@ -99,7 +99,8 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
   "hashtags_sugeridos": ["<hashtag1>", "<hashtag2>", "<hashtag3>", "<hashtag4>", "<hashtag5>", "<hashtag6>", "<hashtag7>"],
 
   "score_virabilidad": <número entero del 1 al 100>,
-  "resumen_patron": "<párrafo de 3-4 oraciones describiendo el patrón ganador de este video: qué hace, por qué funciona psicológicamente y cómo se puede replicar>"
+  "resumen_patron": "<párrafo de 3-4 oraciones describiendo el patrón ganador de este video: qué hace, por qué funciona psicológicamente y cómo se puede replicar>",
+  "conclusion_estrategica": "<síntesis estratégica extensa de aproximadamente 15 líneas que integra TODOS los datos del análisis. Estructura la respuesta así: (1) Veredicto general sobre la efectividad del video y su score de viralidad. (2) Análisis de la estructura narrativa elegida y por qué encaja con el nicho y el avatar objetivo. (3) Qué principios de Cialdini se activaron y cómo interactúan entre sí para generar persuasión. (4) Cómo los elementos de neuromarketing (atención visual, pacing, carga cognitiva, lenguaje sensorial) amplifican el mensaje. (5) Análisis del trigger emocional dominante y el arco emocional: cómo conducen al espectador hacia el CTA. (6) Evaluación del nivel de consciencia del avatar y si la promesa explícita está bien calibrada para ese nivel. (7) Insight estratégico principal: qué hace este video mejor que el promedio de su nicho y por qué es difícil de replicar sin entender su mecánica interna. (8) Veredicto final de replicabilidad y qué elementos son absolutamente críticos conservar en una versión derivada.>"
 }`
 
   const completion = await openai.chat.completions.create({

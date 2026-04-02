@@ -195,6 +195,15 @@
       <!-- Columna derecha (contenido) -->
       <div class="xl:col-span-8 flex flex-col gap-5">
 
+        <!-- Conclusión Estratégica -->
+        <div v-if="guion.conclusion_estrategica" class="bg-surface rounded-xl border border-border shadow-sm p-6">
+          <p class="text-[10px] font-semibold text-ink-2 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-ink-3">summarize</span>
+            Conclusión Estratégica
+          </p>
+          <p class="text-sm text-ink leading-relaxed">{{ guion.conclusion_estrategica }}</p>
+        </div>
+
         <!-- Patrón Ganador -->
         <div class="bg-surface rounded-xl border border-accent-border shadow-sm p-6 bg-accent-subtle/30">
           <p class="text-[10px] font-semibold text-accent uppercase tracking-wider mb-3">Síntesis del Patrón Ganador</p>

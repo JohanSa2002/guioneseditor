@@ -166,6 +166,7 @@ export const AnalisisSchema = z.object({
   // Métricas
   score_virabilidad:      flexInt(1, 100),
   resumen_patron:         z.string().min(10).max(1500),
+  conclusion_estrategica: z.string().min(10).max(4000),
 })
 
 /**
