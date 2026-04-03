@@ -5,15 +5,20 @@
     <p class="text-sm text-ink-3">Cargando análisis…</p>
   </div>
 
-  <div v-else-if="guion" class="flex flex-col gap-8 pb-12">
+  <div v-else-if="guion" class="flex flex-col gap-6 pb-12">
+
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center gap-1.5 text-xs text-ink-3">
+      <router-link to="/" class="hover:text-ink transition-colors">Dashboard</router-link>
+      <span class="material-symbols-outlined text-[14px] text-border-strong">chevron_right</span>
+      <router-link to="/analysis" class="hover:text-ink transition-colors">Análisis</router-link>
+      <span class="material-symbols-outlined text-[14px] text-border-strong">chevron_right</span>
+      <span class="text-ink-2 font-medium truncate max-w-48">{{ guion.tema_principal || 'Detalle' }}</span>
+    </nav>
 
     <!-- Encabezado -->
     <header class="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-border">
       <div class="flex-1">
-        <router-link to="/analysis" class="inline-flex items-center gap-1.5 text-xs font-medium text-ink-3 hover:text-accent transition-colors mb-4 uppercase tracking-wider">
-          <span class="material-symbols-outlined text-base">west</span> Volver al historial
-        </router-link>
-
         <div class="flex items-center gap-2 flex-wrap mb-3">
           <span class="text-[11px] font-semibold px-2.5 py-1 bg-surface-muted border border-border rounded-md text-ink-2 uppercase tracking-wide">{{ guion.niche }}</span>
           <span v-if="guion.sub_niche" class="text-[11px] px-2.5 py-1 bg-canvas border border-border rounded-md text-ink-3">{{ guion.sub_niche }}</span>
@@ -22,7 +27,6 @@
             Replicabilidad {{ guion.replicabilidad }}
           </span>
         </div>
-
         <h1 class="text-3xl font-bold font-headline text-ink mb-2 leading-tight max-w-2xl">
           {{ guion.tema_principal || 'Análisis sin título' }}
         </h1>
@@ -31,22 +35,42 @@
           {{ guion.angulo_unico || 'Ángulo único no especificado' }}
         </p>
       </div>
-
       <div class="flex items-center gap-3 shrink-0">
         <button
           v-if="guion.url_origen"
-          class="h-9 w-9 rounded-lg bg-canvas border border-border flex items-center justify-center text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors"
+          class="h-9 w-9 rounded-lg bg-canvas border border-border flex items-center justify-center text-ink-2
+                 hover:bg-surface-muted hover:text-ink transition-all active:scale-95"
           title="Ver video original"
+          aria-label="Ver video original"
           @click="openUrl(guion.url_origen)"
         >
           <span class="material-symbols-outlined text-[18px]">open_in_new</span>
         </button>
-        <router-link to="/generate" class="px-4 py-2 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg text-sm flex items-center gap-1.5 transition-colors shadow-sm">
+        <router-link
+          to="/generate"
+          class="px-4 py-2 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg text-sm
+                 flex items-center gap-1.5 transition-all shadow-sm active:scale-[0.97]"
+        >
           <span class="material-symbols-outlined text-[16px]">auto_fix_high</span>
           Generar Guion
         </router-link>
       </div>
     </header>
+
+    <!-- Sticky Tab Bar -->
+    <nav class="sticky top-16 z-20 bg-canvas/90 backdrop-blur-md border-b border-border -mx-4 md:-mx-8 px-4 md:px-8 flex gap-0 overflow-x-auto scrollbar-hide">
+      <a
+        v-for="tab in tabs"
+        :key="tab.id"
+        :href="'#' + tab.id"
+        class="px-3 py-3 text-xs font-medium text-ink-3 hover:text-ink border-b-2 border-transparent
+               hover:border-border-strong transition-all whitespace-nowrap shrink-0"
+        :class="tabActivo === tab.id ? '!text-accent !border-accent' : ''"
+        @click.prevent="scrollToSection(tab.id)"
+      >
+        {{ tab.label }}
+      </a>
+    </nav>
 
     <!-- Cuadrícula principal -->
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
@@ -55,7 +79,7 @@
       <div class="xl:col-span-4 flex flex-col gap-4">
 
         <!-- Métricas Sociales -->
-        <div v-if="guion.vistas || guion.likes || guion.compartidos" class="bg-surface rounded-xl border border-border shadow-sm p-5">
+        <div v-if="guion.vistas || guion.likes || guion.compartidos" id="metricas" class="bg-surface rounded-xl border border-border shadow-sm p-5">
           <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-4 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-ink-3 text-[16px]">bar_chart</span>
             Métricas del Video
@@ -64,61 +88,66 @@
             <div class="text-center p-3 rounded-lg bg-surface-muted border border-border">
               <span class="material-symbols-outlined text-blue-500 text-lg block mb-1">visibility</span>
               <p class="text-[9px] text-ink-3 font-semibold uppercase tracking-wider mb-1">Vistas</p>
-              <p class="text-base font-bold text-ink">{{ formatNum(guion.vistas) }}</p>
+              <p class="text-base font-bold text-ink tabular-nums">{{ formatNum(guion.vistas) }}</p>
             </div>
             <div class="text-center p-3 rounded-lg bg-surface-muted border border-border">
               <span class="material-symbols-outlined text-red-500 text-lg block mb-1" style="font-variation-settings:'FILL' 1;">favorite</span>
               <p class="text-[9px] text-ink-3 font-semibold uppercase tracking-wider mb-1">Likes</p>
-              <p class="text-base font-bold text-ink">{{ formatNum(guion.likes) }}</p>
+              <p class="text-base font-bold text-ink tabular-nums">{{ formatNum(guion.likes) }}</p>
             </div>
             <div class="text-center p-3 rounded-lg bg-surface-muted border border-border">
               <span class="material-symbols-outlined text-success text-lg block mb-1">share</span>
               <p class="text-[9px] text-ink-3 font-semibold uppercase tracking-wider mb-1">Compartidos</p>
-              <p class="text-base font-bold text-ink">{{ formatNum(guion.compartidos) }}</p>
+              <p class="text-base font-bold text-ink tabular-nums">{{ formatNum(guion.compartidos) }}</p>
             </div>
           </div>
           <div v-if="guion.score_engagement" class="mt-3 flex items-center justify-between px-3 py-2 rounded-lg bg-success-subtle border border-success-border">
             <span class="text-[11px] text-success font-semibold">Engagement Rate</span>
-            <span class="text-sm font-bold text-success">{{ (guion.score_engagement * 1).toFixed(2) }}%</span>
+            <span class="text-sm font-bold text-success tabular-nums">{{ (guion.score_engagement * 1).toFixed(2) }}%</span>
           </div>
         </div>
 
         <!-- Puntaje Circular -->
-        <div class="bg-surface rounded-xl border border-border shadow-sm p-6">
+        <div id="resumen" class="bg-surface rounded-xl border border-border shadow-sm p-6">
           <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-5 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-accent text-[16px]">analytics</span>
             Puntaje de Viralidad
           </h3>
           <div class="flex justify-center mb-5 relative">
             <svg class="w-40 h-40 transform -rotate-90" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="#e5e3de" stroke-width="7"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="7" class="text-surface-subtle"/>
               <circle
                 cx="50" cy="50" r="42" fill="none"
-                class="stroke-accent transition-all duration-1000 ease-out"
+                :class="scoreArcColor(guion.score_virabilidad)"
                 stroke-width="7"
                 :stroke-dasharray="`${(guion.score_virabilidad || 0)/100 * 264} 264`"
                 stroke-linecap="round"
+                class="transition-all duration-1000 ease-out"
+                :style="(guion.score_virabilidad || 0) >= 80 ? 'filter: drop-shadow(0 0 6px rgba(16,185,129,0.5))' :
+                        (guion.score_virabilidad || 0) >= 60 ? 'filter: drop-shadow(0 0 6px rgba(59,130,246,0.4))' : ''"
               />
             </svg>
             <div class="absolute flex flex-col items-center justify-center" style="margin-top: 30px;">
-              <span class="text-5xl font-bold font-headline text-ink">{{ guion.score_virabilidad || 0 }}</span>
+              <span class="text-5xl font-bold font-headline tabular-nums" :class="scoreTextColor(guion.score_virabilidad)">
+                {{ guion.score_virabilidad || 0 }}
+              </span>
               <span class="text-xs text-ink-3 font-medium">/ 100</span>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3 pt-4 border-t border-border">
             <div class="text-center p-3 rounded-lg bg-surface-muted">
               <p class="text-[10px] text-ink-3 font-medium mb-1">Cialdini</p>
-              <p class="text-xl font-bold text-ink">{{ guion.score_cialdini ?? 0 }}<span class="text-sm text-ink-3">/7</span></p>
+              <p class="text-xl font-bold text-ink tabular-nums">{{ guion.score_cialdini ?? 0 }}<span class="text-sm text-ink-3">/7</span></p>
             </div>
             <div class="text-center p-3 rounded-lg bg-surface-muted">
               <p class="text-[10px] text-ink-3 font-medium mb-1">Intensidad</p>
-              <p class="text-xl font-bold text-warn">{{ guion.intensidad_emocional || 0 }}<span class="text-sm text-ink-3">/10</span></p>
+              <p class="text-xl font-bold text-warn tabular-nums">{{ guion.intensidad_emocional || 0 }}<span class="text-sm text-ink-3">/10</span></p>
             </div>
           </div>
         </div>
 
         <!-- Ganchos Semánticos -->
-        <div class="bg-surface rounded-xl border border-border shadow-sm p-5">
+        <div id="ganchos" class="bg-surface rounded-xl border border-border shadow-sm p-5">
           <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-4 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-success text-[16px]">psychology_alt</span>
             Ganchos Semánticos
@@ -145,14 +174,14 @@
               <div class="px-3 py-2 rounded-lg border border-accent-border bg-accent-subtle flex items-center gap-2">
                 <span class="material-symbols-outlined text-accent text-[16px]">repeat</span>
                 <span class="text-sm font-medium text-accent">{{ guion.tecnica_retencion || '—' }}</span>
-                <span v-if="guion.momento_pico_seg" class="ml-auto text-[10px] text-ink-3">Pico: {{ guion.momento_pico_seg }}s</span>
+                <span v-if="guion.momento_pico_seg" class="ml-auto text-[10px] text-ink-3 tabular-nums">Pico: {{ guion.momento_pico_seg }}s</span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Avatar y Consciencia -->
-        <div class="bg-surface rounded-xl border border-border shadow-sm p-5">
+        <div id="avatar" class="bg-surface rounded-xl border border-border shadow-sm p-5">
           <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-4 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-warn text-[16px]">person_search</span>
             Avatar & Copywriting
@@ -205,7 +234,7 @@
         </div>
 
         <!-- Patrón Ganador -->
-        <div class="bg-surface rounded-xl border border-accent-border shadow-sm p-6 bg-accent-subtle/30">
+        <div id="patron" class="bg-surface rounded-xl border border-accent-border shadow-sm p-6 bg-accent-subtle/30">
           <p class="text-[10px] font-semibold text-accent uppercase tracking-wider mb-3">Síntesis del Patrón Ganador</p>
           <p class="text-base text-ink leading-relaxed max-w-2xl">{{ guion.resumen_patron }}</p>
         </div>
@@ -227,7 +256,7 @@
         </div>
 
         <!-- Ingredientes Clave -->
-        <div v-if="guion.ingredientes_clave?.length" class="bg-surface rounded-xl border border-border shadow-sm p-6">
+        <div v-if="guion.ingredientes_clave?.length" id="estructura" class="bg-surface rounded-xl border border-border shadow-sm p-6">
           <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-4 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-warn text-[16px]">key</span>
             Ingredientes Clave para Replicar
@@ -241,7 +270,7 @@
         </div>
 
         <!-- Emocional + Cialdini -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="emocional" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-surface rounded-xl border border-border shadow-sm p-5">
             <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-4 flex items-center gap-1.5">
               <span class="material-symbols-outlined text-orange-500 text-[16px]">local_fire_department</span>
@@ -250,10 +279,10 @@
             <div class="mb-4">
               <div class="flex justify-between text-xs font-medium mb-1.5">
                 <span class="text-ink-3">Intensidad</span>
-                <span class="text-orange-500 font-semibold">{{ guion.intensidad_emocional || 0 }}/10</span>
+                <span class="text-orange-500 font-semibold tabular-nums">{{ guion.intensidad_emocional || 0 }}/10</span>
               </div>
               <div class="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
-                <div class="bg-orange-400 h-full rounded-full" :style="{ width: ((guion.intensidad_emocional||0)*10) + '%' }"></div>
+                <div class="bg-orange-400 h-full rounded-full transition-all duration-700" :style="{ width: ((guion.intensidad_emocional||0)*10) + '%' }"></div>
               </div>
             </div>
             <div class="space-y-2">
@@ -264,7 +293,7 @@
             </div>
           </div>
 
-          <div class="bg-surface rounded-xl border border-border shadow-sm p-5 flex flex-col">
+          <div id="cialdini" class="bg-surface rounded-xl border border-border shadow-sm p-5 flex flex-col">
             <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-4 flex items-center gap-1.5">
               <span class="material-symbols-outlined text-indigo-500 text-[16px]">group_work</span>
               Principios de Cialdini
@@ -282,7 +311,7 @@
         </div>
 
         <!-- Neuromarketing + Entrega -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="neuromarketing" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-surface rounded-xl border border-border shadow-sm p-5">
             <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-4 flex items-center gap-1.5">
               <span class="material-symbols-outlined text-fuchsia-500 text-[16px]">biotech</span>
@@ -338,7 +367,7 @@
         </div>
 
         <!-- Fortalezas / Debilidades -->
-        <div v-if="guion.fortalezas?.length || guion.debilidades?.length" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div v-if="guion.fortalezas?.length || guion.debilidades?.length" id="fortalezas" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-surface rounded-xl border border-success-border p-5">
             <h3 class="text-xs font-semibold text-success uppercase tracking-wider mb-4 flex items-center gap-1.5">
               <span class="material-symbols-outlined text-[16px]" style="font-variation-settings:'FILL' 1;">thumb_up</span> Fortalezas
@@ -373,7 +402,7 @@
         </div>
 
         <!-- Hashtags -->
-        <div v-if="guion.hashtags_sugeridos?.length" class="bg-surface rounded-xl border border-border shadow-sm p-5">
+        <div v-if="guion.hashtags_sugeridos?.length" id="hashtags" class="bg-surface rounded-xl border border-border shadow-sm p-5">
           <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-ink-3 text-[16px]">tag</span> Hashtags Sugeridos
           </h3>
@@ -381,32 +410,35 @@
             <span
               v-for="tag in guion.hashtags_sugeridos"
               :key="tag"
-              class="px-3 py-1.5 bg-accent-subtle border border-accent-border rounded-full text-xs font-medium text-accent cursor-pointer hover:bg-accent hover:text-white transition-colors"
+              class="px-3 py-1.5 bg-accent-subtle border border-accent-border rounded-full text-xs font-medium text-accent
+                     cursor-pointer hover:bg-accent hover:text-white transition-all active:scale-95"
+              :title="tagCopiado === tag ? 'Copiado!' : 'Clic para copiar'"
               @click="copiarTag(tag)"
-            >#{{ tag.replace(/^#/, '') }}</span>
+            >
+              {{ tagCopiado === tag ? '✓' : '#' }}{{ tag.replace(/^#/, '') }}
+            </span>
           </div>
           <p class="text-[10px] text-ink-3 mt-2">Haz clic en un hashtag para copiarlo</p>
         </div>
 
-        <!-- Contexto ingresado -->
-        <div v-if="guion.contexto_video" class="bg-surface rounded-xl border border-warn-border p-5">
-          <p class="text-[10px] font-semibold text-warn uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">lightbulb</span> Contexto ingresado
-          </p>
-          <p class="text-sm text-ink-2 leading-relaxed italic">{{ guion.contexto_video }}</p>
-        </div>
-
         <!-- Transcripción -->
-        <div class="bg-surface rounded-xl border border-border shadow-sm p-5">
+        <div id="transcripcion" class="bg-surface rounded-xl border border-border shadow-sm p-5">
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-xs font-semibold text-ink-2 uppercase tracking-wider flex items-center gap-1.5">
               <span class="material-symbols-outlined text-ink-3 text-[16px]">notes</span> Transcripción Completa
             </h3>
-            <button @click="showTranscript = !showTranscript" class="text-xs font-medium text-accent hover:text-accent-hover transition-colors">
+            <button
+              @click="showTranscript = !showTranscript"
+              class="text-xs font-medium text-accent hover:text-accent-hover transition-colors flex items-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[14px]">{{ showTranscript ? 'expand_less' : 'expand_more' }}</span>
               {{ showTranscript ? 'Colapsar' : 'Expandir' }}
             </button>
           </div>
-          <div :class="showTranscript ? 'max-h-[600px]' : 'max-h-20'" class="overflow-hidden relative transition-all duration-400 ease-in-out">
+          <div
+            :class="showTranscript ? 'max-h-[600px]' : 'max-h-20'"
+            class="overflow-hidden relative transition-all duration-400 ease-in-out"
+          >
             <div v-if="!showTranscript" class="absolute inset-0 bg-gradient-to-t from-surface to-transparent z-10 pointer-events-none"></div>
             <p class="text-sm text-ink-2 leading-relaxed whitespace-pre-wrap">
               {{ guion.transcript || 'Video sin transcripción disponible.' }}
@@ -420,16 +452,31 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from '../lib/api.js'
+import { useToast } from '../composables/useToast.js'
 import CialdiniItem from '../components/CialdiniItem.vue'
 import DataRow from '../components/DataRow.vue'
 
 const route = useRoute()
+const toast  = useToast()
 const guion  = ref(null)
 const cargando = ref(true)
 const showTranscript = ref(false)
+const tabActivo = ref('resumen')
+const tagCopiado = ref(null)
+
+const tabs = [
+  { id: 'resumen',       label: 'Resumen' },
+  { id: 'ganchos',       label: 'Ganchos' },
+  { id: 'patron',        label: 'Patrón' },
+  { id: 'emocional',     label: 'Emocional' },
+  { id: 'cialdini',      label: 'Cialdini' },
+  { id: 'neuromarketing', label: 'Neuromarketing' },
+  { id: 'fortalezas',    label: 'FODA' },
+  { id: 'transcripcion', label: 'Transcripción' },
+]
 
 const nivelesConciencia = [
   { key: 'inconsciente' },
@@ -454,6 +501,22 @@ const ratioIcon = computed(() => {
   return map[guion.value?.ratio_emocion_logica] || 'help'
 })
 
+function scoreArcColor(score) {
+  if (!score) return 'stroke-border'
+  if (score >= 80) return 'stroke-success'
+  if (score >= 60) return 'stroke-accent'
+  if (score >= 40) return 'stroke-warn'
+  return 'stroke-error'
+}
+
+function scoreTextColor(score) {
+  if (!score) return 'text-ink-3'
+  if (score >= 80) return 'text-success'
+  if (score >= 60) return 'text-accent'
+  if (score >= 40) return 'text-warn'
+  return 'text-error'
+}
+
 function openUrl(url) {
   if (url) window.open(url, '_blank')
 }
@@ -466,7 +529,19 @@ function formatNum(n) {
 }
 
 function copiarTag(tag) {
-  navigator.clipboard.writeText('#' + tag.replace(/^#/, ''))
+  const text = '#' + tag.replace(/^#/, '')
+  navigator.clipboard.writeText(text)
+  tagCopiado.value = tag
+  toast.success(`${text} copiado al portapapeles`)
+  setTimeout(() => { tagCopiado.value = null }, 2000)
+}
+
+function scrollToSection(id) {
+  const el = document.getElementById(id)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    tabActivo.value = id
+  }
 }
 
 function plataformaBadge(p) {
@@ -485,11 +560,36 @@ function replicabilidadBadge(r) {
   }[r] ?? 'bg-surface-muted text-ink-3 border border-border'
 }
 
+// IntersectionObserver para actualizar tab activo al scrollear
+let observer = null
+function setupObserver() {
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) tabActivo.value = entry.target.id
+      })
+    },
+    { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
+  )
+  tabs.forEach(tab => {
+    const el = document.getElementById(tab.id)
+    if (el) observer.observe(el)
+  })
+}
+
 onMounted(async () => {
   try {
     guion.value = await api.guiones.obtener(route.params.id)
   } finally {
     cargando.value = false
   }
+  setTimeout(setupObserver, 300)
 })
+
+onUnmounted(() => observer?.disconnect())
 </script>
+
+<style>
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

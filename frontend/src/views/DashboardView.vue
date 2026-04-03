@@ -9,14 +9,18 @@
       </div>
       <div class="flex items-center gap-3">
         <button
-          class="px-4 py-2 bg-surface border border-border text-ink-2 font-medium rounded-lg text-sm hover:bg-surface-muted transition-colors"
+          class="px-4 py-2 bg-surface border border-border text-ink-2 font-medium rounded-lg text-sm
+                 hover:bg-surface-muted transition-all active:scale-[0.97] flex items-center gap-2 disabled:opacity-40"
+          :disabled="cargando"
           @click="cargarDatos"
         >
+          <span class="material-symbols-outlined text-[16px]" :class="cargando ? 'animate-spin' : ''">refresh</span>
           Actualizar
         </button>
         <router-link
           to="/new-analysis"
-          class="px-5 py-2 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
+          class="px-5 py-2 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg text-sm
+                 flex items-center gap-2 transition-all shadow-sm active:scale-[0.97] hover:shadow-md hover:shadow-accent/20"
         >
           <span class="material-symbols-outlined text-[18px]">add</span>
           Nuevo Análisis
@@ -29,26 +33,27 @@
       <div
         v-for="stat in stats"
         :key="stat.niche"
-        class="bg-surface rounded-xl border border-border p-5 shadow-sm"
+        class="bg-surface rounded-xl border border-border p-5 shadow-sm hover:border-border-strong transition-all"
       >
         <p class="text-[11px] font-semibold text-ink-3 uppercase tracking-wider mb-3">{{ stat.niche }}</p>
         <div class="flex items-end justify-between">
           <span class="text-3xl font-bold font-headline text-ink">{{ stat.total_guiones }}</span>
           <div class="text-right">
             <p class="text-[10px] text-ink-3 mb-0.5">Puntaje prom.</p>
-            <p class="text-lg font-bold text-accent">{{ (stat.avg_score || 0).toFixed(1) }}</p>
+            <p class="text-lg font-bold" :class="scoreColor(stat.avg_score)">{{ (stat.avg_score || 0).toFixed(1) }}</p>
           </div>
         </div>
         <div class="mt-3 w-full bg-surface-subtle h-1 rounded-full overflow-hidden">
           <div
-            class="bg-accent h-full transition-all duration-700 rounded-full"
+            class="h-full transition-all duration-700 rounded-full"
+            :class="scoreBarColor(stat.avg_score)"
             :style="{ width: (stat.avg_score || 0) + '%' }"
           ></div>
         </div>
       </div>
 
       <div
-        v-if="stats.length === 0"
+        v-if="stats.length === 0 && !cargando"
         class="lg:col-span-4 bg-surface border border-dashed border-border rounded-xl p-8 flex items-center justify-center text-sm text-ink-3 italic"
       >
         Conecta la base de datos para ver el rendimiento por niche.
@@ -60,35 +65,70 @@
 
       <!-- Tabla de guiones -->
       <div class="xl:col-span-8 bg-surface rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
-        <div class="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-ink">Guiones Analizados</h2>
+        <div class="px-6 py-4 border-b border-border flex items-center justify-between bg-surface/90 backdrop-blur-sm">
+          <div class="flex items-center gap-3">
+            <h2 class="text-sm font-semibold text-ink">Guiones Analizados</h2>
+            <span v-if="!cargando" class="text-[11px] text-ink-3 font-medium tabular-nums">
+              {{ (filtros.page - 1) * filtros.limit + 1 }}–{{ Math.min(filtros.page * filtros.limit, totalGuiones) }} de {{ totalGuiones }}
+            </span>
+          </div>
           <div class="flex gap-2">
             <button
-              class="px-3 py-1.5 bg-canvas border border-border text-[11px] font-medium text-ink-2 rounded-md hover:bg-surface-muted transition-colors disabled:opacity-40"
+              class="px-3 py-1.5 bg-canvas border border-border text-[11px] font-medium text-ink-2 rounded-md
+                     hover:bg-surface-muted transition-all disabled:opacity-40 active:scale-[0.97]"
               @click="cambiarPagina(filtros.page - 1)"
-              :disabled="filtros.page <= 1"
+              :disabled="filtros.page <= 1 || cargando"
             >Anterior</button>
             <button
-              class="px-3 py-1.5 bg-canvas border border-border text-[11px] font-medium text-ink-2 rounded-md hover:bg-surface-muted transition-colors disabled:opacity-40"
+              class="px-3 py-1.5 bg-canvas border border-border text-[11px] font-medium text-ink-2 rounded-md
+                     hover:bg-surface-muted transition-all disabled:opacity-40 active:scale-[0.97]"
               @click="cambiarPagina(filtros.page + 1)"
-              :disabled="guiones.length < filtros.limit"
+              :disabled="guiones.length < filtros.limit || cargando"
             >Siguiente</button>
           </div>
         </div>
 
-        <div class="overflow-x-auto max-h-[520px]">
+        <!-- Skeleton loading -->
+        <div v-if="cargando" class="divide-y divide-border">
+          <div v-for="i in 5" :key="i" class="px-6 py-4 animate-pulse flex items-center gap-4">
+            <div class="flex-1 space-y-2">
+              <div class="flex gap-2">
+                <div class="h-4 w-12 bg-surface-subtle rounded"></div>
+                <div class="h-4 w-16 bg-surface-subtle rounded"></div>
+              </div>
+              <div class="h-3.5 w-48 bg-surface-subtle rounded"></div>
+            </div>
+            <div class="space-y-1.5">
+              <div class="h-3.5 w-16 bg-surface-subtle rounded"></div>
+              <div class="h-1 w-24 bg-surface-subtle rounded-full"></div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="overflow-x-auto max-h-[520px]">
           <table class="w-full text-left border-collapse">
-            <thead class="sticky top-0 bg-surface-muted z-10">
-              <tr class="border-b border-border">
+            <thead class="sticky top-0 bg-surface/90 backdrop-blur-sm z-10 border-b border-border">
+              <tr>
                 <th class="px-6 py-3 text-[11px] font-semibold text-ink-3 uppercase tracking-wider">Video</th>
-                <th class="px-4 py-3 text-[11px] font-semibold text-ink-3 uppercase tracking-wider">Viralidad</th>
+                <th
+                  class="px-4 py-3 text-[11px] font-semibold text-ink-3 uppercase tracking-wider cursor-pointer hover:text-ink-2 select-none group"
+                  @click="toggleSort('score_virabilidad')"
+                >
+                  <div class="flex items-center gap-1">
+                    Viralidad
+                    <span class="material-symbols-outlined text-[14px] transition-colors"
+                      :class="sortField === 'score_virabilidad' ? 'text-accent' : 'text-border-strong group-hover:text-ink-3'">
+                      {{ sortField === 'score_virabilidad' ? (sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more' }}
+                    </span>
+                  </div>
+                </th>
                 <th class="px-4 py-3 text-[11px] font-semibold text-ink-3 uppercase tracking-wider">Gancho</th>
                 <th class="px-6 py-3"></th>
               </tr>
             </thead>
             <tbody class="divide-y divide-border">
               <tr
-                v-for="g in guiones"
+                v-for="g in guionesOrdenados"
                 :key="g.id"
                 class="group hover:bg-surface-muted/60 transition-colors cursor-pointer"
                 @click="verDetalle(g.id)"
@@ -109,12 +149,13 @@
                 <td class="px-4 py-4">
                   <div class="flex flex-col gap-1.5">
                     <div class="flex items-center gap-2 text-[11px]">
-                      <span class="font-bold text-ink">{{ g.score_virabilidad || 0 }}/100</span>
-                      <span class="text-success text-[10px]">{{ (g.score_engagement || 0).toFixed(1) }}%</span>
+                      <span class="font-bold tabular-nums" :class="scoreColor(g.score_virabilidad)">{{ g.score_virabilidad || 0 }}</span>
+                      <span class="text-success text-[10px] tabular-nums">{{ (g.score_engagement || 0).toFixed(1) }}%</span>
                     </div>
                     <div class="w-24 bg-surface-subtle h-1 rounded-full overflow-hidden">
                       <div
-                        class="bg-accent h-full rounded-full"
+                        class="h-full rounded-full transition-all duration-500"
+                        :class="scoreBarColor(g.score_virabilidad)"
                         :style="{ width: (g.score_virabilidad || 0) + '%' }"
                       ></div>
                     </div>
@@ -129,17 +170,30 @@
                 </td>
 
                 <td class="px-6 py-4 text-right">
-                  <button class="p-1.5 rounded-lg text-ink-3 hover:text-accent hover:bg-accent-subtle transition-all opacity-0 group-hover:opacity-100">
+                  <button
+                    class="p-1.5 rounded-lg text-ink-3 hover:text-accent hover:bg-accent-subtle transition-all
+                           opacity-0 group-hover:opacity-100 active:scale-95"
+                    aria-label="Ver análisis"
+                  >
                     <span class="material-symbols-outlined text-[18px]">open_in_new</span>
                   </button>
                 </td>
               </tr>
 
-              <tr v-if="guiones.length === 0 && !cargando">
+              <tr v-if="guiones.length === 0">
                 <td colspan="4" class="py-20 text-center">
-                  <div class="flex flex-col items-center gap-2 text-ink-3">
-                    <span class="material-symbols-outlined text-4xl">inbox</span>
-                    <p class="text-sm font-medium">Sin guiones analizados</p>
+                  <div class="flex flex-col items-center gap-3 text-ink-3">
+                    <div class="w-14 h-14 rounded-2xl bg-surface-muted border border-border flex items-center justify-center">
+                      <span class="material-symbols-outlined text-3xl">inbox</span>
+                    </div>
+                    <div>
+                      <p class="text-sm font-semibold text-ink mb-1">Sin guiones analizados</p>
+                      <p class="text-xs text-ink-3">Analiza tu primer video viral para empezar.</p>
+                    </div>
+                    <router-link to="/new-analysis" class="px-4 py-2 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg text-sm flex items-center gap-2 transition-colors mt-1">
+                      <span class="material-symbols-outlined text-[16px]">add</span>
+                      Nuevo análisis
+                    </router-link>
                   </div>
                 </td>
               </tr>
@@ -152,14 +206,27 @@
       <div class="xl:col-span-4 bg-surface rounded-xl border border-border shadow-sm p-6 flex flex-col gap-5">
         <div>
           <div class="flex items-center gap-1.5 text-success text-[11px] font-semibold uppercase tracking-wider mb-2">
-            <span class="material-symbols-outlined text-sm">star</span>
+            <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">star</span>
             Mejor Rendimiento
           </div>
           <h2 class="text-lg font-bold font-headline text-ink">Guión Destacado</h2>
           <p class="text-xs text-ink-3 mt-0.5">Mayor puntaje de viralidad en tu biblioteca</p>
         </div>
 
-        <div v-if="guionTop" class="flex flex-col gap-4 flex-1">
+        <!-- Skeleton -->
+        <div v-if="cargando" class="flex flex-col gap-4 flex-1 animate-pulse">
+          <div class="h-20 bg-surface-subtle rounded-lg"></div>
+          <div class="space-y-2">
+            <div class="h-3 w-full bg-surface-subtle rounded"></div>
+            <div class="h-3 w-3/4 bg-surface-subtle rounded"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="h-16 bg-surface-subtle rounded-lg"></div>
+            <div class="h-16 bg-surface-subtle rounded-lg"></div>
+          </div>
+        </div>
+
+        <div v-else-if="guionTop" class="flex flex-col gap-4 flex-1">
           <div class="p-4 rounded-lg bg-surface-muted border border-border">
             <p class="text-[10px] font-semibold text-success uppercase tracking-wider mb-1">
               {{ guionTop.niche }}{{ guionTop.sub_niche ? ` · ${guionTop.sub_niche}` : '' }}
@@ -175,24 +242,34 @@
           <div class="grid grid-cols-2 gap-3">
             <div class="p-3 rounded-lg bg-surface-muted border border-border text-center">
               <p class="text-[10px] text-ink-3 font-medium mb-1">Cialdini</p>
-              <p class="text-xl font-bold text-ink">{{ guionTop.score_cialdini }}<span class="text-xs text-ink-3">/7</span></p>
+              <p class="text-xl font-bold text-ink tabular-nums">{{ guionTop.score_cialdini }}<span class="text-xs text-ink-3">/7</span></p>
             </div>
-            <div class="p-3 rounded-lg bg-accent-subtle border border-accent-border text-center">
-              <p class="text-[10px] text-accent font-medium mb-1">Viralidad</p>
-              <p class="text-xl font-bold text-accent">{{ guionTop.score_virabilidad }}<span class="text-xs">%</span></p>
+            <div class="p-3 rounded-lg border text-center"
+              :class="guionTop.score_virabilidad >= 80 ? 'bg-success-subtle border-success-border' :
+                      guionTop.score_virabilidad >= 60 ? 'bg-accent-subtle border-accent-border' : 'bg-warn-subtle border-warn-border'">
+              <p class="text-[10px] font-medium mb-1"
+                :class="guionTop.score_virabilidad >= 80 ? 'text-success' :
+                        guionTop.score_virabilidad >= 60 ? 'text-accent' : 'text-warn'">Viralidad</p>
+              <p class="text-xl font-bold tabular-nums"
+                :class="guionTop.score_virabilidad >= 80 ? 'text-success' :
+                        guionTop.score_virabilidad >= 60 ? 'text-accent' : 'text-warn'">
+                {{ guionTop.score_virabilidad }}<span class="text-xs">%</span>
+              </p>
             </div>
           </div>
 
           <button
             @click="verDetalle(guionTop.id)"
-            class="w-full py-2.5 bg-ink hover:bg-ink-2 text-surface rounded-lg font-semibold text-sm transition-colors mt-auto"
+            class="w-full py-2.5 bg-ink hover:bg-ink-2 text-surface rounded-lg font-semibold text-sm
+                   transition-all mt-auto active:scale-[0.97]"
           >
             Ver análisis completo
           </button>
         </div>
 
-        <div v-else class="flex flex-col items-center justify-center flex-1 py-8 text-ink-3 text-sm italic">
-          Aún no hay guiones analizados.
+        <div v-else class="flex flex-col items-center justify-center flex-1 py-8 gap-3 text-center">
+          <span class="material-symbols-outlined text-3xl text-ink-3">bar_chart</span>
+          <p class="text-sm text-ink-3 italic">Aún no hay guiones analizados.</p>
         </div>
       </div>
     </div>
@@ -200,7 +277,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../lib/api.js'
 
@@ -208,16 +285,51 @@ const router = useRouter()
 const guiones = ref([])
 const stats   = ref([])
 const cargando = ref(true)
+const totalGuiones = ref(0)
+const sortField = ref('score_virabilidad')
+const sortDir   = ref('desc')
 
-const filtros = ref({
-  page: 1,
-  limit: 20
-})
+const filtros = ref({ page: 1, limit: 20 })
 
 const guionTop = computed(() => {
   if (guiones.value.length === 0) return null
-  return [...guiones.value].sort((a,b) => (b.score_virabilidad || 0) - (a.score_virabilidad || 0))[0]
+  return [...guiones.value].sort((a, b) => (b.score_virabilidad || 0) - (a.score_virabilidad || 0))[0]
 })
+
+const guionesOrdenados = computed(() => {
+  const lista = [...guiones.value]
+  lista.sort((a, b) => {
+    const va = a[sortField.value] || 0
+    const vb = b[sortField.value] || 0
+    return sortDir.value === 'desc' ? vb - va : va - vb
+  })
+  return lista
+})
+
+function toggleSort(field) {
+  if (sortField.value === field) {
+    sortDir.value = sortDir.value === 'desc' ? 'asc' : 'desc'
+  } else {
+    sortField.value = field
+    sortDir.value   = 'desc'
+  }
+}
+
+function scoreColor(score) {
+  if (!score) return 'text-ink-3'
+  if (score >= 80) return 'text-success'
+  if (score >= 60) return 'text-accent'
+  if (score >= 40) return 'text-warn'
+  return 'text-error'
+}
+
+function scoreBarColor(score) {
+  if (!score) return 'bg-border'
+  if (score >= 80) return 'bg-success'
+  if (score >= 60) return 'bg-accent'
+  if (score >= 40) return 'bg-warn'
+  return 'bg-error'
+}
 
 async function cargarDatos() {
   cargando.value = true
@@ -226,8 +338,9 @@ async function cargarDatos() {
       api.guiones.listar(filtros.value),
       api.stats()
     ])
-    guiones.value = dg.guiones
-    stats.value   = ds
+    guiones.value      = dg.guiones
+    totalGuiones.value = dg.total || dg.guiones.length
+    stats.value        = ds
   } catch (e) {
     console.error(e)
   } finally {
@@ -254,7 +367,5 @@ function plataformaBadge(p) {
   return map[p] || 'bg-surface-muted text-ink-3 border border-border'
 }
 
-onMounted(() => {
-  cargarDatos()
-})
+onMounted(cargarDatos)
 </script>
