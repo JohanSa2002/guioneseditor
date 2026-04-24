@@ -365,7 +365,7 @@ const tabsDisponibles = computed(() => {
 async function cargarGuion() {
   cargando.value = true
   try {
-    guion.value = await api.guiones.ver(route.params.id)
+    guion.value = await api.guiones.obtener(route.params.id)
   } catch (e) {
     console.error(e)
   } finally {

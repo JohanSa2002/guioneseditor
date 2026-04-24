@@ -123,8 +123,8 @@
               </td>
 
               <td class="px-4 py-4">
-                <p class="text-xs text-ink-2 font-medium">{{ formatearFecha(g.created_at) }}</p>
-                <p class="text-[10px] text-ink-3 uppercase tracking-widest mt-0.5">HACE {{ tiempoRelativo(g.created_at) }}</p>
+                <p class="text-xs text-ink-2 font-medium">{{ formatearFecha(g.fecha_analisis) }}</p>
+                <p class="text-[10px] text-ink-3 uppercase tracking-widest mt-0.5">HACE {{ tiempoRelativo(g.fecha_analisis) }}</p>
               </td>
 
               <td class="px-6 py-4 text-right relative" @click.stop>

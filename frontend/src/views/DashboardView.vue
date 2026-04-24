@@ -1,5 +1,7 @@
 <template>
   <div class="flex flex-col gap-8">
+    <!-- DEBUG: Si ves esto, el componente montó -->
+    <div class="hidden">Componente Dashboard Montado</div>
 
     <!-- Encabezado -->
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border">
@@ -51,7 +53,7 @@
       </div>
 
       <div
-        v-if="stats.length === 0 && !cargando"
+        v-if="!cargando && stats.length === 0"
         class="lg:col-span-4 glass-panel border-dashed p-8 flex items-center justify-center text-sm text-ink-3 italic"
       >
         Analiza videos para ver el rendimiento por nicho.
@@ -230,10 +232,10 @@
         </div>
         
         <!-- Info Card -->
-        <div class="glass-panel p-6 border-accent-border/30 bg-accent-subtle/5">
+        <div v-if="stats && stats.length > 0" class="glass-panel p-6 border-accent-border/30 bg-accent-subtle/5">
           <h3 class="text-sm font-bold text-accent uppercase tracking-widest mb-3">CONSEJO IA</h3>
           <p class="text-xs text-ink-2 leading-relaxed">
-            Tus videos del nicho <span class="text-accent font-bold">{{ stats[0]?.niche || 'actual' }}</span> están rindiendo un <span class="text-accent font-bold">{{ stats[0]?.avg_score.toFixed(1) || '0' }}%</span> mejor que el promedio. Replica estos patrones para escalar.
+            Tus videos del nicho <span class="text-accent font-bold">{{ stats[0]?.niche || 'actual' }}</span> están rindiendo un <span class="text-accent font-bold">{{ (stats[0]?.avg_score || 0).toFixed(1) }}%</span> mejor que el promedio. Replica estos patrones para escalar.
           </p>
         </div>
       </div>
@@ -289,9 +291,9 @@ async function cargarDatos() {
       api.guiones.listar(filtros.value),
       api.stats()
     ])
-    guiones.value      = dg.guiones
-    totalGuiones.value = dg.total || dg.guiones.length
-    stats.value        = ds
+    guiones.value      = dg.guiones || []
+    totalGuiones.value = dg.total || (dg.guiones?.length || 0)
+    stats.value        = ds || []
   } catch (e) {
     console.error(e)
   } finally {

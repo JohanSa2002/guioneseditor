@@ -11,11 +11,11 @@
       />
       <TopAppBar @toggle-sidebar="sidebarOpen = !sidebarOpen" />
       <main class="md:ml-60 pt-16 pb-12 px-4 md:px-8 min-h-screen">
+        <!-- DEBUG -->
+        <div class="text-[8px] opacity-10 uppercase tracking-widest mb-4">Guiones IA Layout V1.1</div>
         <div class="max-w-7xl mx-auto pt-8">
           <router-view v-slot="{ Component }">
-            <transition name="fade" mode="out-in">
-              <component :is="Component" />
-            </transition>
+            <component :is="Component" />
           </router-view>
         </div>
       </main>
