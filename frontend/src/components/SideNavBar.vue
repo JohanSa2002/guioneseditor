@@ -1,82 +1,54 @@
 <template>
   <aside
-    class="fixed left-0 top-0 h-full z-40 flex flex-col w-60 bg-surface border-r border-border font-body
-           transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
+    class="fixed left-0 top-0 h-full z-40 flex flex-col w-60 border-r border-border font-body transition-transform duration-300 ease-out"
+    style="background: rgba(12, 12, 16, 0.95); backdrop-filter: blur(20px);"
     :class="open ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
   >
 
     <!-- Logo -->
-    <div class="px-5 py-5 border-b border-border">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0 shadow-sm shadow-accent/30">
-          <span class="material-symbols-outlined text-white text-[18px]" style="font-variation-settings:'FILL' 1;">psychology</span>
+    <div class="px-6 py-8">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center shrink-0 shadow-neon-accent group cursor-pointer overflow-hidden relative">
+          <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+          <span class="material-symbols-outlined text-canvas text-[22px] relative z-10" style="font-variation-settings:'FILL' 1;">psychology</span>
         </div>
         <div>
-          <p class="text-[15px] font-semibold text-ink leading-none font-headline">Guiones IA</p>
-          <p class="text-[10px] text-ink-3 mt-0.5">Marketing Pro</p>
+          <p class="text-lg font-black text-ink leading-none font-headline tracking-tight uppercase">Guiones<span class="text-accent italic">IA</span></p>
+          <p class="text-[9px] font-bold text-ink-3 mt-1 tracking-[0.2em] uppercase opacity-60">Marketing Pro Max</p>
         </div>
       </div>
     </div>
 
     <!-- Navegación -->
-    <nav class="flex-1 px-3 py-4 space-y-0.5" role="navigation" aria-label="Navegación principal">
+    <nav class="flex-1 px-4 py-4 space-y-1.5" role="navigation" aria-label="Navegación principal">
       <router-link
-        to="/"
-        class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-2 hover:bg-surface-muted hover:text-ink transition-all text-sm font-medium group"
-        active-class="bg-accent-subtle !text-accent font-semibold is-active"
-        exact
+        v-for="item in navItems"
+        :key="item.to"
+        :to="item.to"
+        class="relative flex items-center gap-3 px-4 py-3 rounded-xl text-ink-3 hover:bg-white/5 hover:text-ink transition-all text-xs font-bold uppercase tracking-widest group"
+        active-class="bg-white/5 !text-accent is-active"
+        :exact="item.exact"
         @click="$emit('close')"
       >
-        <span class="active-bar absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-accent rounded-full opacity-0 transition-opacity"></span>
-        <span class="material-symbols-outlined text-[20px] transition-all group-hover:scale-110">dashboard</span>
-        <span>Dashboard</span>
-      </router-link>
-
-      <router-link
-        to="/analysis"
-        class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-2 hover:bg-surface-muted hover:text-ink transition-all text-sm font-medium group"
-        active-class="bg-accent-subtle !text-accent font-semibold is-active"
-        @click="$emit('close')"
-      >
-        <span class="active-bar absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-accent rounded-full opacity-0 transition-opacity"></span>
-        <span class="material-symbols-outlined text-[20px] transition-all group-hover:scale-110">analytics</span>
-        <span>Análisis</span>
-      </router-link>
-
-      <router-link
-        to="/scripts"
-        class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-2 hover:bg-surface-muted hover:text-ink transition-all text-sm font-medium group"
-        active-class="bg-accent-subtle !text-accent font-semibold is-active"
-        @click="$emit('close')"
-      >
-        <span class="active-bar absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-accent rounded-full opacity-0 transition-opacity"></span>
-        <span class="material-symbols-outlined text-[20px] transition-all group-hover:scale-110">description</span>
-        <span>Guiones</span>
-      </router-link>
-
-      <router-link
-        to="/generate"
-        class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-ink-2 hover:bg-surface-muted hover:text-ink transition-all text-sm font-medium group"
-        active-class="bg-accent-subtle !text-accent font-semibold is-active"
-        @click="$emit('close')"
-      >
-        <span class="active-bar absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-accent rounded-full opacity-0 transition-opacity"></span>
-        <span class="material-symbols-outlined text-[20px] transition-all group-hover:scale-110">auto_fix_high</span>
-        <span>Generar</span>
+        <!-- Glow Indicator -->
+        <div class="active-indicator absolute left-0 w-1 h-6 bg-accent rounded-full opacity-0 -translate-x-2 transition-all"></div>
+        
+        <span class="material-symbols-outlined text-[20px] transition-all group-hover:scale-110 group-hover:text-accent">
+          {{ item.icon }}
+        </span>
+        <span>{{ item.label }}</span>
       </router-link>
     </nav>
 
     <!-- CTA Nuevo Análisis -->
-    <div class="px-3 pb-5">
+    <div class="px-4 pb-8 mt-auto">
       <router-link
         to="/new-analysis"
-        class="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-accent hover:bg-accent-hover
-               text-white rounded-lg text-sm font-semibold transition-all shadow-sm
-               active:scale-[0.97] hover:shadow-md hover:shadow-accent/20"
+        class="btn-primary w-full py-4 text-xs tracking-widest"
         @click="$emit('close')"
       >
-        <span class="material-symbols-outlined text-[18px]">add</span>
-        Nuevo Análisis
+        <span class="material-symbols-outlined text-[18px]">bolt</span>
+        NUEVO ANÁLISIS
       </router-link>
     </div>
   </aside>
@@ -85,11 +57,19 @@
 <script setup>
 defineProps({ open: Boolean })
 defineEmits(['close'])
+
+const navItems = [
+  { to: '/', label: 'Panel', icon: 'grid_view', exact: true },
+  { to: '/analysis', label: 'Historial', icon: 'history', exact: false },
+  { to: '/scripts', label: 'Librería', icon: 'bookmarks', exact: false },
+  { to: '/generate', label: 'Creador', icon: 'auto_awesome', exact: false },
+]
 </script>
 
 <style scoped>
-.router-link-active.is-active .active-bar,
-.router-link-exact-active.is-active .active-bar {
+.is-active .active-indicator {
   opacity: 1;
+  transform: translateX(0);
+  box-shadow: 0 0 15px var(--accent);
 }
 </style>

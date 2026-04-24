@@ -1,334 +1,261 @@
 <template>
-  <div class="flex flex-col gap-8">
-
+  <div class="flex flex-col gap-6">
+    
     <!-- Encabezado -->
-    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border">
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold font-headline text-ink mb-1">Historial de Análisis</h1>
-        <p class="text-sm text-ink-3">
-          <span class="text-success font-medium">{{ totalOk }} exitosos</span>
-          <span class="mx-1 text-border-strong">·</span>
-          <span class="text-error font-medium">{{ totalFallidos }} fallidos</span>
-        </p>
+        <h1 class="text-2xl font-bold font-headline text-ink">Historial de Análisis</h1>
+        <p class="text-xs text-ink-3">Gestiona y revisa todos tus videos analizados</p>
       </div>
-      <div class="flex items-center gap-3">
-        <button
-          class="px-4 py-2 bg-surface border border-border text-ink-2 font-medium rounded-lg text-sm
-                 hover:bg-surface-muted transition-all active:scale-[0.97] flex items-center gap-2 disabled:opacity-40"
-          :disabled="cargando"
-          @click="cargarDatos"
-        >
-          <span class="material-symbols-outlined text-[16px]" :class="cargando ? 'animate-spin' : ''">refresh</span>
-          Actualizar
-        </button>
-        <router-link
-          to="/new-analysis"
-          class="px-5 py-2 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg text-sm
-                 flex items-center gap-2 transition-all shadow-sm active:scale-[0.97]"
-        >
-          <span class="material-symbols-outlined text-[18px]">add</span>
-          Nuevo Análisis
-        </router-link>
-      </div>
+      <router-link to="/new-analysis" class="btn-primary">
+        <span class="material-symbols-outlined text-[18px]">add</span>
+        Nuevo Análisis
+      </router-link>
     </header>
 
     <!-- Filtros -->
-    <div class="flex flex-wrap items-center gap-3">
-      <div class="flex items-center gap-1 bg-surface border border-border rounded-lg p-1">
-        <button
-          v-for="f in filtrosEstado"
-          :key="f.valor"
-          @click="filtroActivo = f.valor; filtros.page = 1; cargarDatos()"
-          class="px-3 py-1.5 rounded-md text-xs font-medium transition-all active:scale-[0.97]"
-          :class="filtroActivo === f.valor
-            ? 'bg-accent text-white shadow-sm'
-            : 'text-ink-2 hover:bg-surface-muted'"
-        >
-          {{ f.label }}
-        </button>
+    <div class="glass-panel p-4 flex flex-wrap items-center gap-4">
+      <div class="flex-1 min-w-[200px] relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-3 text-[18px]">search</span>
+        <input
+          v-model="filtros.busqueda"
+          type="text"
+          placeholder="Buscar por tema o URL..."
+          class="input-base pl-10 py-2"
+        />
       </div>
+      
+      <select v-model="filtros.status" class="input-base py-2 w-auto min-w-[140px] bg-surface-muted">
+        <option value="todos">Todos los estados</option>
+        <option value="ok">Procesados</option>
+        <option value="error">Con Error</option>
+      </select>
 
-      <div class="ml-auto">
-        <select
-          v-model="filtros.niche"
-          @change="filtros.page = 1; cargarDatos()"
-          class="bg-surface border border-border rounded-lg px-3 py-2 text-xs text-ink-2
-                 focus:outline-none focus:ring-2 focus:ring-accent/30 appearance-none"
-        >
-          <option value="">Todos los nichos</option>
-          <option v-for="n in nichos" :key="n" :value="n">{{ n }}</option>
-        </select>
-      </div>
+      <select v-model="filtros.niche" class="input-base py-2 w-auto min-w-[140px] bg-surface-muted">
+        <option value="todos">Todos los nichos</option>
+        <option v-for="n in nichos" :key="n" :value="n">{{ n }}</option>
+      </select>
     </div>
 
     <!-- Tabla -->
-    <div class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
-      <!-- Header tabla -->
-      <div class="px-6 py-4 border-b border-border flex items-center justify-between bg-surface/90 backdrop-blur-sm">
-        <div class="flex items-center gap-3">
-          <h2 class="text-sm font-semibold text-ink">Registro completo</h2>
-          <span v-if="!cargando && totalGuiones > 0" class="text-[11px] text-ink-3 font-medium tabular-nums">
-            {{ (filtros.page - 1) * filtros.limit + 1 }}–{{ Math.min(filtros.page * filtros.limit, totalGuiones) }} de {{ totalGuiones }}
-          </span>
-        </div>
-        <div class="flex items-center gap-2">
-          <button
-            class="px-3 py-1.5 bg-canvas border border-border text-[11px] font-medium text-ink-2 rounded-md
-                   hover:bg-surface-muted transition-all disabled:opacity-40 active:scale-[0.97]"
-            :disabled="filtros.page <= 1 || cargando"
-            @click="cambiarPagina(filtros.page - 1)"
-          >Anterior</button>
-          <span class="text-[11px] text-ink-3 font-medium px-2 tabular-nums">Pág. {{ filtros.page }}</span>
-          <button
-            class="px-3 py-1.5 bg-canvas border border-border text-[11px] font-medium text-ink-2 rounded-md
-                   hover:bg-surface-muted transition-all disabled:opacity-40 active:scale-[0.97]"
-            :disabled="guiones.length < filtros.limit || cargando"
-            @click="cambiarPagina(filtros.page + 1)"
-          >Siguiente</button>
-        </div>
-      </div>
-
-      <!-- Loading skeleton -->
+    <div class="glass-panel overflow-hidden">
       <div v-if="cargando" class="divide-y divide-border">
-        <div v-for="i in 8" :key="i" class="px-6 py-4 animate-pulse flex items-center gap-6">
-          <div class="w-20 space-y-1.5">
-            <div class="h-3 w-3 rounded-full bg-surface-subtle"></div>
-          </div>
+        <div v-for="i in 8" :key="i" class="px-6 py-4 animate-pulse flex items-center gap-4">
+          <div class="w-10 h-10 bg-white/5 rounded-xl"></div>
           <div class="flex-1 space-y-2">
-            <div class="h-4 w-14 bg-surface-subtle rounded"></div>
-            <div class="h-3.5 w-40 bg-surface-subtle rounded"></div>
+            <div class="h-4 w-48 bg-white/5 rounded"></div>
+            <div class="h-3 w-32 bg-white/5 rounded"></div>
           </div>
-          <div class="w-20 h-3 bg-surface-subtle rounded"></div>
-          <div class="flex gap-4">
-            <div class="space-y-1"><div class="h-3 w-8 bg-surface-subtle rounded"></div><div class="h-4 w-6 bg-surface-subtle rounded"></div></div>
-            <div class="space-y-1"><div class="h-3 w-12 bg-surface-subtle rounded"></div><div class="h-4 w-8 bg-surface-subtle rounded"></div></div>
-          </div>
+          <div class="h-4 w-24 bg-white/5 rounded"></div>
         </div>
       </div>
 
-      <!-- Vacío -->
-      <div v-else-if="guiones.length === 0" class="py-24 flex flex-col items-center gap-4 text-center">
-        <div class="w-14 h-14 rounded-2xl bg-surface-muted border border-border flex items-center justify-center">
-          <span class="material-symbols-outlined text-3xl text-ink-3">manage_search</span>
-        </div>
-        <div>
-          <p class="text-sm font-semibold text-ink mb-1">Sin registros para este filtro</p>
-          <p class="text-xs text-ink-3">Prueba cambiando el filtro o el nicho seleccionado.</p>
-        </div>
-        <button
-          @click="filtroActivo = 'todos'; filtros.niche = ''; filtros.page = 1; cargarDatos()"
-          class="px-4 py-2 bg-surface border border-border text-ink-2 font-medium rounded-lg text-sm hover:bg-surface-muted transition-colors"
-        >
-          Limpiar filtros
-        </button>
-      </div>
-
-      <!-- Tabla con datos -->
       <div v-else class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead class="sticky top-0 bg-surface/90 backdrop-blur-sm border-b border-border z-10">
+        <table v-if="guiones.length > 0" class="w-full text-left border-collapse">
+          <thead class="bg-white/5 border-b border-border">
             <tr>
-              <th class="px-6 py-3 text-[11px] font-semibold text-ink-3 uppercase tracking-wider">Estado</th>
-              <th class="px-4 py-3 text-[11px] font-semibold text-ink-3 uppercase tracking-wider">Video / Fuente</th>
-              <th class="px-4 py-3 text-[11px] font-semibold text-ink-3 uppercase tracking-wider">Niche</th>
-              <!-- Columna Viralidad: ordenable -->
+              <th class="px-6 py-3 text-[10px] font-bold text-ink-3 uppercase tracking-widest">Video / Nicho</th>
+              <th class="px-4 py-3 text-[10px] font-bold text-ink-3 uppercase tracking-widest text-center">Status</th>
               <th
-                class="px-4 py-3 text-[11px] font-semibold text-ink-3 uppercase tracking-wider cursor-pointer hover:text-ink-2 select-none group"
+                class="px-4 py-3 text-[10px] font-bold text-ink-3 uppercase tracking-widest cursor-pointer hover:text-ink transition-colors"
                 @click="toggleSort('score_virabilidad')"
               >
-                <div class="flex items-center gap-1">
-                  Puntajes
-                  <span class="material-symbols-outlined text-[14px] transition-colors"
-                    :class="sortField === 'score_virabilidad' ? 'text-accent' : 'text-border-strong group-hover:text-ink-3'">
-                    {{ sortField === 'score_virabilidad' ? (sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more' }}
-                  </span>
-                </div>
+                Puntajes
               </th>
-              <!-- Columna Fecha: ordenable -->
               <th
-                class="px-4 py-3 text-[11px] font-semibold text-ink-3 uppercase tracking-wider cursor-pointer hover:text-ink-2 select-none group"
-                @click="toggleSort('fecha_analisis')"
+                class="px-4 py-3 text-[10px] font-bold text-ink-3 uppercase tracking-widest cursor-pointer hover:text-ink transition-colors"
+                @click="toggleSort('created_at')"
               >
-                <div class="flex items-center gap-1">
-                  Fecha
-                  <span class="material-symbols-outlined text-[14px] transition-colors"
-                    :class="sortField === 'fecha_analisis' ? 'text-accent' : 'text-border-strong group-hover:text-ink-3'">
-                    {{ sortField === 'fecha_analisis' ? (sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more' }}
-                  </span>
-                </div>
+                Fecha
               </th>
               <th class="px-6 py-3"></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-border">
             <tr
-              v-for="g in guionesOrdenados"
+              v-for="g in guiones"
               :key="g.id"
-              class="group hover:bg-surface-muted/60 transition-colors"
-              :class="g.procesado_ok ? 'cursor-pointer' : 'opacity-60'"
+              class="group hover:bg-white/5 transition-colors cursor-pointer"
+              :class="!g.procesado_ok ? 'opacity-60' : ''"
               @click="g.procesado_ok && verDetalle(g.id)"
             >
-              <!-- Estado -->
               <td class="px-6 py-4">
-                <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full shrink-0" :class="g.procesado_ok ? 'bg-success' : 'bg-error'"></span>
-                  <span class="text-xs font-medium" :class="g.procesado_ok ? 'text-success' : 'text-error'">
-                    {{ g.procesado_ok ? 'Completado' : 'Fallido' }}
+                <div class="flex items-center gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-white/5 border border-border flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-ink-3">{{ g.plataforma === 'tiktok' ? 'movie' : 'video_library' }}</span>
+                  </div>
+                  <div class="flex flex-col gap-0.5 min-w-0">
+                    <div class="flex items-center gap-2">
+                      <span :class="getPlatformBadge(g.plataforma)" class="platform-badge">{{ g.plataforma }}</span>
+                      <span class="text-[10px] font-bold text-ink-3 uppercase">{{ g.niche }}</span>
+                    </div>
+                    <p class="text-sm font-bold text-ink leading-tight truncate group-hover:text-accent transition-colors">
+                      {{ g.tema_principal || 'Procesando...' }}
+                    </p>
+                    <p class="text-[10px] text-ink-3 truncate italic">{{ g.url_origen }}</p>
+                  </div>
+                </div>
+              </td>
+
+              <td class="px-4 py-4 text-center">
+                <div class="flex flex-col items-center gap-1">
+                  <span
+                    class="w-2 h-2 rounded-full"
+                    :class="g.procesado_ok ? 'bg-success shadow-[0_0_8px_rgba(0,255,157,0.4)]' : 'bg-error shadow-[0_0_8px_rgba(255,42,95,0.4)]'"
+                  ></span>
+                  <span class="text-[9px] font-bold uppercase tracking-tighter" :class="g.procesado_ok ? 'text-success' : 'text-error'">
+                    {{ g.procesado_ok ? 'OK' : 'ERROR' }}
                   </span>
                 </div>
-                <p
-                  v-if="!g.procesado_ok && g.error_detalle"
-                  class="text-[10px] text-error/70 mt-1 max-w-[180px] leading-snug"
-                  :title="g.error_detalle"
-                >{{ g.error_detalle.substring(0, 80) }}{{ g.error_detalle.length > 80 ? '…' : '' }}</p>
               </td>
 
-              <!-- Fuente -->
               <td class="px-4 py-4">
-                <div class="flex flex-col gap-1">
-                  <span :class="plataformaBadge(g.plataforma)" class="platform-badge w-fit">{{ g.plataforma || '—' }}</span>
-                  <p class="text-sm font-medium text-ink line-clamp-1 max-w-52">{{ g.tema_principal || g.url_origen }}</p>
-                  <p class="text-[10px] text-ink-3 truncate max-w-52" :title="g.url_origen">{{ g.url_origen }}</p>
-                </div>
-              </td>
-
-              <!-- Niche -->
-              <td class="px-4 py-4">
-                <p class="text-sm font-medium text-ink-2">{{ g.niche || '—' }}</p>
-                <p v-if="g.sub_niche" class="text-[10px] text-ink-3 mt-0.5">{{ g.sub_niche }}</p>
-              </td>
-
-              <!-- Puntajes -->
-              <td class="px-4 py-4">
-                <div v-if="g.procesado_ok" class="flex items-center gap-4">
-                  <div>
-                    <p class="text-[10px] text-ink-3 font-medium">Viral</p>
-                    <p class="text-sm font-bold tabular-nums" :class="scoreColor(g.score_virabilidad)">{{ g.score_virabilidad || 0 }}</p>
+                <div v-if="g.procesado_ok" class="flex flex-col gap-1">
+                  <div class="flex items-center justify-between text-[11px] font-bold">
+                    <span :class="getScoreColor(g.score_virabilidad)">{{ g.score_virabilidad }}%</span>
+                    <span class="text-ink-3">{{ (g.score_engagement || 0).toFixed(1) }}%</span>
                   </div>
-                  <div>
-                    <p class="text-[10px] text-ink-3 font-medium">Cialdini</p>
-                    <p class="text-sm font-bold text-ink tabular-nums">{{ g.score_cialdini || 0 }}/7</p>
-                  </div>
-                  <div>
-                    <p class="text-[10px] text-ink-3 font-medium">Eng.</p>
-                    <p class="text-sm font-bold text-success tabular-nums">{{ (g.score_engagement || 0).toFixed(1) }}%</p>
+                  <div class="w-24 h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-1000" :class="getScoreBarColor(g.score_virabilidad)" :style="{ width: g.score_virabilidad + '%' }"></div>
                   </div>
                 </div>
-                <span v-else class="text-[11px] text-ink-3">—</span>
+                <span v-else class="text-[10px] text-ink-3 italic">—</span>
               </td>
 
-              <!-- Fecha -->
               <td class="px-4 py-4">
-                <p class="text-xs text-ink-2">{{ formatFecha(g.fecha_analisis) }}</p>
+                <p class="text-xs text-ink-2 font-medium">{{ formatearFecha(g.created_at) }}</p>
+                <p class="text-[10px] text-ink-3 uppercase tracking-widest mt-0.5">HACE {{ tiempoRelativo(g.created_at) }}</p>
               </td>
 
-              <!-- Acción -->
-              <td class="px-6 py-4 text-right" @click.stop>
-                <div class="relative" v-if="g.procesado_ok">
+              <td class="px-6 py-4 text-right relative" @click.stop>
+                <button
+                  class="p-2 rounded-lg hover:bg-white/10 text-ink-3 hover:text-ink transition-all opacity-0 group-hover:opacity-100"
+                  @click="menuAbiertoId = menuAbiertoId === g.id ? null : g.id"
+                  data-menu
+                >
+                  <span class="material-symbols-outlined text-[20px]">more_vert</span>
+                </button>
+
+                <!-- Context Menu -->
+                <div
+                  v-if="menuAbiertoId === g.id"
+                  class="absolute right-6 top-14 w-48 bg-surface-solid border border-border shadow-2xl rounded-xl z-50 overflow-hidden backdrop-blur-xl"
+                  data-menu
+                >
                   <button
-                    @click="menuAbierto = menuAbierto === g.id ? null : g.id"
-                    class="p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-surface-muted transition-all
-                           opacity-0 group-hover:opacity-100 active:scale-95"
-                    aria-label="Acciones"
+                    @click="verDetalle(g.id)"
+                    class="w-full text-left px-4 py-3 text-xs text-ink-2 hover:bg-accent/10 hover:text-accent transition-colors flex items-center gap-2"
                   >
-                    <span class="material-symbols-outlined text-[18px]">more_horiz</span>
+                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    Ver Análisis
                   </button>
-                  <div
-                    v-if="menuAbierto === g.id"
-                    class="absolute right-0 top-9 z-30 w-44 bg-surface-muted border border-border rounded-xl shadow-xl py-1 overflow-hidden"
+                  <button
+                    class="w-full text-left px-4 py-3 text-xs text-ink-2 hover:bg-accent/10 hover:text-accent transition-colors flex items-center gap-2"
                   >
-                    <button
-                      @click="verDetalle(g.id); menuAbierto = null"
-                      class="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-ink-2 hover:bg-surface-subtle hover:text-ink transition-colors text-left"
-                    >
-                      <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                      Ver análisis
-                    </button>
-                  </div>
+                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                    Editar Notas
+                  </button>
+                  <div class="border-t border-border"></div>
+                  <button
+                    @click="confirmarBorrado(g.id)"
+                    class="w-full text-left px-4 py-3 text-xs text-error hover:bg-error/10 transition-colors flex items-center gap-2"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                    Eliminar
+                  </button>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
+
+        <!-- Estado vacío -->
+        <div v-else class="py-20 text-center flex flex-col items-center gap-4">
+          <div class="w-16 h-16 rounded-3xl bg-white/5 border border-border flex items-center justify-center animate-float">
+            <span class="material-symbols-outlined text-4xl text-ink-3">inbox</span>
+          </div>
+          <div>
+            <p class="text-base font-bold text-ink mb-1">No se encontraron análisis</p>
+            <p class="text-xs text-ink-3">Prueba con otros filtros o realiza un nuevo análisis.</p>
+          </div>
+          <router-link to="/new-analysis" class="btn-primary mt-2">
+            Nuevo Análisis
+          </router-link>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div v-if="total > filtros.limit" class="flex items-center justify-between px-2">
+      <p class="text-[11px] font-bold text-ink-3 uppercase tracking-widest">
+        MOSTRANDO {{ guiones.length }} DE {{ total }} RESULTADOS
+      </p>
+      <div class="flex gap-2">
+        <button
+          class="btn-secondary py-1.5 px-4 text-xs"
+          :disabled="filtros.page === 1"
+          @click="filtros.page--; cargarDatos()"
+        >Anterior</button>
+        <div class="flex items-center gap-1">
+          <button
+            v-for="p in paginasVisibles"
+            :key="p"
+            @click="filtros.page = p; cargarDatos()"
+            class="w-8 h-8 rounded-lg text-xs font-bold transition-all"
+            :class="p === filtros.page ? 'bg-accent text-canvas' : 'bg-white/5 text-ink-3 hover:text-ink hover:bg-white/10'"
+          >{{ p }}</button>
+        </div>
+        <button
+          class="btn-secondary py-1.5 px-4 text-xs"
+          :disabled="filtros.page * filtros.limit >= total"
+          @click="filtros.page++; cargarDatos()"
+        >Siguiente</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../lib/api.js'
+import { getScoreColor, getScoreBarColor } from '../utils/scores.js'
+import { getPlatformBadge } from '../utils/badges.js'
 
-const router  = useRouter()
+const router = useRouter()
 const guiones = ref([])
+const total   = ref(0)
 const nichos  = ref([])
 const cargando = ref(true)
-const filtroActivo = ref('todos')
-const menuAbierto  = ref(null)
-const sortField    = ref('fecha_analisis')
-const sortDir      = ref('desc')
-const totalGuiones = ref(0)
+const menuAbiertoId = ref(null)
 
-const filtros = ref({ page: 1, limit: 20, niche: '' })
-
-const filtrosEstado = [
-  { valor: 'todos',    label: 'Todos' },
-  { valor: 'exitosos', label: 'Exitosos' },
-  { valor: 'fallidos', label: 'Fallidos' },
-]
-
-const totalOk       = ref(0)
-const totalFallidos = ref(0)
-
-const guionesOrdenados = computed(() => {
-  const lista = [...guiones.value]
-  lista.sort((a, b) => {
-    const va = sortField.value === 'fecha_analisis'
-      ? new Date(a[sortField.value] || 0).getTime()
-      : (a[sortField.value] || 0)
-    const vb = sortField.value === 'fecha_analisis'
-      ? new Date(b[sortField.value] || 0).getTime()
-      : (b[sortField.value] || 0)
-    return sortDir.value === 'desc' ? vb - va : va - vb
-  })
-  return lista
+const filtros = ref({
+  page: 1,
+  limit: 15,
+  status: 'todos',
+  niche: 'todos',
+  busqueda: '',
+  sortField: 'created_at',
+  sortDir: 'desc'
 })
 
-function toggleSort(field) {
-  if (sortField.value === field) {
-    sortDir.value = sortDir.value === 'desc' ? 'asc' : 'desc'
-  } else {
-    sortField.value = field
-    sortDir.value   = 'desc'
-  }
-}
+const paginasVisibles = computed(() => {
+  const totalPaginas = Math.ceil(total.value / filtros.value.limit)
+  const p = []
+  for (let i = 1; i <= Math.min(totalPaginas, 5); i++) p.push(i)
+  return p
+})
 
 async function cargarDatos() {
   cargando.value = true
   try {
-    const params = { page: filtros.value.page, limit: filtros.value.limit }
-    if (filtros.value.niche) params.niche = filtros.value.niche
-    if (filtroActivo.value === 'exitosos') params.procesado_ok = true
-    if (filtroActivo.value === 'fallidos') params.procesado_ok = false
-
-    const [dg, dn, okReq, allReq] = await Promise.all([
-      api.guiones.listarTodos(params),
-      api.nichos(),
-      api.guiones.listar({ limit: 1, ...(params.niche ? { niche: params.niche } : {}) }),
-      api.guiones.listarTodos({ limit: 1, ...(params.niche ? { niche: params.niche } : {}) }),
+    const [res, nList] = await Promise.all([
+      api.guiones.listarTodos(filtros.value),
+      api.nichos()
     ])
-
-    totalOk.value       = okReq.total || 0
-    totalFallidos.value = (allReq.total || 0) - (okReq.total || 0)
-
-    let lista = dg.guiones
-    if (filtroActivo.value === 'exitosos') lista = lista.filter(g => g.procesado_ok)
-    if (filtroActivo.value === 'fallidos') lista = lista.filter(g => !g.procesado_ok)
-
-    guiones.value      = lista
-    totalGuiones.value = dg.total || lista.length
-    nichos.value       = dn
+    guiones.value = res.guiones
+    total.value   = res.total
+    nichos.value  = nList
   } catch (e) {
     console.error(e)
   } finally {
@@ -336,45 +263,70 @@ async function cargarDatos() {
   }
 }
 
-function cambiarPagina(p) {
-  if (p < 1) return
-  filtros.value.page = p
+function toggleSort(field) {
+  if (filtros.value.sortField === field) {
+    filtros.value.sortDir = filtros.value.sortDir === 'desc' ? 'asc' : 'desc'
+  } else {
+    filtros.value.sortField = field
+    filtros.value.sortDir   = 'desc'
+  }
   cargarDatos()
+}
+
+function formatearFecha(f) {
+  if (!f) return '—'
+  return new Date(f).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+}
+
+function tiempoRelativo(f) {
+  if (!f) return ''
+  const diff = Date.now() - new Date(f).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins} MIN`
+  const horas = Math.floor(mins / 60)
+  if (horas < 24) return `${horas} H`
+  return `${Math.floor(horas / 24)} D`
 }
 
 function verDetalle(id) {
   router.push({ name: 'AnalysisDetail', params: { id } })
 }
 
-function formatFecha(fecha) {
-  if (!fecha) return '—'
-  return new Date(fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
-}
-
-function plataformaBadge(p) {
-  const map = {
-    tiktok: 'bg-red-950 text-red-400 border border-red-800',
-    reels:  'bg-fuchsia-950 text-fuchsia-400 border border-fuchsia-800',
-    shorts: 'bg-orange-950 text-orange-400 border border-orange-800',
+function confirmarBorrado(id) {
+  if (confirm('¿Estás seguro de eliminar este análisis? Esta acción no se puede deshacer.')) {
+    // API delete call here
+    menuAbiertoId.value = null
   }
-  return map[p] || 'bg-surface-muted text-ink-3 border border-border'
 }
 
-function scoreColor(score) {
-  if (!score) return 'text-ink-3'
-  if (score >= 80) return 'text-success'
-  if (score >= 60) return 'text-accent'
-  if (score >= 40) return 'text-warn'
-  return 'text-error'
-}
-
+// Cerrar menú al hacer clic fuera
 function cerrarMenu(e) {
-  if (!e.target.closest('[data-menu]')) menuAbierto.value = null
+  if (!e.target.closest('[data-menu]')) {
+    menuAbiertoId.value = null
+  }
 }
+
+watch([() => filtros.value.status, () => filtros.value.niche], () => {
+  filtros.value.page = 1
+  cargarDatos()
+})
+
+// Debounce para búsqueda
+let debounceTimer = null
+watch(() => filtros.value.busqueda, () => {
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => {
+    filtros.value.page = 1
+    cargarDatos()
+  }, 400)
+})
 
 onMounted(() => {
   cargarDatos()
   document.addEventListener('click', cerrarMenu)
 })
-onUnmounted(() => document.removeEventListener('click', cerrarMenu))
+
+onUnmounted(() => {
+  document.removeEventListener('click', cerrarMenu)
+})
 </script>

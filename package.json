@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "engines": { "node": "24.x" },
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev": "npm run dev:frontend & npm run dev:backend"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "openai": "^4.28.0",

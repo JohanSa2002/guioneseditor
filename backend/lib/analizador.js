@@ -98,7 +98,12 @@ Devuelve EXACTAMENTE este JSON con los valores que correspondan:
   "sugerencias_mejora": ["<sugerencia accionable concreta 1 para mejorar el video>", "<sugerencia 2>", "<sugerencia 3>"],
   "hashtags_sugeridos": ["<hashtag1>", "<hashtag2>", "<hashtag3>", "<hashtag4>", "<hashtag5>", "<hashtag6>", "<hashtag7>"],
 
-  "score_virabilidad": <número entero del 1 al 100>,
+  "score_virabilidad": <entero 1-100 usando esta rubrica estricta:
+    90-100 = Viral comprobado: gancho en <3s, retención >80%, emoción intensa, CTA natural
+    75-89  = Alto potencial: estructura sólida, 2+ triggers Cialdini, promesa clara
+    55-74  = Promedio: cumple lo básico pero sin diferenciador fuerte
+    35-54  = Bajo: ganchos débiles, promesa vaga, retención probable <40%
+    1-34   = Muy bajo: sin estructura, confuso o aburrido. Sé honesto y diferencia entre videos.>,
   "resumen_patron": "<párrafo de 3-4 oraciones describiendo el patrón ganador de este video: qué hace, por qué funciona psicológicamente y cómo se puede replicar>",
   "conclusion_estrategica": "<síntesis estratégica extensa de aproximadamente 15 líneas que integra TODOS los datos del análisis. Estructura la respuesta así: (1) Veredicto general sobre la efectividad del video y su score de viralidad. (2) Análisis de la estructura narrativa elegida y por qué encaja con el nicho y el avatar objetivo. (3) Qué principios de Cialdini se activaron y cómo interactúan entre sí para generar persuasión. (4) Cómo los elementos de neuromarketing (atención visual, pacing, carga cognitiva, lenguaje sensorial) amplifican el mensaje. (5) Análisis del trigger emocional dominante y el arco emocional: cómo conducen al espectador hacia el CTA. (6) Evaluación del nivel de consciencia del avatar y si la promesa explícita está bien calibrada para ese nivel. (7) Insight estratégico principal: qué hace este video mejor que el promedio de su nicho y por qué es difícil de replicar sin entender su mecánica interna. (8) Veredicto final de replicabilidad y qué elementos son absolutamente críticos conservar en una versión derivada.>"
 }`

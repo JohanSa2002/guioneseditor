@@ -7,6 +7,37 @@
   ::-webkit-scrollbar-track { @apply bg-canvas; }
   ::-webkit-scrollbar-thumb { @apply bg-border-strong rounded-full; }
   ::-webkit-scrollbar-thumb:hover { @apply bg-ink-3; }
+  
+  body {
+    @apply bg-canvas text-ink selection:bg-accent/30 selection:text-ink;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-surface backdrop-blur-xl border border-border shadow-glass;
+  }
+  
+  .glass-card {
+    @apply glass-panel hover:border-accent-border/50 hover:shadow-neon-accent transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply px-5 py-2.5 bg-accent hover:bg-accent-hover text-canvas font-bold rounded-xl
+           flex items-center gap-2 transition-all shadow-lg shadow-accent/20 active:scale-95
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-5 py-2.5 bg-surface-muted hover:bg-surface-subtle text-ink font-semibold rounded-xl
+           border border-border flex items-center gap-2 transition-all active:scale-95;
+  }
+  
+  .input-base {
+    @apply w-full bg-surface-muted border border-border rounded-xl px-4 py-3 text-sm text-ink
+           placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/20 
+           focus:border-accent/40 transition-all;
+  }
 }
 
 @layer utilities {
@@ -14,25 +45,23 @@
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   }
 
-  /* Tarjeta base con sombra sutil */
-  .card {
-    @apply bg-surface rounded-xl border border-border shadow-sm;
-  }
-
-  /* Badge de plataforma — base */
   .platform-badge {
-    @apply text-[9px] font-semibold px-2 py-0.5 rounded-md uppercase tracking-wider;
+    @apply text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-tighter border;
   }
 
-  /* Animación del paso activo */
   .step-pulse {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.3);
+    box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.4);
     animation: step-pulse-anim 2s infinite;
   }
 }
 
 @keyframes step-pulse-anim {
-  0%   { box-shadow: 0 0 0 0   rgba(37, 99, 235, 0.3); }
-  70%  { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
-  100% { box-shadow: 0 0 0 0   rgba(37, 99, 235, 0); }
+  0%   { box-shadow: 0 0 0 0   rgba(0, 240, 255, 0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(0, 240, 255, 0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }

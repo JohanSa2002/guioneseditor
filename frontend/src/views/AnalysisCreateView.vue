@@ -1,297 +1,221 @@
 <template>
-  <div class="flex flex-col gap-8">
-
+  <div class="max-w-6xl mx-auto flex flex-col gap-8 pb-20">
+    
     <!-- Encabezado -->
-    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border">
-      <div>
-        <h1 class="text-3xl font-bold font-headline text-ink mb-1">Nuevo Análisis</h1>
-        <p class="text-sm text-ink-3">Extrae patrones de neuromarketing de cualquier video viral</p>
-      </div>
+    <header class="flex flex-col gap-2">
       <div class="flex items-center gap-3">
-        <button
-          class="px-5 py-2 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg text-sm
-                 flex items-center gap-2 transition-all shadow-sm active:scale-[0.97]
-                 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md hover:shadow-accent/20"
-          :disabled="analizando"
-          @click="iniciarAnalisis"
-        >
-          <span class="material-symbols-outlined text-[18px]" :class="analizando ? 'animate-spin' : ''">
-            {{ analizando ? 'progress_activity' : 'play_arrow' }}
-          </span>
-          {{ analizando ? 'Analizando…' : 'Iniciar Análisis' }}
-        </button>
+        <router-link to="/" class="p-2 rounded-xl hover:bg-white/5 text-ink-3 hover:text-ink transition-colors">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </router-link>
+        <h1 class="text-3xl font-bold font-headline text-ink">Nuevo Análisis</h1>
       </div>
+      <p class="text-sm text-ink-3 ml-12">Extrae patrones virales y neuromarketing de cualquier video</p>
     </header>
 
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
-
-      <!-- Formulario -->
-      <div class="xl:col-span-7 flex flex-col gap-6">
-
-        <!-- Paso 1: Fuente del Video -->
-        <section class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
-          <div class="px-6 py-4 border-b border-border bg-surface-muted/50 flex items-center gap-3">
-            <span class="w-6 h-6 rounded-md bg-accent text-white text-xs font-bold flex items-center justify-center">1</span>
-            <h2 class="text-sm font-semibold text-ink">Fuente del Video</h2>
-          </div>
-          <div class="p-6 space-y-5">
-            <div class="space-y-1.5">
-              <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide flex items-center gap-1">
-                URL del Video
-                <span class="text-error font-normal normal-case ml-1 text-[11px]">obligatorio</span>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Formulario Principal -->
+      <div class="lg:col-span-7 flex flex-col gap-6">
+        <div class="glass-panel p-8 flex flex-col gap-8 relative overflow-hidden">
+          
+          <!-- URL del Video -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-[11px] font-bold text-ink-3 uppercase tracking-widest flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] text-accent">link</span>
+                URL del Video Viral
               </label>
-              <div class="relative">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-3 text-[18px] transition-colors"
-                  :class="urlState === 'valid' ? 'text-success' : urlState === 'invalid' ? 'text-error' : ''">link</span>
-                <input
-                  v-model="form.url"
-                  @input="validarUrl"
-                  type="url"
-                  placeholder="https://www.tiktok.com/@usuario/video/..."
-                  class="w-full bg-canvas border rounded-lg pl-10 pr-10 py-2.5 text-sm text-ink
-                         placeholder:text-ink-3 focus:outline-none focus:ring-2 transition-all"
-                  :class="urlState === 'valid'   ? 'border-success/50 focus:ring-success/20' :
-                           urlState === 'invalid' ? 'border-error/50 focus:ring-error/20' :
-                                                    'border-border focus:ring-accent/30 focus:border-accent/40'"
-                  :disabled="analizando"
-                />
-                <span v-if="urlState !== 'idle'"
-                  class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[18px] transition-all"
-                  :class="urlState === 'valid' ? 'text-success' : 'text-error'"
-                  style="font-variation-settings:'FILL' 1;">
-                  {{ urlState === 'valid' ? 'check_circle' : 'cancel' }}
-                </span>
-              </div>
-              <p class="text-[11px] transition-colors"
-                :class="urlState === 'valid'   ? 'text-success' :
-                         urlState === 'invalid' ? 'text-error' :
-                                                  'text-ink-3'">
-                {{ urlState === 'valid'   ? 'URL compatible detectada' :
-                   urlState === 'invalid' ? 'Solo TikTok, Instagram Reels o YouTube Shorts' :
-                                            'Compatible con TikTok, Instagram Reels y YouTube Shorts.' }}
-              </p>
+              <span v-if="errorUrl" class="text-[10px] font-bold text-error uppercase tracking-tighter">{{ errorUrl }}</span>
+              <span v-else-if="form.url && !errorUrl" class="text-[10px] font-bold text-success uppercase tracking-tighter">URL VÁLIDA</span>
             </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Cliente</label>
-                <select
-                  v-model="form.cliente_id"
-                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink
-                         focus:outline-none focus:ring-2 focus:ring-accent/30 appearance-none transition-all"
-                  :disabled="analizando"
-                >
-                  <option :value="null">Interno / Sin cliente</option>
-                  <option v-for="c in clientes" :key="c.id" :value="c.id">{{ c.nombre }}</option>
-                </select>
-              </div>
-              <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Proyecto <span class="text-ink-3 font-normal normal-case">(opcional)</span></label>
-                <input
-                  v-model="form.proyecto_nombre"
-                  type="text"
-                  placeholder="Ej. Campaña Q1"
-                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink
-                         placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all"
-                  :disabled="analizando"
-                />
-              </div>
-            </div>
+            <input
+              v-model="form.url"
+              type="text"
+              placeholder="https://www.tiktok.com/@user/video/..."
+              class="input-base text-lg py-4"
+              :class="[errorUrl ? 'border-error/50 focus:ring-error/20' : '', form.url && !errorUrl ? 'border-success/50 focus:ring-success/20' : '']"
+              :disabled="analizando"
+            />
+            <p class="text-[10px] text-ink-3 italic">Soportamos TikTok, Instagram Reels y YouTube Shorts.</p>
           </div>
-        </section>
 
-        <!-- Paso 2: Inteligencia de Mercado -->
-        <section class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
-          <div class="px-6 py-4 border-b border-border bg-surface-muted/50 flex items-center gap-3">
-            <span class="w-6 h-6 rounded-md bg-success text-white text-xs font-bold flex items-center justify-center">2</span>
-            <h2 class="text-sm font-semibold text-ink">Inteligencia de Mercado</h2>
-          </div>
-          <div class="p-6 space-y-5">
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide flex items-center gap-1">
-                  Nicho Principal
-                  <span class="text-error font-normal normal-case ml-1 text-[11px]">obligatorio</span>
-                </label>
-                <input
-                  v-model="form.niche"
-                  list="nichos-list"
-                  placeholder="Seleccionar o escribir…"
-                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink
-                         placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all"
-                  :disabled="analizando"
-                />
-                <datalist id="nichos-list">
-                  <option v-for="n in nichos" :key="n" :value="n">{{ n }}</option>
-                </datalist>
-              </div>
-              <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Audiencia Objetivo</label>
-                <input
-                  v-model="form.mercado_objetivo"
-                  type="text"
-                  placeholder="Ej. Emprendedoras 25-35 años"
-                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink
-                         placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all"
-                  :disabled="analizando"
-                />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-4">
-              <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide flex items-center gap-1">
-                  Vistas <span class="text-error ml-1 text-[11px] font-normal normal-case">obligatorio</span>
-                </label>
-                <input v-model.number="form.vistas" type="number" min="1" placeholder="250000"
-                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink text-center
-                         focus:outline-none focus:ring-2 focus:ring-accent/30 tabular-nums"
-                  :disabled="analizando"/>
-              </div>
-              <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide flex items-center gap-1">
-                  Likes <span class="text-error ml-1 text-[11px] font-normal normal-case">obligatorio</span>
-                </label>
-                <input v-model.number="form.likes" type="number" min="1" placeholder="18000"
-                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink text-center
-                         focus:outline-none focus:ring-2 focus:ring-accent/30 tabular-nums"
-                  :disabled="analizando"/>
-              </div>
-              <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-ink-2 uppercase tracking-wide">Compartidos</label>
-                <input v-model.number="form.compartidos" type="number" min="0" placeholder="3200"
-                  class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-ink text-center
-                         focus:outline-none focus:ring-2 focus:ring-accent/30 tabular-nums"
-                  :disabled="analizando"/>
-              </div>
-            </div>
-
-            <label class="flex items-center gap-3 cursor-pointer group">
-              <input
-                v-model="form.competidor_referente"
-                type="checkbox"
-                class="w-4 h-4 rounded border-border text-accent focus:ring-accent/30 focus:ring-offset-0 cursor-pointer"
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Nicho con ComboBox -->
+            <div class="space-y-3">
+              <label class="text-[11px] font-bold text-ink-3 uppercase tracking-widest flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] text-accent">category</span>
+                Nicho Principal
+              </label>
+              <ComboBox
+                v-model="form.niche"
+                :options="nichosPredefinidos"
+                placeholder="Selecciona o escribe..."
+                icon="search"
                 :disabled="analizando"
               />
-              <span class="text-sm text-ink-2 group-hover:text-ink transition-colors select-none">
-                Marcar como referencia de competidor estratégico
-              </span>
-            </label>
-          </div>
-        </section>
+            </div>
 
-        <!-- Paso 3: Contexto del Video -->
-        <section class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
-          <div class="px-6 py-4 border-b border-border bg-surface-muted/50 flex items-center gap-3">
-            <span class="w-6 h-6 rounded-md bg-warn text-white text-xs font-bold flex items-center justify-center">3</span>
-            <h2 class="text-sm font-semibold text-ink">
-              Contexto del Video
-              <span class="text-ink-3 font-normal ml-1 text-xs">(opcional)</span>
-            </h2>
+            <!-- Plataforma -->
+            <div class="space-y-3">
+              <label class="text-[11px] font-bold text-ink-3 uppercase tracking-widest flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] text-accent">language</span>
+                Plataforma
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <button
+                  v-for="p in ['tiktok', 'reels', 'shorts']"
+                  :key="p"
+                  @click="form.plataforma = p"
+                  type="button"
+                  class="py-3 rounded-xl border transition-all flex flex-col items-center gap-1 group"
+                  :class="form.plataforma === p ? 'bg-accent/10 border-accent text-accent shadow-neon-accent' : 'bg-white/5 border-border text-ink-3 hover:border-border-strong'"
+                  :disabled="analizando"
+                >
+                  <span class="text-[10px] font-black uppercase tracking-tighter">{{ p }}</span>
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="p-6">
-            <p class="text-xs text-ink-3 leading-relaxed mb-3">
-              Describe la intención del creador o cualquier contexto que la transcripción no capture.
-            </p>
-            <textarea
-              v-model="form.contexto_video"
-              rows="3"
-              placeholder="Ej. Este video responde a una tendencia viral usando humor sarcástico…"
-              class="w-full bg-canvas border border-border rounded-lg px-4 py-3 text-sm text-ink
-                     placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/30
-                     resize-none leading-relaxed transition-all"
-              :disabled="analizando"
-            ></textarea>
+
+          <!-- Métricas de Engagement -->
+          <div class="space-y-4">
+            <label class="text-[11px] font-bold text-ink-3 uppercase tracking-widest flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-accent">analytics</span>
+              Métricas de Engagement (Contexto)
+            </label>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="space-y-2">
+                <p class="text-[9px] font-bold text-ink-3 uppercase text-center">Vistas</p>
+                <input v-model.number="form.vistas" type="number" class="input-base text-center font-bold tabular-nums" placeholder="0" :disabled="analizando"/>
+              </div>
+              <div class="space-y-2">
+                <p class="text-[9px] font-bold text-ink-3 uppercase text-center">Likes</p>
+                <input v-model.number="form.likes" type="number" class="input-base text-center font-bold tabular-nums" placeholder="0" :disabled="analizando"/>
+              </div>
+              <div class="space-y-2">
+                <p class="text-[9px] font-bold text-ink-3 uppercase text-center">Compartidos</p>
+                <input v-model.number="form.shares" type="number" class="input-base text-center font-bold tabular-nums" placeholder="0" :disabled="analizando"/>
+              </div>
+            </div>
           </div>
-        </section>
+
+          <!-- Botón de Acción -->
+          <div class="pt-4">
+            <button
+              @click="iniciarAnalisis"
+              class="btn-primary w-full py-5 text-lg group overflow-hidden relative"
+              :disabled="analizando || !form.url || !form.niche"
+            >
+              <div v-if="analizando" class="flex items-center gap-3">
+                <div class="w-5 h-5 border-2 border-canvas/30 border-t-canvas rounded-full animate-spin"></div>
+                <span>PROCESANDO INTELIGENCIA...</span>
+              </div>
+              <div v-else class="flex items-center justify-center gap-3">
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">bolt</span>
+                <span>INICIAR ANÁLISIS PROFUNDO</span>
+              </div>
+              
+              <!-- Glow effect on hover -->
+              <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Panel de Estado del Pipeline -->
-      <div class="xl:col-span-5">
-        <div class="sticky top-24 bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
-          <div class="px-6 py-4 border-b border-border flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-semibold text-ink">Estado del Pipeline</h3>
-              <p class="text-[11px] text-ink-3 mt-0.5">Proceso de análisis en tiempo real</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full" :class="analizando ? 'bg-success animate-pulse' : 'bg-border-strong'"></span>
-              <span class="text-[11px] font-medium" :class="analizando ? 'text-success' : 'text-ink-3'">
-                {{ analizando ? 'Activo' : 'En espera' }}
-              </span>
-            </div>
-          </div>
+      <!-- Pipeline de Estado -->
+      <div class="lg:col-span-5 flex flex-col gap-6 sticky top-8">
+        <div class="glass-panel p-6 overflow-hidden">
+          <h2 class="text-sm font-bold text-ink uppercase tracking-widest mb-6 flex items-center gap-2">
+            <span class="material-symbols-outlined text-accent">pipeline</span>
+            Estado del Pipeline
+          </h2>
 
-          <div class="p-6">
-            <div class="space-y-5 relative">
-              <div class="absolute left-[14px] top-4 bottom-4 w-px bg-border z-0"></div>
-
+          <!-- Barra de progreso global -->
+          <div class="mb-8">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-[10px] font-bold text-ink-3 uppercase">Progreso Total</p>
+              <p class="text-[10px] font-bold text-accent tabular-nums">{{ Math.round(progresoVisual) }}%</p>
+            </div>
+            <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-border">
               <div
-                v-for="(s, idx) in pasosVisibles"
-                :key="s.id"
-                class="flex gap-4 relative z-10 transition-opacity duration-300"
-                :class="idx > currentStepIdx && analizando ? 'opacity-40' : 'opacity-100'"
-              >
-                <div
-                  class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-300"
-                  :class="
-                    idx < currentStepIdx
-                      ? 'bg-success border-2 border-success text-white step-complete'
-                      : idx === currentStepIdx && analizando
-                        ? 'bg-accent border-2 border-accent text-white step-pulse'
-                        : 'bg-surface border-2 border-border text-ink-3'
-                  "
-                >
-                  <span class="material-symbols-outlined text-[14px]">{{ idx < currentStepIdx ? 'check' : s.icon }}</span>
-                </div>
-                <div class="pt-0.5">
-                  <p class="text-sm font-medium" :class="idx === currentStepIdx && analizando ? 'text-ink' : 'text-ink-2'">{{ s.label }}</p>
-                  <p class="text-[11px] text-ink-3 mt-0.5">{{ s.desc }}</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Progreso con tiempo transcurrido -->
-            <div v-if="analizando" class="mt-6 pt-5 border-t border-border space-y-2">
-              <div class="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
-                <div
-                  class="bg-accent h-full rounded-full transition-all duration-700"
-                  :style="{ width: ((currentStepIdx / 3) * 100) + '%' }"
-                ></div>
-              </div>
-              <div class="flex items-center justify-between">
-                <p class="text-[11px] text-ink-3">GPT-4o + Whisper</p>
-                <p class="text-[11px] text-ink-3 tabular-nums font-medium">{{ elapsed }}s</p>
-              </div>
-            </div>
-
-            <!-- Error con retry -->
-            <div v-if="error" class="mt-5 p-4 rounded-lg bg-error-subtle border border-error-border">
-              <div class="flex items-start gap-3 mb-3">
-                <span class="material-symbols-outlined text-error text-[18px] shrink-0 mt-0.5"
-                  style="font-variation-settings:'FILL' 1;">error</span>
-                <div>
-                  <p class="text-sm font-semibold text-error mb-1">Error en el pipeline</p>
-                  <p class="text-[12px] text-error/80 leading-relaxed">{{ error }}</p>
-                </div>
-              </div>
-              <button
-                @click="error = null; iniciarAnalisis()"
-                class="w-full px-3 py-2 bg-error/10 border border-error-border text-error text-xs font-semibold
-                       rounded-lg hover:bg-error/20 transition-colors flex items-center justify-center gap-1.5 active:scale-[0.97]"
-              >
-                <span class="material-symbols-outlined text-[14px]">refresh</span>
-                Reintentar análisis
-              </button>
-            </div>
-
-            <!-- Estado inicial -->
-            <div v-if="!analizando && !error" class="mt-6 pt-5 border-t border-border">
-              <p class="text-[11px] text-ink-3 leading-relaxed">
-                Completa la URL y el nicho para iniciar. El pipeline extrae audio, transcribe con Whisper y analiza los patrones de neuromarketing automáticamente.
-              </p>
+                class="h-full bg-accent shadow-neon-accent transition-all duration-500 ease-out"
+                :style="{ width: progresoVisual + '%' }"
+              ></div>
             </div>
           </div>
+
+          <!-- Pasos -->
+          <div class="space-y-2 relative">
+            <!-- Línea conectora -->
+            <div class="absolute left-[19px] top-4 bottom-4 w-0.5 bg-border"></div>
+
+            <div
+              v-for="(p, idx) in pasosVisibles"
+              :key="p.id"
+              class="relative pl-12 py-3 transition-all duration-500"
+              :class="[
+                p.id === pasoActualId ? 'opacity-100' : 'opacity-40',
+                pasoActualIdx > idx ? 'opacity-100' : ''
+              ]"
+            >
+              <!-- Punto del paso -->
+              <div
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border-4 border-canvas z-10 flex items-center justify-center transition-all duration-500"
+                :class="[
+                  pasoActualId === p.id ? 'bg-accent text-canvas shadow-neon-accent scale-110 step-pulse' : 
+                  pasoActualIdx > idx ? 'bg-success text-canvas' : 'bg-surface-subtle text-ink-3'
+                ]"
+              >
+                <span class="material-symbols-outlined text-[18px] font-bold">
+                  {{ pasoActualIdx > idx ? 'check' : p.icon }}
+                </span>
+              </div>
+
+              <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider" :class="pasoActualId === p.id ? 'text-accent' : 'text-ink'">
+                  {{ p.label }}
+                </p>
+                <p class="text-[10px] text-ink-3 leading-tight mt-0.5">{{ p.desc }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel de Error -->
+          <Transition
+            enter-active-class="transition duration-300 ease-out"
+            enter-from-class="transform translate-y-4 opacity-0"
+            enter-to-class="transform translate-y-0 opacity-100"
+          >
+            <div v-if="errorAnalisis" class="mt-8 p-4 rounded-xl bg-error-subtle border border-error-border">
+              <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-error">error</span>
+                <div class="flex-1">
+                  <p class="text-xs font-bold text-error uppercase mb-1">Error en el Pipeline</p>
+                  <p class="text-xs text-ink leading-relaxed">{{ errorAnalisis }}</p>
+                  <button @click="reintentar" class="mt-3 text-[10px] font-bold text-error hover:underline uppercase tracking-widest">
+                    Volver a intentar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Transition>
+
+          <!-- Timer -->
+          <div v-if="analizando" class="mt-6 flex items-center justify-center gap-2 text-ink-3">
+            <span class="material-symbols-outlined text-[16px] animate-spin">schedule</span>
+            <span class="text-[11px] font-bold tabular-nums">TIEMPO TRANSCURRIDO: {{ tiempoFormateado }}</span>
+          </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="glass-panel p-6 bg-accent-subtle/5 border-accent-border/20">
+          <h3 class="text-xs font-bold text-accent uppercase tracking-widest mb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">lightbulb</span>
+            ¿Sabías que?
+          </h3>
+          <p class="text-[11px] text-ink-2 leading-relaxed italic">
+            El análisis de neuromarketing detecta automáticamente los sesgos cognitivos de Cialdini que activan el deseo de compra en tu audiencia.
+          </p>
         </div>
       </div>
     </div>
@@ -299,115 +223,144 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../lib/api.js'
+import ComboBox from '../components/ComboBox.vue'
 
 const router = useRouter()
-const analizando = ref(false)
-const error  = ref(null)
-const paso   = ref('inicio')
-const elapsed = ref(0)
-let elapsedTimer = null
-
-const urlState = ref('idle') // 'idle' | 'valid' | 'invalid'
-const URL_REGEX = /^https?:\/\/(www\.)?(tiktok\.com|vm\.tiktok\.com|instagram\.com|youtube\.com|youtu\.be)/
-
-const nichos   = ref([])
-const clientes = ref([])
 
 const form = ref({
   url: '',
   niche: '',
-  sub_niche: '',
-  mercado_objetivo: '',
+  plataforma: 'tiktok',
   vistas: null,
   likes: null,
-  compartidos: null,
-  cliente_id: null,
-  proyecto_nombre: '',
-  competidor_referente: false,
-  contexto_video: ''
+  shares: null
 })
 
-const pasosVisibles = [
-  { id: 'extraccion',    label: 'Extracción de Audio',    icon: 'downloading', desc: 'Descargando el video y extrayendo el audio.' },
-  { id: 'transcripcion', label: 'Transcripción Whisper',  icon: 'mic',         desc: 'Convirtiendo audio a texto con precisión.' },
-  { id: 'analisis',      label: 'Análisis con GPT-4o',    icon: 'psychology',  desc: 'Identificando patrones de neuromarketing.' },
-  { id: 'embedding',     label: 'Codificación Vectorial', icon: 'hub',         desc: 'Guardando análisis en la base de datos.' },
+const analizando = ref(false)
+const errorAnalisis = ref(null)
+const tiempoInicio = ref(null)
+const tiempoActual = ref(null)
+const timerInterval = ref(null)
+
+const nichosPredefinidos = [
+  'Fitness & Bienestar',
+  'Emprendimiento & Negocios',
+  'Tecnología & Gadgets',
+  'Cocina & Recetas',
+  'Moda & Estilo',
+  'Viajes & Lifestyle',
+  'Educación & Tutoriales',
+  'Marketing & Redes Sociales',
+  'Finanzas Personales',
+  'Desarrollo Personal'
 ]
 
-const currentStepIdx = computed(() => {
-  if (!analizando.value) return -1
-  return pasosVisibles.findIndex(p => p.id === paso.value)
+const pasosVisibles = [
+  { id: 'extraccion',   label: 'Extracción de Datos', icon: 'download', desc: 'Obteniendo metadatos y video origen...' },
+  { id: 'transcripcion', label: 'Transcripción IA',   icon: 'keyboard', desc: 'Convirtiendo audio a texto con Whisper...' },
+  { id: 'analisis',      label: 'Análisis Neuronal',   icon: 'psychology', desc: 'Identificando ganchos y neuromarketing...' },
+  { id: 'embedding',     label: 'Indexación Vectorial', icon: 'database', desc: 'Guardando patrones en la memoria semántica...' }
+]
+
+const pasoActualId = ref(null)
+const progresoReal = ref(0) // 0 a 100
+
+const progresoVisual = computed(() => {
+  if (!analizando.value && !errorAnalisis.value && progresoReal.value === 0) return 0
+  if (progresoReal.value >= 100) return 100
+  
+  // Basado en el paso actual
+  const idx = pasosVisibles.findIndex(p => p.id === pasoActualId.value)
+  if (idx === -1) return 0
+  
+  // Cada paso es el 25% del total
+  const base = (idx / pasosVisibles.length) * 100
+  // Le sumamos un pequeño offset para que se vea movimiento
+  return Math.min(base + 10, 95)
 })
 
-function validarUrl() {
-  if (!form.value.url) { urlState.value = 'idle'; return }
-  urlState.value = URL_REGEX.test(form.value.url) ? 'valid' : 'invalid'
-}
+const pasoActualIdx = computed(() => pasosVisibles.findIndex(p => p.id === pasoActualId.value))
 
-onMounted(async () => {
+const tiempoFormateado = computed(() => {
+  if (!tiempoInicio.value || !tiempoActual.value) return '00s'
+  const diff = Math.floor((tiempoActual.value - tiempoInicio.value) / 1000)
+  if (diff < 60) return `${diff}s`
+  const m = Math.floor(diff / 60)
+  const s = diff % 60
+  return `${m}:${s.toString().padStart(2, '0')}`
+})
+
+const errorUrl = computed(() => {
+  if (!form.value.url) return null
   try {
-    const [n, c] = await Promise.all([api.nichos(), api.clientes()])
-    nichos.value   = n
-    clientes.value = c
-  } catch (e) { console.error(e) }
+    const u = new URL(form.value.url)
+    if (!['tiktok.com', 'instagram.com', 'youtube.com', 'youtu.be', 'www.tiktok.com', 'www.instagram.com', 'www.youtube.com'].some(d => u.hostname.includes(d))) {
+      return 'Dominio no soportado'
+    }
+  } catch (e) {
+    return 'URL inválida'
+  }
+  return null
 })
 
 async function iniciarAnalisis() {
-  if (!form.value.url || !form.value.niche) {
-    error.value = "URL y Nicho son obligatorios para iniciar el pipeline."
-    return
-  }
-  if (!form.value.vistas || form.value.vistas <= 0 || !form.value.likes || form.value.likes <= 0) {
-    error.value = "Vistas y Likes son obligatorios. Cópialos directamente del video antes de analizar."
-    return
-  }
-  if (!URL_REGEX.test(form.value.url)) {
-    error.value = "URL no soportada. Solo se aceptan TikTok, Instagram Reels y YouTube Shorts."
-    urlState.value = 'invalid'
-    return
-  }
+  if (errorUrl.value) return
+  if (!form.value.niche) return
 
   analizando.value = true
-  error.value      = null
-  paso.value       = 'extraccion'
-  elapsed.value    = 0
+  errorAnalisis.value = null
+  progresoReal.value = 5
+  pasoActualId.value = 'extraccion'
+  
+  tiempoInicio.value = Date.now()
+  tiempoActual.value = Date.now()
+  timerInterval.value = setInterval(() => {
+    tiempoActual.value = Date.now()
+  }, 1000)
 
-  elapsedTimer = setInterval(() => elapsed.value++, 1000)
-
-  const fakeInterval = setInterval(() => {
-    if (paso.value === 'extraccion')    paso.value = 'transcripcion'
-    else if (paso.value === 'transcripcion') paso.value = 'analisis'
-    else if (paso.value === 'analisis')      paso.value = 'embedding'
-  }, 4000)
+  // Simulación de flujo de pasos (hasta tener WebSockets/SSE)
+  const pipeSim = async () => {
+    if (!analizando.value) return
+    await new Promise(r => setTimeout(r, 4000))
+    if (!analizando.value) return
+    pasoActualId.value = 'transcripcion'
+    await new Promise(r => setTimeout(r, 6000))
+    if (!analizando.value) return
+    pasoActualId.value = 'analisis'
+    await new Promise(r => setTimeout(r, 5000))
+    if (!analizando.value) return
+    pasoActualId.value = 'embedding'
+  }
+  
+  pipeSim()
 
   try {
     const res = await api.analizar(form.value)
-    clearInterval(fakeInterval)
-    clearInterval(elapsedTimer)
-    paso.value = 'embedding'
+    progresoReal.value = 100
+    clearInterval(timerInterval.value)
+    
+    // Pequeña pausa para que el usuario vea el 100%
     setTimeout(() => {
-      router.push({ name: 'AnalysisDetail', params: { id: res.guion_id } })
-    }, 800)
+      router.push({ name: 'AnalysisDetail', params: { id: res.id } })
+    }, 1200)
+    
   } catch (err) {
-    clearInterval(fakeInterval)
-    clearInterval(elapsedTimer)
-    error.value = err.message
-  } finally {
     analizando.value = false
+    errorAnalisis.value = err.message || 'Error desconocido al procesar el video'
+    clearInterval(timerInterval.value)
   }
 }
-</script>
 
-<style>
-@keyframes step-complete {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.2); }
-  100% { transform: scale(1); }
+function reintentar() {
+  errorAnalisis.value = null
+  progresoReal.value = 0
+  pasoActualId.value = null
 }
-.step-complete {
-  animation: step-complete 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-</style>
+
+onUnmounted(() => {
+  if (timerInterval.value) clearInterval(timerInterval.value)
+})
+</script>
