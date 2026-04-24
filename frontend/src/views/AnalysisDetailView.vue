@@ -98,7 +98,7 @@
             </div>
             <div class="flex items-center justify-between">
               <span class="text-xs text-ink-2">Compartidos</span>
-              <span class="text-sm font-bold text-ink tabular-nums">{{ formatearNumero(guion.shares) }}</span>
+              <span class="text-sm font-bold text-ink tabular-nums">{{ formatearNumero(guion.compartidos) }}</span>
             </div>
             <div class="pt-2 border-t border-border flex items-center justify-between">
               <span class="text-xs text-accent font-bold">Plataforma</span>
@@ -259,13 +259,13 @@
           </section>
 
           <!-- Transcripción -->
-          <section v-if="guion.transcripcion" id="transcripcion" class="glass-panel p-8 seccion-detalle">
+          <section v-if="guion.transcript" id="transcripcion" class="glass-panel p-8 seccion-detalle">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-sm font-bold text-ink uppercase tracking-[0.2em] flex items-center gap-3">
                 <span class="material-symbols-outlined text-accent">notes</span>
                 Transcripción del Video
               </h3>
-              <button @click="copiarTexto(guion.transcripcion)" class="text-[10px] font-bold text-accent hover:underline uppercase tracking-widest">
+              <button @click="copiarTexto(guion.transcript)" class="text-[10px] font-bold text-accent hover:underline uppercase tracking-widest">
                 COPIAR TEXTO
               </button>
             </div>
@@ -274,7 +274,7 @@
                 class="text-sm text-ink-2 leading-relaxed whitespace-pre-wrap font-serif"
                 :class="transcripcionExpandida ? '' : 'max-h-48'"
               >
-                {{ guion.transcripcion }}
+                {{ guion.transcript }}
               </div>
               <!-- Gradiente fade -->
               <div v-if="!transcripcionExpandida" class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-surface-solid to-transparent pointer-events-none"></div>
@@ -329,26 +329,22 @@ const transcripcionExpandida = ref(false)
 const tabActivo = ref('resumen')
 
 const hashtags = computed(() => {
-  if (!guion.value?.transcripcion) return []
-  const matches = guion.value.transcripcion.match(/#[\wáéíóú]+/g)
+  if (!guion.value?.transcript) return []
+  const matches = guion.value.transcript.match(/#[\wáéíóú]+/g)
   return matches ? [...new Set(matches.map(h => h.slice(1)))] : []
 })
 
 const principiosCialdini = computed(() => {
   if (!guion.value) return []
-  const princs = [
-    { id: 'reciprocidad', label: 'Reciprocidad', desc: 'Ofrece algo de valor gratis para generar deuda emocional.' },
-    { id: 'escasez',      label: 'Escasez',      desc: 'Genera urgencia limitando el tiempo o disponibilidad.' },
-    { id: 'autoridad',    label: 'Autoridad',    desc: 'Usa credenciales, títulos o pruebas de experto.' },
-    { id: 'consistencia', label: 'Consistencia', desc: 'Logra un pequeño compromiso inicial del usuario.' },
-    { id: 'simpatia',     label: 'Simpatía',     desc: 'Genera conexión a través de valores o estilo similar.' },
-    { id: 'consenso',     label: 'Consenso Social', desc: 'Muestra que otros ya confían o usan el producto.' },
-    { id: 'unidad',       label: 'Unidad',       desc: 'Crea un sentido de pertenencia a un grupo exclusivo.' },
+  return [
+    { id: 'reciprocidad', label: 'Reciprocidad', detectado: !!guion.value.cialdini_reciprocidad, desc: 'Ofrece algo de valor gratis para generar deuda emocional.' },
+    { id: 'escasez',      label: 'Escasez',      detectado: !!guion.value.cialdini_escasez,      desc: 'Genera urgencia limitando el tiempo o disponibilidad.' },
+    { id: 'autoridad',    label: 'Autoridad',    detectado: !!guion.value.cialdini_autoridad,    desc: 'Usa credenciales, títulos o pruebas de experto.' },
+    { id: 'consistencia', label: 'Consistencia', detectado: !!guion.value.cialdini_consistencia, desc: 'Logra un pequeño compromiso inicial del usuario.' },
+    { id: 'simpatia',     label: 'Simpatía',     detectado: !!guion.value.cialdini_simpatia,     desc: 'Genera conexión a través de valores o estilo similar.' },
+    { id: 'consenso',     label: 'Prueba Social', detectado: !!guion.value.cialdini_prueba_social, desc: 'Muestra que otros ya confían o usan el producto.' },
+    { id: 'unidad',       label: 'Unidad',       detectado: !!guion.value.cialdini_unidad,       desc: 'Crea un sentido de pertenencia a un grupo exclusivo.' },
   ]
-  return princs.map(p => ({
-    ...p,
-    detectado: guion.value.principios_cialdini?.some(dp => dp.toLowerCase().includes(p.label.toLowerCase()))
-  }))
 })
 
 const tabsDisponibles = computed(() => {
@@ -358,7 +354,7 @@ const tabsDisponibles = computed(() => {
     { id: 'neuromarketing', label: 'Neuro' },
     { id: 'estructura', label: 'Estructura' },
   ]
-  if (guion.value?.transcripcion) tabs.push({ id: 'transcripcion', label: 'Transcripción' })
+  if (guion.value?.transcript) tabs.push({ id: 'transcripcion', label: 'Transcripción' })
   return tabs
 })
 

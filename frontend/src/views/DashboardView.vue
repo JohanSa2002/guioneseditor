@@ -293,7 +293,11 @@ async function cargarDatos() {
     ])
     guiones.value      = dg.guiones || []
     totalGuiones.value = dg.total || (dg.guiones?.length || 0)
-    stats.value        = ds || []
+    // Map backend fields (virabilidad_promedio) to frontend names (avg_score)
+    stats.value        = (ds || []).map(s => ({
+      ...s,
+      avg_score: parseFloat(s.virabilidad_promedio || 0)
+    }))
   } catch (e) {
     console.error(e)
   } finally {

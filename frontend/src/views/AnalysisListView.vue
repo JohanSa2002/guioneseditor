@@ -64,7 +64,7 @@
               </th>
               <th
                 class="px-4 py-3 text-[10px] font-bold text-ink-3 uppercase tracking-widest cursor-pointer hover:text-ink transition-colors"
-                @click="toggleSort('created_at')"
+                @click="toggleSort('fecha_analisis')"
               >
                 Fecha
               </th>
