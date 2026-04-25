@@ -137,11 +137,11 @@ Ej: Plano medio frontal, cámara fija, música lo-fi de fondo, texto rojo parpad
             >
               <div v-if="analizando" class="flex items-center gap-3">
                 <div class="w-5 h-5 border-2 border-canvas/30 border-t-canvas rounded-full animate-spin"></div>
-                <span>PROCESANDO INTELIGENCIA...</span>
+                <span>Analizando tu video...</span>
               </div>
               <div v-else class="flex items-center justify-center gap-3">
                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">bolt</span>
-                <span>INICIAR ANÁLISIS PROFUNDO</span>
+                <span>Analizar este video</span>
               </div>
               
               <!-- Glow effect on hover -->
@@ -155,14 +155,14 @@ Ej: Plano medio frontal, cámara fija, música lo-fi de fondo, texto rojo parpad
       <div class="lg:col-span-5 flex flex-col gap-6 sticky top-8">
         <div class="glass-panel p-6 overflow-hidden">
           <h2 class="text-sm font-bold text-ink uppercase tracking-widest mb-6 flex items-center gap-2">
-            <span class="material-symbols-outlined text-accent">pipeline</span>
-            Estado del Pipeline
+            <span class="material-symbols-outlined text-accent">settings_suggest</span>
+            ¿Qué está haciendo la IA?
           </h2>
 
           <!-- Barra de progreso global -->
           <div class="mb-8">
             <div class="flex items-center justify-between mb-2">
-              <p class="text-[10px] font-bold text-ink-3 uppercase">Progreso Total</p>
+              <p class="text-[10px] font-bold text-ink-3 uppercase">Progreso</p>
               <p class="text-[10px] font-bold text-accent tabular-nums">{{ Math.round(progresoVisual) }}%</p>
             </div>
             <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-border">
@@ -232,7 +232,7 @@ Ej: Plano medio frontal, cámara fija, música lo-fi de fondo, texto rojo parpad
           <!-- Timer -->
           <div v-if="analizando" class="mt-6 flex items-center justify-center gap-2 text-ink-3">
             <span class="material-symbols-outlined text-[16px] animate-spin">schedule</span>
-            <span class="text-[11px] font-bold tabular-nums">TIEMPO TRANSCURRIDO: {{ tiempoFormateado }}</span>
+            <span class="text-[11px] font-bold tabular-nums">Tiempo: {{ tiempoFormateado }}</span>
           </div>
         </div>
 
@@ -243,7 +243,7 @@ Ej: Plano medio frontal, cámara fija, música lo-fi de fondo, texto rojo parpad
             ¿Sabías que?
           </h3>
           <p class="text-[11px] text-ink-2 leading-relaxed italic">
-            El análisis de neuromarketing detecta automáticamente los sesgos cognitivos de Cialdini que activan el deseo de compra en tu audiencia.
+            Cuanto más contexto des sobre el video (música, cámara, texto en pantalla), más preciso será el análisis.
           </p>
         </div>
       </div>
@@ -300,10 +300,10 @@ const nichosPredefinidos = [
 ]
 
 const pasosVisibles = [
-  { id: 'extraccion',   label: 'Extracción de Datos', icon: 'download', desc: 'Obteniendo metadatos y video origen...' },
-  { id: 'transcripcion', label: 'Transcripción IA',   icon: 'keyboard', desc: 'Convirtiendo audio a texto con Whisper...' },
-  { id: 'analisis',      label: 'Análisis Neuronal',   icon: 'psychology', desc: 'Identificando ganchos y neuromarketing...' },
-  { id: 'embedding',     label: 'Indexación Vectorial', icon: 'database', desc: 'Guardando patrones en la memoria semántica...' }
+  { id: 'extraccion',    label: 'Descargando el video',         icon: 'download',    desc: 'Accediendo al audio de tu video...' },
+  { id: 'transcripcion', label: 'Escuchando lo que se dice',    icon: 'hearing',     desc: 'Convirtiendo el audio en texto...' },
+  { id: 'analisis',      label: 'Analizando el contenido',      icon: 'manage_search', desc: 'Detectando ganchos, emociones y patrones virales...' },
+  { id: 'embedding',     label: 'Guardando en tu biblioteca',   icon: 'save',        desc: 'Registrando el análisis para futuras generaciones...' },
 ]
 
 const pasoActualId = ref(null)
