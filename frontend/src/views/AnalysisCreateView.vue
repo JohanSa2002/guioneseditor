@@ -99,6 +99,35 @@
             </div>
           </div>
 
+          <!-- Contexto Visual del Video -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-[11px] font-bold text-ink-3 uppercase tracking-widest flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] text-accent">videocam</span>
+                Contexto Visual del Video
+              </label>
+              <span class="text-[10px] text-ink-3 italic">Opcional pero mejora el análisis</span>
+            </div>
+            <textarea
+              v-model="form.contexto_video"
+              rows="4"
+              placeholder="Describe los primeros segundos: plano, inclinación de cámara, texto en pantalla, tipo de música, palabras clave visuales...
+Ej: Plano medio frontal, cámara fija, música lo-fi de fondo, texto rojo parpadeante en pantalla que dice '¿Sabías esto?', creador apunta directo a cámara."
+              class="input-base py-3 resize-none leading-relaxed text-sm"
+              :disabled="analizando"
+            ></textarea>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="tip in contextTips"
+                :key="tip"
+                type="button"
+                @click="appendContextTip(tip)"
+                :disabled="analizando"
+                class="px-2.5 py-1 rounded-lg bg-white/5 border border-border text-[10px] font-bold text-ink-3 hover:border-accent/40 hover:text-accent transition-all"
+              >+ {{ tip }}</button>
+            </div>
+          </div>
+
           <!-- Botón de Acción -->
           <div class="pt-4">
             <button
@@ -236,8 +265,20 @@ const form = ref({
   plataforma: 'tiktok',
   vistas: null,
   likes: null,
-  compartidos: null
+  compartidos: null,
+  contexto_video: ''
 })
+
+const contextTips = [
+  'Plano medio', 'Plano detalle', 'Cámara en mano', 'Cámara fija',
+  'Música upbeat', 'Música lo-fi', 'Sin música', 'Voz en off',
+  'Texto en pantalla', 'Subtítulos animados', 'Transición rápida', 'Zoom agresivo',
+]
+
+function appendContextTip(tip) {
+  const sep = form.value.contexto_video ? ', ' : ''
+  form.value.contexto_video += sep + tip
+}
 
 const analizando = ref(false)
 const errorAnalisis = ref(null)
