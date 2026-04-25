@@ -188,7 +188,7 @@ async function cargarDatos() {
 }
 
 function verDetalle(id) {
-  router.push({ name: 'Generate', query: { base_generado: id } })
+  router.push({ name: 'ScriptDetail', params: { id } })
 }
 
 function tiempoRelativo(f) {
