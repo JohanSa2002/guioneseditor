@@ -26,8 +26,12 @@ app.use(express.json())
 // ── GET /api/guiones ────────────────────────────────────────
 // Lista todos los guiones con paginación y filtros
 app.get('/api/guiones', async (req, res) => {
-  const { niche, cliente_id, plataforma, page = 1, limit = 20, todos } = req.query
-  const offset = (page - 1) * limit
+  const { niche, cliente_id, plataforma, page = 1, limit = 20, todos, status, busqueda, sortField, sortDir } = req.query
+  const offset = (Number(page) - 1) * Number(limit)
+
+  const SORT_MAP = { score_virabilidad: 'score_virabilidad', fecha_analisis: 'fecha_analisis', created_at: 'fecha_analisis' }
+  const orderBy  = SORT_MAP[sortField] || 'fecha_analisis'
+  const ascending = sortDir === 'asc'
 
   let query = supabase
     .from('guiones')
@@ -38,13 +42,17 @@ app.get('/api/guiones', async (req, res) => {
       fecha_analisis, procesado_ok, error_detalle, vistas, likes, compartidos,
       tema_principal, resumen_patron
     `, { count: 'exact' })
-    .order('fecha_analisis', { ascending: false })
-    .range(offset, offset + limit - 1)
+    .order(orderBy, { ascending })
+    .range(offset, offset + Number(limit) - 1)
 
-  if (todos !== '1' && todos !== 'true') query = query.eq('procesado_ok', true)
-  if (niche)      query = query.eq('niche', niche)
-  if (cliente_id) query = query.eq('cliente_id', cliente_id)
-  if (plataforma) query = query.eq('plataforma', plataforma)
+  if (status === 'ok')         query = query.eq('procesado_ok', true)
+  else if (status === 'error') query = query.eq('procesado_ok', false)
+  else if (todos !== '1' && todos !== 'true') query = query.eq('procesado_ok', true)
+
+  if (niche && niche !== 'todos') query = query.eq('niche', niche)
+  if (cliente_id)                 query = query.eq('cliente_id', cliente_id)
+  if (plataforma)                 query = query.eq('plataforma', plataforma)
+  if (busqueda)                   query = query.or(`tema_principal.ilike.%${busqueda}%,url_origen.ilike.%${busqueda}%`)
 
   const { data, error, count } = await query
 

@@ -63,10 +63,10 @@
         <div class="p-6 pb-4">
           <div class="flex items-start justify-between mb-3">
             <span :class="getPlatformBadge(s.plataforma)" class="platform-badge">{{ s.plataforma }}</span>
-            <span class="text-[9px] font-bold text-ink-3 uppercase tracking-widest">{{ tiempoRelativo(s.created_at) }}</span>
+            <span class="text-[9px] font-bold text-ink-3 uppercase tracking-widest">{{ tiempoRelativo(s.fecha_generacion) }}</span>
           </div>
           <h3 class="text-base font-bold text-ink group-hover:text-accent transition-colors line-clamp-2 leading-tight mb-2">
-            {{ s.tema_principal || 'Sin título' }}
+            {{ s.titulo_sugerido || s.tema || 'Sin título' }}
           </h3>
           <p class="text-[10px] font-bold text-ink-3 uppercase tracking-tighter">{{ s.niche }}</p>
         </div>
@@ -74,7 +74,7 @@
         <!-- Script Preview -->
         <div class="px-6 py-4 bg-white/2 border-y border-white/5 flex-1">
           <p class="text-xs text-ink-2 italic line-clamp-3 leading-relaxed">
-            "{{ s.gancho_texto || 'Cargando gancho...' }}"
+            {{ s.tema ? '"' + s.tema + '"' : 'Vista previa no disponible' }}
           </p>
         </div>
 
@@ -83,7 +83,7 @@
           <div class="flex items-center gap-3">
             <div class="flex flex-col">
               <span class="text-[9px] font-bold text-ink-3 uppercase leading-none">SCORE</span>
-              <span class="text-sm font-black text-ink leading-none mt-1">{{ s.score_virabilidad || 0 }}%</span>
+              <span class="text-sm font-black text-ink leading-none mt-1">{{ s.score_estimado || 0 }}%</span>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -176,8 +176,8 @@ async function cargarDatos() {
   else cargando.value = true
   
   try {
-    const res = await api.guiones.listar(filtros.value)
-    guiones.value = res.guiones
+    const res = await api.generados.listar(filtros.value)
+    guiones.value = res.generados
     total.value = res.total
   } catch (e) {
     console.error(e)
@@ -188,7 +188,7 @@ async function cargarDatos() {
 }
 
 function verDetalle(id) {
-  router.push({ name: 'ScriptDetail', params: { id } })
+  router.push({ name: 'Generate', query: { base_generado: id } })
 }
 
 function tiempoRelativo(f) {
@@ -202,10 +202,13 @@ function tiempoRelativo(f) {
 }
 
 function copiarGuion(s) {
-  const partes = (s.partes_guion || []).map(p => p.fase + ': ' + p.contenido).join('\n')
-  const text = 'TEMA: ' + (s.tema_principal || '') +
-               '\nGANCHO: ' + (s.gancho_texto || '') +
-               '\n\nCONTENIDO:\n' + partes
+  const text = [
+    'TÍTULO: '    + (s.titulo_sugerido || s.tema || ''),
+    'TEMA: '      + (s.tema || ''),
+    'NICHO: '     + (s.niche || ''),
+    'PLATAFORMA: '+ (s.plataforma || ''),
+    'SCORE: '     + (s.score_estimado || 0) + '%',
+  ].join('\n')
   navigator.clipboard.writeText(text)
   toastVisible.value = true
   setTimeout(() => toastVisible.value = false, 3000)

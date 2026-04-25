@@ -315,7 +315,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api.js'
-import { getScoreColor, getScoreBarColor } from '../utils/scores.js'
+import { getScoreColor } from '../utils/scores.js'
 import { getPlatformBadge } from '../utils/badges.js'
 
 const route = useRoute()

@@ -94,7 +94,7 @@
               </div>
               <div class="space-y-2">
                 <p class="text-[9px] font-bold text-ink-3 uppercase text-center">Compartidos</p>
-                <input v-model.number="form.shares" type="number" class="input-base text-center font-bold tabular-nums" placeholder="0" :disabled="analizando"/>
+                <input v-model.number="form.compartidos" type="number" class="input-base text-center font-bold tabular-nums" placeholder="0" :disabled="analizando"/>
               </div>
             </div>
           </div>
@@ -236,7 +236,7 @@ const form = ref({
   plataforma: 'tiktok',
   vistas: null,
   likes: null,
-  shares: null
+  compartidos: null
 })
 
 const analizando = ref(false)
@@ -344,7 +344,7 @@ async function iniciarAnalisis() {
     
     // Pequeña pausa para que el usuario vea el 100%
     setTimeout(() => {
-      router.push({ name: 'AnalysisDetail', params: { id: res.id } })
+      router.push({ name: 'AnalysisDetail', params: { id: res.guion_id } })
     }, 1200)
     
   } catch (err) {
