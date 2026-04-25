@@ -158,11 +158,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <p class="text-[11px] font-bold text-accent uppercase tracking-widest mb-4">¿Por qué funcionó?</p>
-                <p class="text-sm text-ink-2 leading-relaxed">{{ guion.explicacion_exito }}</p>
+                <p class="text-sm text-ink-2 leading-relaxed">{{ guion.angulo_unico }}</p>
               </div>
               <div class="p-6 rounded-3xl bg-white/5 border border-border">
                 <p class="text-[11px] font-bold text-success uppercase tracking-widest mb-3">Acción Sugerida</p>
-                <p class="text-sm text-ink leading-relaxed">{{ guion.accion_sugerida }}</p>
+                <p class="text-sm text-ink leading-relaxed">{{ guion.sugerencias_mejora?.[0] }}</p>
               </div>
             </div>
           </section>
@@ -174,10 +174,7 @@
               Análisis del Gancho (Hooks)
             </h3>
             <div class="space-y-8">
-              <div class="p-6 rounded-3xl bg-accent-subtle/10 border border-accent-border/30 relative overflow-hidden">
-                <div class="absolute right-0 top-0 p-4 opacity-10">
-                  <span class="material-symbols-outlined text-6xl">format_quote</span>
-                </div>
+              <div class="p-6 rounded-3xl bg-accent-subtle/10 border border-accent-border/30">
                 <p class="text-[10px] font-bold text-accent uppercase tracking-widest mb-3">TEXTO ORIGINAL</p>
                 <p class="text-xl font-bold text-ink leading-snug">"{{ guion.gancho_texto }}"</p>
               </div>
@@ -194,14 +191,14 @@
                   <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-accent">bolt</span>
                     <div>
-                      <p class="text-[10px] font-bold text-ink-3 uppercase tracking-tighter">EFECTO PSICOLÓGICO</p>
-                      <p class="text-sm font-bold text-ink">{{ guion.gancho_efecto }}</p>
+                      <p class="text-[10px] font-bold text-ink-3 uppercase tracking-tighter">SESGO COGNITIVO</p>
+                      <p class="text-sm font-bold text-ink">{{ guion.sesgo_cognitivo || guion.trigger_emocional || '—' }}</p>
                     </div>
                   </div>
                 </div>
                 <div class="p-5 rounded-2xl bg-white/2 border border-dashed border-border">
-                  <p class="text-[11px] font-bold text-ink-3 uppercase mb-2">CONSEJO DEL GANCHO</p>
-                  <p class="text-xs text-ink-2 leading-relaxed italic">"{{ guion.gancho_consejo }}"</p>
+                  <p class="text-[11px] font-bold text-ink-3 uppercase mb-2">PROMESA EXPLÍCITA</p>
+                  <p class="text-xs text-ink-2 leading-relaxed italic">"{{ guion.promesa_explicita || '—' }}"</p>
                 </div>
               </div>
             </div>
@@ -243,12 +240,12 @@
               Arquitectura del Contenido
             </h3>
             <div class="space-y-6">
-              <div v-for="(p, idx) in guion.partes_guion" :key="idx" class="flex gap-6 group">
+              <div v-for="(p, idx) in partesGuion" :key="idx" class="flex gap-6 group">
                 <div class="flex flex-col items-center gap-2">
                   <div class="w-8 h-8 rounded-full bg-white/5 border border-border flex items-center justify-center shrink-0 group-hover:border-accent transition-colors">
                     <span class="text-xs font-black text-ink-3 group-hover:text-accent tabular-nums">{{ idx + 1 }}</span>
                   </div>
-                  <div v-if="idx < guion.partes_guion.length - 1" class="w-px flex-1 bg-border group-hover:bg-accent/30 transition-colors"></div>
+                  <div v-if="idx < partesGuion.length - 1" class="w-px flex-1 bg-border group-hover:bg-accent/30 transition-colors"></div>
                 </div>
                 <div class="pb-8">
                   <p class="text-[10px] font-bold text-accent uppercase tracking-widest mb-1">{{ p.fase }}</p>
@@ -332,6 +329,19 @@ const hashtags = computed(() => {
   if (!guion.value?.transcript) return []
   const matches = guion.value.transcript.match(/#[\wáéíóú]+/g)
   return matches ? [...new Set(matches.map(h => h.slice(1)))] : []
+})
+
+const partesGuion = computed(() => {
+  if (!guion.value) return []
+  const partes = [
+    { fase: 'APERTURA / GANCHO',  contenido: guion.value.apertura_exacta || guion.value.gancho_texto || '—' },
+    { fase: 'CONFLICTO CENTRAL',  contenido: guion.value.conflicto_central || '—' },
+    { fase: 'RESOLUCIÓN',         contenido: guion.value.resolucion || '—' },
+  ]
+  const cta = guion.value.cta_texto || (guion.value.cta_tipo && guion.value.cta_tipo !== 'ninguno' ? guion.value.cta_tipo : null)
+  if (cta) partes.push({ fase: 'CALL TO ACTION', contenido: cta })
+  if (guion.value.cierre_exacto) partes.push({ fase: 'CIERRE EXACTO', contenido: guion.value.cierre_exacto })
+  return partes
 })
 
 const principiosCialdini = computed(() => {
