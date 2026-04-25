@@ -11,7 +11,7 @@ export default async function handler(req, res) {
       .single()
 
     if (error) return res.status(404).json({ error: 'Guion no encontrado' })
-    return res.json({ generado: data })
+    return res.json(data)
   }
 
   if (req.method === 'DELETE') {

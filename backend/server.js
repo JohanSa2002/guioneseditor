@@ -274,53 +274,56 @@ app.post('/api/generar', async (req, res) => {
 
       patrones = data || []
     } else {
-      // Auto-seleccionar los mejores del mismo niche y plataforma
-      let query = supabase
+      // 3.2. Obtener patrones de referencia (auto-selección si no se envían IDs)
+      const { data, error: errPatrones } = await supabase
         .from('guiones')
         .select(`
-          estructura_narrativa, gancho_tipo, gancho_texto, apertura_exacta,
-          tecnica_retencion, trigger_emocional, intensidad_emocional,
-          cialdini_reciprocidad, cialdini_escasez, cialdini_autoridad,
-          cialdini_consistencia, cialdini_prueba_social, cialdini_simpatia, cialdini_unidad,
-          ingredientes_clave, resumen_patron, score_virabilidad
+          id,
+          estructura_narrativa, gancho_tipo, gancho_texto, apertura_exacta, 
+          cierre_exacta, cta_tipo, cta_texto, arco_emocional, 
+          conflicto_central, resolucion, pacing_ritmo, sesgo_cognitivo, 
+          trigger_emocional, intensidad_emocional, tono, nivel_especificidad,
+          score_engagement, score_virabilidad, resumen_patron
         `)
-        .eq('procesado_ok', true)
         .eq('niche', niche)
-        .order('likes', { ascending: false })
-        .order('vistas', { ascending: false })
-        .limit(num_referencias)
+        .eq('procesado_ok', true)
+        .order('score_engagement', { ascending: false })
+        .limit(3)
 
-      if (plataforma) query = query.eq('plataforma', plataforma)
-
-      const { data } = await query
+      if (errPatrones) console.warn('[generar] Error obteniendo patrones:', errPatrones.message)
       patrones = data || []
     }
 
+    // 4. Generar con GPT-4o
     const guion = await generarGuion({
-      niche, tema, audiencia, plataforma, duracion_objetivo,
-      tono, objetivo, estructura, instrucciones_extra,
+      niche, tema, audiencia, plataforma, 
+      tono, objetivo, estructura, duracion_objetivo, instrucciones_extra
     }, patrones)
 
-    // Guardar en Supabase
+    // 5. Guardar en base de datos
     const { data: guardado, error: errGuardado } = await supabase
       .from('guiones_generados')
       .insert({
         cliente_id,
-        niche, tema, audiencia, plataforma,
-        duracion_objetivo, tono, objetivo,
-        estructura_usada: estructura,
-        instrucciones_extra: instrucciones_extra || null,
-        referencias_ids: referencias_ids.length > 0 ? referencias_ids : (patrones.map ? null : null),
-        titulo_sugerido:       guion.titulo_sugerido,
-        gancho:                guion.gancho,
-        desarrollo:            guion.desarrollo,
+        niche,
+        tema,
+        audiencia,
+        plataforma,
+        tono,
+        objetivo,
+        estructura_usada:      estructura,
+        instrucciones_extra,
+        referencias_ids:       referencias_ids.length > 0 ? referencias_ids : (patrones.length > 0 ? patrones.map(p => p.id) : null),
+        titulo_sugerido:       guion.titulo_sugerido || `Guion: ${tema}`,
+        gancho:                guion.gancho || '...',
+        desarrollo:            guion.desarrollo || '...',
         cta:                   guion.cta,
-        guion_completo:        guion.guion_completo,
-        variantes_gancho:      guion.variantes_gancho,
-        tecnicas_aplicadas:    guion.tecnicas_aplicadas,
+        guion_completo:        guion.guion_completo || '',
+        variantes_gancho:      guion.variantes_gancho || [],
+        tecnicas_aplicadas:    guion.tecnicas_aplicadas || [],
         notas_produccion:      guion.notas_produccion,
-        duracion_estimada_seg: guion.duracion_estimada_seg,
-        score_estimado:        guion.score_estimado,
+        duracion_estimada_seg: guion.duracion_estimada_seg || 0,
+        score_estimado:        guion.score_estimado || 0,
         version_prompt:        'v1.0',
       })
       .select('id')
@@ -328,6 +331,7 @@ app.post('/api/generar', async (req, res) => {
 
     if (errGuardado) throw new Error(`Supabase: ${errGuardado.message}`)
 
+    console.log(`✓ Guion guardado con ID: ${guardado.id}`)
     res.json({ ok: true, guion_id: guardado.id, guion })
   } catch (err) {
     console.error('[generar] Error:', err.message)

@@ -246,9 +246,12 @@ function formatearFecha(f) {
 async function cargarGuion() {
   cargando.value = true
   try {
-    guion.value = await api.generados.obtener(route.params.id)
+    console.log('[ScriptDetail] Cargando ID:', route.params.id)
+    const data = await api.generados.obtener(route.params.id)
+    console.log('[ScriptDetail] Datos recibidos:', data)
+    guion.value = data
   } catch (e) {
-    console.error(e)
+    console.error('[ScriptDetail] Error:', e)
     router.push({ name: 'Scripts' })
   } finally {
     cargando.value = false
