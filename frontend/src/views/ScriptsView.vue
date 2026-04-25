@@ -90,11 +90,19 @@
             <button
               @click.stop="copiarGuion(s)"
               class="p-2 rounded-lg hover:bg-white/10 text-ink-3 hover:text-ink transition-all"
-              title="Copiar Guion"
+              title="Copiar guion"
             >
               <span class="material-symbols-outlined text-[18px]">content_copy</span>
             </button>
             <button
+              @click.stop="eliminar(s.id)"
+              class="p-2 rounded-lg hover:bg-error/10 text-ink-3 hover:text-error transition-all"
+              title="Eliminar guion"
+            >
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>
+            <button
+              @click.stop="verDetalle(s.id)"
               class="p-2 rounded-lg hover:bg-white/10 text-ink-3 hover:text-ink transition-all"
             >
               <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -189,6 +197,17 @@ async function cargarDatos() {
 
 function verDetalle(id) {
   router.push({ name: 'ScriptDetail', params: { id } })
+}
+
+async function eliminar(id) {
+  if (!confirm('¿Eliminar este guion? Esta acción no se puede deshacer.')) return
+  try {
+    await api.generados.eliminar(id)
+    guiones.value = guiones.value.filter(g => g.id !== id)
+    total.value--
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 function tiempoRelativo(f) {
