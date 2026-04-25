@@ -252,8 +252,8 @@ const toastVisible = ref(false)
 
 const guionCorrupto = computed(() => {
   if (!guion.value) return false
-  const gancho = guion.value.gancho || ''
-  return !gancho || gancho.trim() === '...' || gancho.startsWith('<') || !guion.value.score_estimado
+  const gancho = (guion.value.gancho || '').trim()
+  return !gancho || gancho === '...' || gancho === '…' || gancho.startsWith('<texto')
 })
 
 function getScoreStroke(score) {
