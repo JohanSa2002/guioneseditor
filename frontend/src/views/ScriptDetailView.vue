@@ -7,27 +7,6 @@
     </div>
   </div>
 
-  <!-- Guion corrupto / vacío -->
-  <div v-else-if="guionCorrupto" class="flex flex-col items-center justify-center gap-6 py-32 text-center">
-    <div class="w-16 h-16 rounded-3xl bg-error/10 border border-error/30 flex items-center justify-center">
-      <span class="material-symbols-outlined text-4xl text-error">broken_image</span>
-    </div>
-    <div>
-      <p class="text-base font-bold text-ink mb-1">Este guion tiene datos incompletos</p>
-      <p class="text-sm text-ink-3 max-w-sm">Fue generado antes de que el sistema estuviera estable. Elimínalo y genera uno nuevo.</p>
-    </div>
-    <div class="flex items-center gap-3">
-      <button @click="eliminarYVolver" class="btn-secondary text-error border-error/30 hover:bg-error/10">
-        <span class="material-symbols-outlined text-[18px]">delete</span>
-        Eliminar este guion
-      </button>
-      <router-link to="/generate" class="btn-primary">
-        <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-        Generar uno nuevo
-      </router-link>
-    </div>
-  </div>
-
   <div v-else-if="guion" class="flex flex-col gap-8 pb-24">
 
     <!-- Header -->
@@ -238,7 +217,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api.js'
 import { getPlatformBadge } from '../utils/badges.js'
@@ -250,11 +229,6 @@ const cargando = ref(true)
 const copiado  = ref(false)
 const toastVisible = ref(false)
 
-const guionCorrupto = computed(() => {
-  if (!guion.value) return false
-  const gancho = (guion.value.gancho || '').trim()
-  return !gancho || gancho === '...' || gancho === '…' || gancho.startsWith('<texto')
-})
 
 function getScoreStroke(score) {
   if (!score) return 'text-border'
