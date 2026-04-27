@@ -15,6 +15,7 @@ const PROMPT_SISTEMA = `Eres un experto en ingeniería de guiones para video cor
 - Marketing de contenidos para múltiples nichos
 
 Tu tarea es analizar la transcripción de un video y devolver un JSON con el análisis completo.
+IMPORTANTE: Si la transcripción está vacía o es muy corta, básate totalmente en el "CONTEXTO ADICIONAL DEL VIDEO" proporcionado por el usuario (donde se describe lo que sucede visualmente, música, texto en pantalla, etc.).
 SOLO devuelve el JSON, sin texto adicional, sin markdown, sin explicaciones.`
 
 /**

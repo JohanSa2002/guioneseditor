@@ -60,6 +60,14 @@ export default async function handler(req, res) {
     paso = 'transcripcion'
     const transcript = await transcribir(audioUrl, idioma)
 
+    // Validar que tengamos ALGO para analizar
+    if (!transcript && !contexto_video) {
+      throw new Error(
+        'Whisper no detectó voz en el video y no se proporcionó contexto visual. ' +
+        'Para videos sin voz, por favor describe lo que sucede en el campo "Contexto Visual del Video".'
+      )
+    }
+
     // ── PASO 3: Analizar con GPT-4o ───────────────────────
     paso = 'analisis'
     const analisisRaw = await analizarTranscript(transcript, niche, plataforma, duracionSeg, contexto_video)

@@ -33,12 +33,17 @@ export async function extraerAudio(url) {
 
   // Buscar el media de tipo audio
   const audioMedia = data.medias?.find(m => m.type === 'audio')
-  if (!audioMedia?.url) {
-    throw new Error('La API no devolvió un archivo de audio para esta URL')
+  // Buscar el media de tipo video (como fallback si el audio falla)
+  const videoMedia = data.medias?.find(m => m.type === 'video' && m.quality === 'hd') || 
+                     data.medias?.find(m => m.type === 'video')
+
+  if (!audioMedia?.url && !videoMedia?.url) {
+    throw new Error('La API no devolvió un archivo de audio o video para esta URL')
   }
 
   return {
-    audioUrl:   audioMedia.url,
+    audioUrl:   audioMedia?.url || videoMedia?.url,
+    videoUrl:   videoMedia?.url || null,
     duracion:   data.duration   ?? null,
     titulo:     data.title      ?? null,
     thumbnail:  data.thumbnail  ?? null,

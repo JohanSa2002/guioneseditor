@@ -154,9 +154,17 @@ app.post('/api/analizar', async (req, res) => {
     // Normalizar duración: TikTok devuelve ms (ej. 47416), Instagram devuelve s float (ej. 49.062)
     const duracionSeg = duracion ? Math.round(duracion > 1000 ? duracion / 1000 : duracion) : null
 
+    // ── PASO 2: Transcribir con Whisper ───────────────────
     paso = 'transcripcion'
-    console.log(`[2/5] Transcribiendo audio (${duracionSeg}s)...`)
     const transcript = await transcribir(audioUrl, idioma)
+
+    // Validar que tengamos ALGO para analizar
+    if (!transcript && !contexto_video) {
+      throw new Error(
+        'Whisper no detectó voz en el video y no se proporcionó contexto visual. ' +
+        'Para videos sin voz, por favor describe lo que sucede en el campo "Contexto Visual del Video".'
+      )
+    }
 
     paso = 'analisis'
     console.log(`[3/5] Analizando con GPT-4o...`)
